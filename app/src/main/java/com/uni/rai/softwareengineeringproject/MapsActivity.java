@@ -1,14 +1,17 @@
 package com.uni.rai.softwareengineeringproject;
-import android.Manifest;
-import android.content.pm.PackageManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
-import android.support.v4.app.ActivityCompat;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -38,35 +41,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //since API 23, need to ask for user permission to use location
-        //so create a check and dialog box
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0
-                        );//MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        }
-
         setContentView(R.layout.activity_maps);
         //build a google api client
         buildGoogleApiClient();
@@ -103,16 +77,57 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.setMyLocationEnabled(true);
+        mMap = googleMap;
+        mMap.setMyLocationEnabled(true);
     }
     @Override
     //updated the location variables once a connection is established with the google server
     public void onConnected(Bundle connectionHint) {
-        startLocationUpdates(); //start updating the location variables
+        // check to see if the device is connected to the internet, if not show a warning message
+        ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conManager.getActiveNetworkInfo();
+        if (netInfo == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Unable to connect to the internet");
+            builder.setMessage("If you see a white screen instead of a map, please enable wifi or mobile data and try again");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // do nothing
+                }
+            });
+            Dialog dialog = builder.create();
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setCancelable(false);
+            dialog.show();
+        }
 
-//        ((MapFragment) getFragmentManager()
-//                .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
-//                position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        startLocationUpdates(); //start updating the location variables
+        if (mCurrentLocation != null) {
+            // only add marker on the map if the current location is found
+            ((MapFragment) getFragmentManager()
+                    .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
+                    position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        } else {
+            // if the current location could not be found, display a dialog that redirect the user to the location setting screen
+            LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+            if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                    !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Location Services Not Active");
+                builder.setMessage("Please enable Location Services and GPS");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    }
+                });
+                Dialog alertDialog = builder.create();
+                alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.setCancelable(false);
+                alertDialog.show();
+            }
+        }
     }
 
     //request location udates from google
@@ -128,12 +143,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     //Update as the device is moving
-    public void onLocationChanged(Location location){
-//        Log.v(TAG, "IN ON LOCATION CHANGE, lat=" + location.getLatitude() + ", lon=" + location.getLongitude());
-//        mCurrentLocation = location; //get current location
-//        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location; //get current location
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
         //map centers in on the current location
-//        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(0,0)));//new LatLng(location.getLatitude(), location.getLongitude())));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
     }
 
     @Override
