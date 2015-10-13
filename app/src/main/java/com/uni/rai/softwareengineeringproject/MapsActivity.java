@@ -1,27 +1,26 @@
 package com.uni.rai.softwareengineeringproject;
-
 import android.location.Location;
-import android.location.LocationListener;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import java.text.DateFormat;
 import java.util.Date;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    private static final long LOCATION_REQUEST_INTERVAL = 1000;
-    private static final long FASTEST_LOCATION_INTERVAL = 5000;
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener{
+    private static final long LOCATION_REQUEST_INTERVAL = 1000;//ms
+    private static final long FASTEST_LOCATION_INTERVAL = 5000;//ms
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
@@ -36,20 +35,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         //build a google api client
         buildGoogleApiClient();
-
+        //connect to the server
+        mGoogleApiClient.connect();
+//        create a new location request for the map locator
+        createLocationRequest();
+        //init the map
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
+        //call onMapReady()
         mapFragment.getMapAsync(this);
-
-        //create a new location request for the map locator
-        createLocationRequest();
-    }
-
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(LOCATION_REQUEST_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_LOCATION_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);   //request highest possible accuracy from device
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -58,6 +52,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(LOCATION_REQUEST_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_LOCATION_INTERVAL);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);   //request highest possible accuracy from device
     }
 
     @Override
@@ -69,12 +70,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         googleMap.setMyLocationEnabled(true);
     }
-
-
     @Override
-    //updated the location variables once a connection is established
+    //updated the location variables once a connection is established with the google server
     public void onConnected(Bundle connectionHint) {
-            startLocationUpdates();
+        startLocationUpdates(); //start updating the location variables
+
         ((MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
                 position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
@@ -82,44 +82,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //request location udates from google
     protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, this.mLocationRequest, (com.google.android.gms.location.LocationListener) this);
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation == null) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
+        else{
+            mCurrentLocation=mLastLocation;
+        }
     }
 
     @Override
     //Update as the device is moving
     public void onLocationChanged(Location location) {
         mCurrentLocation = location; //get current location
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get las update time
-        ((MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
-                position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))); // try to drop a marker on the last location
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
+        //map centers in on the current location
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-        @Override
     public void onConnectionSuspended(int i) {
-
     }
-
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
     }
-
-
 }
