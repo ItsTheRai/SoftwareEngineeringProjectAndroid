@@ -12,7 +12,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -41,6 +40,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //create a new location request for the map locator
+        createLocationRequest();
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(LOCATION_REQUEST_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_LOCATION_INTERVAL);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);   //request highest possible accuracy from device
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     @Override
@@ -53,15 +70,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setMyLocationEnabled(true);
     }
 
-    protected void createLocationRequest() {
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(LOCATION_REQUEST_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_LOCATION_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
 
     @Override
+    //updated the location variables once a connection is established
     public void onConnected(Bundle connectionHint) {
             startLocationUpdates();
         ((MapFragment) getFragmentManager()
@@ -69,18 +80,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
     }
 
+    //request location udates from google
     protected void startLocationUpdates() {
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, this.mLocationRequest, (com.google.android.gms.location.LocationListener) this);
     }
 
     @Override
+    //Update as the device is moving
     public void onLocationChanged(Location location) {
-        mCurrentLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        mCurrentLocation = location; //get current location
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get las update time
         ((MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
-                position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+                position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))); // try to drop a marker on the last location
     }
 
     @Override
@@ -108,11 +121,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
+
 }
