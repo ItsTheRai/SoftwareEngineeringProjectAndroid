@@ -1,5 +1,14 @@
 package com.uni.rai.softwareengineeringproject;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -68,16 +77,57 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.setMyLocationEnabled(true);
+        mMap = googleMap;
+        mMap.setMyLocationEnabled(true);
     }
     @Override
     //updated the location variables once a connection is established with the google server
     public void onConnected(Bundle connectionHint) {
-        startLocationUpdates(); //start updating the location variables
+        // check to see if the device is connected to the internet, if not show a warning message
+        ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conManager.getActiveNetworkInfo();
+        if (netInfo == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Unable to connect to the internet");
+            builder.setMessage("If you see a white screen instead of a map, please enable wifi or mobile data and try again");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // do nothing
+                }
+            });
+            Dialog dialog = builder.create();
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setCancelable(false);
+            dialog.show();
+        }
 
-        ((MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
-                position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        startLocationUpdates(); //start updating the location variables
+        if (mCurrentLocation != null) {
+            // only add marker on the map if the current location is found
+            ((MapFragment) getFragmentManager()
+                    .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
+                    position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        } else {
+            // if the current location could not be found, display a dialog that redirect the user to the location setting screen
+            LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+            if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                    !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Location Services Not Active");
+                builder.setMessage("Please enable Location Services and GPS");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    }
+                });
+                Dialog alertDialog = builder.create();
+                alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.setCancelable(false);
+                alertDialog.show();
+            }
+        }
     }
 
     //request location udates from google
