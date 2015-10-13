@@ -1,8 +1,14 @@
 package com.uni.rai.softwareengineeringproject;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -32,6 +38,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //since API 23, need to ask for user permission to use location
+        //so create a check and dialog box
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0
+                        );//MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+
         setContentView(R.layout.activity_maps);
         //build a google api client
         buildGoogleApiClient();
@@ -75,9 +110,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnected(Bundle connectionHint) {
         startLocationUpdates(); //start updating the location variables
 
-        ((MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
-                position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+//        ((MapFragment) getFragmentManager()
+//                .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
+//                position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
     }
 
     //request location udates from google
@@ -93,11 +128,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     //Update as the device is moving
-    public void onLocationChanged(Location location) {
-        mCurrentLocation = location; //get current location
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
+    public void onLocationChanged(Location location){
+//        Log.v(TAG, "IN ON LOCATION CHANGE, lat=" + location.getLatitude() + ", lon=" + location.getLongitude());
+//        mCurrentLocation = location; //get current location
+//        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
         //map centers in on the current location
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+//        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(0,0)));//new LatLng(location.getLatitude(), location.getLongitude())));
     }
 
     @Override
