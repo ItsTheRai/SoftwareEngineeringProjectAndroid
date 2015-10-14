@@ -55,10 +55,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //since API 23, need to ask for user permission to use location
         //so create a check and dialog box
 
-
-
-
-
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -144,7 +140,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);   //request highest possible accuracy from device
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -161,16 +156,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Unable to connect to the internet");
             builder.setMessage("If you see a white screen instead of a map, please enable wifi or mobile data and try again");
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton("Wifi", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // do nothing
+                    // go to the Wifi settings screen
+                    Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                    startActivity(intent);
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //  Do nothing
                 }
             });
             Dialog dialog = builder.create();
             dialog.setCanceledOnTouchOutside(false);
             dialog.setCancelable(false);
+
             dialog.show();
+            if (netInfo != null) {
+                dialog.hide();
+            }
         }
 
         startLocationUpdates(); //start listening for location changes
@@ -185,7 +192,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                     !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Location Services Not Active");
+                builder.setTitle("Unable to determine current location");
                 builder.setMessage("Please enable Location Services and GPS");
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -193,10 +200,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         startActivity(intent);
                     }
                 });
-                Dialog alertDialog = builder.create();
-                alertDialog.setCanceledOnTouchOutside(false);
-                alertDialog.setCancelable(false);
-                alertDialog.show();
+                Dialog dialog = builder.create();
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setCancelable(false);
+                dialog.show();
             }
         }
     }
