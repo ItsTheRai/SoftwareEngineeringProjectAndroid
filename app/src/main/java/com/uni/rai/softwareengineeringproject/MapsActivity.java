@@ -176,9 +176,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startLocationUpdates(); //start listening for location changes
         if (mCurrentLocation != null) {
             // only add marker on the map if the current location is found
-            ((MapFragment) getFragmentManager()
-                    .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
-                    position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+//            ((MapFragment) getFragmentManager()
+//                    .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
+//                    position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
         } else {
             // if the current location could not be found, display a dialog that redirect the user to the location setting screen
             LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
