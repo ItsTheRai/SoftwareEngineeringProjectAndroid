@@ -101,6 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStop();
         Log.d(TAG, "onStop fired ..............");
         mGoogleApiClient.disconnect();
+        mCurrentLocation = null; // reset the current location to null
         Log.d(TAG, "isConnected ...............: " + mGoogleApiClient.isConnected());
     }
 
@@ -149,10 +150,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     //updated the location variables once a connection is established with the google server
     public void onConnected(Bundle connectionHint) {
-        // check to see if the device is connected to the internet, if not show a warning message
-        ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = conManager.getActiveNetworkInfo();
-        if (netInfo == null) {
+        checkInternet(); // check to see if connected to internet
+        startLocationUpdates(); //start listening for location changes
+        // if can't find current location, check to see if GPS is turned on
+        if (mCurrentLocation == null) {
+            checkGPS();
+        }
+    }
+
+    // check for internet connection using the isInternetConnected method, if not connected, show a warning message
+    private void checkInternet() {
+        if (!isInternetConnected()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Unable to connect to the internet");
             builder.setMessage("If you see a white screen instead of a map, please enable wifi or mobile data and try again");
@@ -172,39 +180,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
             Dialog dialog = builder.create();
             dialog.setCanceledOnTouchOutside(false);
-            dialog.setCancelable(false);
-
             dialog.show();
-            if (netInfo != null) {
-                dialog.hide();
-            }
         }
+    }
 
-        startLocationUpdates(); //start listening for location changes
-        if (mCurrentLocation != null) {
-            // only add marker on the map if the current location is found
-//            ((MapFragment) getFragmentManager()
-//                    .findFragmentById(R.id.map)).getMap().addMarker(new MarkerOptions().
-//                    position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-        } else {
-            // if the current location could not be found, display a dialog that redirect the user to the location setting screen
-            LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-            if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                    !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Unable to determine current location");
-                builder.setMessage("Please enable Location Services and GPS");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(intent);
-                    }
-                });
-                Dialog dialog = builder.create();
-                dialog.setCanceledOnTouchOutside(false);
-                dialog.setCancelable(false);
-                dialog.show();
-            }
+    // return true if connected to the internet, false otherwise
+    private boolean isInternetConnected() {
+        ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conManager.getActiveNetworkInfo();
+        return netInfo != null;
+    }
+
+    // check if GPS is on, if it's on, this method should do nothing, otherwise display a dialog that redirect the user to the location setting screen
+    private void checkGPS() {
+        System.out.println("checking GPS");
+        LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (!locManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                !locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Unable to determine current location");
+            builder.setMessage("Please enable Location Services and GPS");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
+                }
+            });
+            Dialog dialog = builder.create();
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setCancelable(false);
+            dialog.show();
         }
     }
 
