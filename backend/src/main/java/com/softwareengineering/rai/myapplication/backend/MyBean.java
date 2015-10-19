@@ -1,4 +1,4 @@
-package com.example.rai.myapplication.backend;
+package com.softwareengineering.rai.myapplication.backend;
 
 /**
  * The object model for the data we are sending through endpoints

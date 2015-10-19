@@ -150,6 +150,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     //updated the location variables once a connection is established with the google server
     public void onConnected(Bundle connectionHint) {
+        //should have internet since connected
         checkInternet(); // check to see if connected to internet
         startLocationUpdates(); //start listening for location changes
         // if can't find current location, check to see if GPS is turned on
@@ -188,6 +189,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean isInternetConnected() {
         ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = conManager.getActiveNetworkInfo();
+        //use && netInfo.isConnected() since as this may not get the right results (airplane mode etc)
         return netInfo != null;
     }
 
@@ -216,19 +218,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //request location udates from google
 //    @TargetApi(Build.VERSION_CODES.M)
     protected void startLocationUpdates() {
-        // Register the listener with the Location Manager to receive location updates
-//        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for Activity#requestPermissions for more details.
-//            return;
-//        }
-//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-
         //request google to start receiving regular updates
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
