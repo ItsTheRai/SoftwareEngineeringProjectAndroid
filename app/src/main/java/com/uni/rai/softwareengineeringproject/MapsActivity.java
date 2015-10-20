@@ -30,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -39,19 +40,22 @@ import java.util.Date;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
-    private static final long LOCATION_REQUEST_INTERVAL = 1000;//ms
-    private static final long FASTEST_LOCATION_INTERVAL = 5000;//ms
+    private static final long LOCATION_REQUEST_INTERVAL = 100;//ms
+    private static final long FASTEST_LOCATION_INTERVAL = 100;//ms
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
-    private Location mLastLocation;
+//    private Location mLastLocation;
     private Location mCurrentLocation;
     private String mLastUpdateTime;
     private LocationRequest mLocationRequest;
+    private boolean isLockedOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //set tracking flag
+        isLockedOn=false;
         //since API 23, need to ask for user permission to use location
         //so create a check and dialog box
 
@@ -92,6 +96,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart fired ..............");
+        //check if connected
+        checkInternet(); // check to see if connected to internet
         //connect to the server
         mGoogleApiClient.connect();
     }
@@ -120,6 +126,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onResume() {
         super.onResume();
+        //check connection
+        checkInternet();
         if (mGoogleApiClient.isConnected()) {
             startLocationUpdates();
             Log.d(TAG, "Location update resumed .....................");
@@ -134,6 +142,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();
     }
 
+    //create a callback to google and set parameters for frequency
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(LOCATION_REQUEST_INTERVAL);
@@ -144,20 +153,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+//        mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setMyLocationEnabled(true);
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                //TODO: Any custom actions
+                isLockedOn = !isLockedOn;
+                if (isLockedOn) {
+                    showUser();
+                }
+                if (!isLockedOn) {
+                    mMap.getUiSettings().setScrollGesturesEnabled(true);
+                }
+                else if(isLockedOn){
+                    mMap.getUiSettings().setScrollGesturesEnabled(false);
+                }
+                return true;
+            }
+        });
+    }
+
+    public void showUser(){
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+//        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
     }
 
     @Override
     //updated the location variables once a connection is established with the google server
     public void onConnected(Bundle connectionHint) {
         //should have internet since connected
-        checkInternet(); // check to see if connected to internet
+
         startLocationUpdates(); //start listening for location changes
         // if can't find current location, check to see if GPS is turned on
         if (mCurrentLocation == null) {
             checkGPS();
         }
+        else {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        }
     }
+
 
     // check for internet connection using the isInternetConnected method, if not connected, show a warning message
     private void checkInternet() {
@@ -190,7 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = conManager.getActiveNetworkInfo();
         //use && netInfo.isConnected() since as this may not get the right results (airplane mode etc)
-        return netInfo != null;
+        return netInfo != null && netInfo.isConnected();
     }
 
     // check if GPS is on, if it's on, this method should do nothing, otherwise display a dialog that redirect the user to the location setting screen
@@ -216,28 +255,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     //request location udates from google
-//    @TargetApi(Build.VERSION_CODES.M)
     protected void startLocationUpdates() {
         //request google to start receiving regular updates
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation == null) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
-        else{
-            mCurrentLocation=mLastLocation;
-        }
+        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//        if (mCurrentLocation == null) {
+//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+//        }
+//        else{
+//            mCurrentLocation=mLastLocation;
+//        }
+
+        //map centers in on the current location
+
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+//        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+//        mMap.animateCamera(CameraUpdateFactory.zoomTo(25));
+
     }
 
     @Override
     //Update as the device is moving
     public void onLocationChanged(Location location) {
+
         mCurrentLocation = location; //get current location
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
-        //map centers in on the current location
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        if(isLockedOn) {
+            //map centers in on the current location
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+//            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        }
     }
 
 
@@ -245,6 +293,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionSuspended(int i) {
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
     }
