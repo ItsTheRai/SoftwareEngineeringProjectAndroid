@@ -1,9 +1,7 @@
-gradle
 .gradle
 .idea
 df
 gradle.properties
-gradlew
 gradlew.bat
 SoftwareEngineeringProject.iml
 /local.properties
