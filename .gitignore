@@ -4,14 +4,7 @@
 df
 gradle.properties
 gradlew.bat
-SoftwareEngineeringProject.iml
 /local.properties
 /.idea
-/.idea/workspace.xml
-/.idea/libraries
 app/hs_err_pid13046.log
-backend/backend.iml
 backend/build
-.DS_Store
-/build
-/captures

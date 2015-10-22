@@ -1,7 +1,6 @@
 package com.uni.rai.softwareengineeringproject;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -9,19 +8,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.Pair;
 
+import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -30,9 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -54,6 +50,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //start the back end task
+//
         //set tracking flag
         isLockedOn=false;
         //since API 23, need to ask for user permission to use location
@@ -277,6 +275,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     //Update as the device is moving
     public void onLocationChanged(Location location) {
+        //push current location
+        UserLocation l = new UserLocation();
+        l.setId((long) 1);
+        l.setLatitude(location.getLatitude());
+        l.setLongitude(location.getLongitude());
+        new UpdateLocationAsyncTask(this).execute(l);//location.getLatitude(),location.getLongitude()));
+//        new UpdateUserLocation().execute(new Pair<Context, Location>(this, location));
 
         mCurrentLocation = location; //get current location
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
