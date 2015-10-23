@@ -15,6 +15,9 @@ public class UserLocation {
     private double latitude;
 
 
+    public UserLocation(){
+
+    }
     public UserLocation(double latitude,double longitude){
 //        UserLocation a = new UserLocation(new Long(1),new Long(4));
         this.latitude=latitude;

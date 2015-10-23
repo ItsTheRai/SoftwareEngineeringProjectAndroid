@@ -12,6 +12,7 @@ import java.util.logging.Logger;
  * An endpoint class we are exposing
  */
 @Api(
+//        root = "http://127.0.0.1:8080/_ah/api", //for local server only TODO remove this before deploying
         name = "userLocationApi",
         version = "v1",
         resource = "userLocation",
