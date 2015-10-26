@@ -43,7 +43,7 @@ class UpdateLocationAsyncTask extends AsyncTask<UserLocation, Void, Void> {
             UserLocationApi.Builder builder = new UserLocationApi.Builder(
                     AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
                     // options for running against local devappserver
-                    .setRootUrl("https://DogStudio.appspot.com/_ah/api/");    //for servlet
+                    .setRootUrl("https://software-engineering-1102.appspot.com/_ah/api/");    //for servlet
 //                  .setRootUrl("http://192.168.0.4:8080/_ah/api/") //for local wifi
 //                  .setRootUrl("http://10.0.2.2:8080/_ah/api/")//for emulator
 // - 10.0.2.2 is localhost's IP address in Android emulator   //for emulator
