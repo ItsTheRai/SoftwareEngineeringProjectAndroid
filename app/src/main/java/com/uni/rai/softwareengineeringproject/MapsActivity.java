@@ -170,6 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return true;
             }
         });
+
     }
 
     public void showUser(){

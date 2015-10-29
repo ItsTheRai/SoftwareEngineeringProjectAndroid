@@ -5,20 +5,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:background="#FFFFFF"
+    android:background="@mipmap/background121"
     tools:context="com.uni.rai.softwareengineeringproject.MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:layout_weight="0.8">
+        android:layout_height="87dp"
+        android:layout_gravity="end">
+
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imageView"
-            android:src="@mipmap/version1"
+            android:src="@mipmap/houseHunter"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
     </RelativeLayout>
@@ -35,8 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imageView2"
-            android:src="@mipmap/maps2"
-            android:layout_above="@+id/button"
+            android:src="@mipmap/small3"
+            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
 
         <Button
@@ -44,13 +44,30 @@
             android:layout_height="wrap_content"
             android:text="Find Location"
             android:id="@+id/button"
-            android:background="#1E90FF"
+            android:background="#ffcc00"
             android:textSize="18dp"
             android:textColor="#FFFFFF"
             android:layout_marginBottom="117dp"
             android:layout_alignParentBottom="true"
+            android:onClick="openMap"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:allowUndo="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Data produced by Land Registry © Crown copyright 2015."
+            android:id="@+id/textView"
+            android:textColor="#cccccc"
+            android:textSize="6dp"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:onClick="openMap"/>
+            android:layout_marginBottom="6dp"
+            />
 
     </RelativeLayout>
 </LinearLayout>
