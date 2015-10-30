@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Pair;
+import android.view.View;
 
 import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
 import com.google.android.gms.common.ConnectionResult;
@@ -163,14 +164,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 if (!isLockedOn) {
                     mMap.getUiSettings().setScrollGesturesEnabled(true);
-                }
-                else if(isLockedOn){
+                } else if (isLockedOn) {
                     mMap.getUiSettings().setScrollGesturesEnabled(false);
                 }
                 return true;
             }
         });
-
+        
     }
 
     public void showUser(){
@@ -302,5 +302,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
+
+    public void ScreenPage (View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
