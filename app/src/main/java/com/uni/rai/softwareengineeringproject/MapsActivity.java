@@ -30,8 +30,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -47,6 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String mLastUpdateTime;
     private LocationRequest mLocationRequest;
     private boolean isLockedOn;
+    private TileOverlay tOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,9 +196,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             checkGPS();
         }
         else {
+            ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
+            // These are just example locations and only creates heatmap overlay surrounding the current location. We will need to query the server to get the actual latitude, longitude, as well as the price.
+            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 237));
+            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.0008, mCurrentLocation.getLongitude()-0.0025), 182));
+            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.0007, mCurrentLocation.getLongitude()-0.005), 82));
+            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.0005, mCurrentLocation.getLongitude()-0.0021), 167));
+            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()-0.001), 192));
+            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.001, mCurrentLocation.getLongitude()-0.0005), 142));
+            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.0012, mCurrentLocation.getLongitude()-0.0018), 217));
+
+            createHeatmap(llList);
+
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
         }
     }
 
@@ -294,6 +313,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //  create heatmap using the list taken from a parameter
+    public void createHeatmap(ArrayList<WeightedLatLng> pointsList) {
+        HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).build();
+        tOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tProvider));
+    }
 
 
     @Override
