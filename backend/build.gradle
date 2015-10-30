@@ -33,7 +33,7 @@ appengine {
     downloadSdk = true
     appcfg {
         oauth2 = true
-        httpAddress = "0.0.0.0" //TODO this line is for local testing, remove before deploying
+//        httpAddress = "0.0.0.0" //TODO this line is for local testing, remove before deploying
     }
     endpoints {
         getClientLibsOnBuild = true
