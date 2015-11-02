@@ -1,5 +1,6 @@
 package com.example.rai.myapplication.backend;
 
+import com.example.rai.myapplication.backend.model.SalesInformation;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;

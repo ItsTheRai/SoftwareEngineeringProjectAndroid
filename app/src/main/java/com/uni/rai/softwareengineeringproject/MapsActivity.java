@@ -17,7 +17,6 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 
 import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
@@ -34,6 +33,8 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
+import com.uni.rai.softwareengineeringproject.tasks.*;
+import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -196,25 +197,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             checkGPS();
         }
         else {
-            ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
-            // These are just example locations and only creates heatmap overlay surrounding the current location. We will need to query the server to get the actual latitude, longitude, as well as the price.
-            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 237));
-            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.0008, mCurrentLocation.getLongitude()-0.0025), 182));
-            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.0007, mCurrentLocation.getLongitude()-0.005), 82));
-            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.0005, mCurrentLocation.getLongitude()-0.0021), 167));
-            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()-0.001), 192));
-            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.001, mCurrentLocation.getLongitude()-0.0005), 142));
-            llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude()-0.0012, mCurrentLocation.getLongitude()-0.0018), 217));
-
-            createHeatmap(llList);
-
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-
+//            mMap.getCameraPosition().zoom;
         }
     }
 
+    public void updateHeatmap() {
+        ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
+        // These are just example locations and only creates heatmap overlay surrounding the current location. We will need to query the server to get the actual latitude, longitude, as well as the price.
+        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 237));
+        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0008, mCurrentLocation.getLongitude() - 0.0025), 182));
+        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0007, mCurrentLocation.getLongitude() - 0.005), 82));
+        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0005, mCurrentLocation.getLongitude() - 0.0021), 167));
+        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude() - 0.001), 192));
+        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.001, mCurrentLocation.getLongitude() - 0.0005), 142));
+        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0012, mCurrentLocation.getLongitude() - 0.0018), 217));
+
+        createHeatmap(llList);
+    }
 
     // check for internet connection using the isInternetConnected method, if not connected, show a warning message
     private void checkInternet() {
