@@ -248,8 +248,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            mMap.getCameraPosition().zoom;
         }
     }
-
     public void clearHeatmap(){
+        tOverlay.remove();
 
     }
 
