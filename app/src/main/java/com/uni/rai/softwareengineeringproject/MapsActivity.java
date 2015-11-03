@@ -18,6 +18,8 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.support.v7.app.ActionBar;
+
 
 import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
 import com.google.android.gms.common.ConnectionResult;
@@ -35,11 +37,15 @@ import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.uni.rai.softwareengineeringproject.tasks.*;
 import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
+import android.support.v7.app.ActionBarActivity;
+
+import android.widget.Toast;
+import android.view.MenuItem;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
+import android.view.Menu;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
@@ -59,6 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //start the back end task
+
 //
         //set tracking flag
         isLockedOn=false;
@@ -96,7 +103,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         //call onMapReady()
         mapFragment.getMapAsync(this);
+
+
+
+
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.map_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.heat_map:
+                item.setChecked(true);
+                Toast.makeText(getApplicationContext(),
+                        "Heat Map selected",
+                        Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.normal_map:
+                item.setChecked(true);
+                Toast.makeText(getApplicationContext(),
+                        "Normal map selected",
+                        Toast.LENGTH_LONG).show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
 
     @Override
     public void onStart() {
@@ -107,6 +147,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //connect to the server
         mGoogleApiClient.connect();
     }
+
 
     @Override
     public void onStop() {
