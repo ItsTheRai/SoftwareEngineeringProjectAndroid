@@ -7,6 +7,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
@@ -67,6 +68,15 @@ public class SalesInformationEndpoint {
         }
         return salesInformation;
     }
+
+    @ApiMethod(
+            name="getPointsInRange",
+            path = "salesInformation{}",
+            httpMethod = ApiMethod.HttpMethod.GET)
+    public List<SalesInformation> getPointsInRange(@Named("rangeInMiles") float rangeInMiles,GeoPt currentLocation, @Named("maxLength") int maxLength){
+    return null;//temp value
+    }
+
 
     /**
      * Inserts a new {@code SalesInformation}.

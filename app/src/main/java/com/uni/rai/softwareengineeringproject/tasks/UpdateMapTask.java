@@ -7,50 +7,53 @@ import android.widget.Toast;
 
 import com.example.rai.myapplication.backend.salesInformationApi.model.SalesInformation;
 import com.example.rai.myapplication.backend.userLocationApi.UserLocationApi;
+import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
 import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
 import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.google.appengine.api.datastore.GeoPt;
+import com.uni.rai.softwareengineeringproject.MainActivity;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by rai on 21/10/15.
  */
 
 
-
-
-class UpdateMapTask extends AsyncTask<UserLocation, Void, SalesInformation> {
-    private static UserLocationApi myApiService = null;
+public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<SalesInformation>> {
+    private static SalesInformationApi myApiService = null;
     private Context context;
 
     UpdateMapTask(Context context) {
         this.context = context;
     }
 
-//    @Override
-//    protected List<UserLocation> doInBackground(Void... params) {
-//
-//    }
+    @Override
+    protected void onPreExecute() {
+//        placesListLabel.setText(R.string.retrievingPlaces);
+//        MainActivity.setProgressBarIndeterminateVisibility(true);
+    }
 
     @Override
-    protected SalesInformation doInBackground(UserLocation... params) {
+    protected List<SalesInformation> doInBackground(GeoPt... params) {
         if(myApiService == null) { // Only do this once
-            UserLocationApi.Builder builder = new UserLocationApi.Builder(
+            SalesInformationApi.Builder builder = new SalesInformationApi.Builder(
                     AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
                     // options for running against local devappserver
                     .setRootUrl("https://software-engineering-1102.appspot.com/_ah/api/");    //for servlet
             myApiService = builder.build();
         }
-        try {
-            myApiService.updateUserLocation(params[0]).execute();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+////            myApiService.get()
+////
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 

@@ -33,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.uni.rai.softwareengineeringproject.tasks.*;
@@ -119,12 +120,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.heat_map:
+//                clearHeatmap();
+                updateHeatmap();    //querries the DB to update the heatmap
                 item.setChecked(true);
                 Toast.makeText(getApplicationContext(),
                         "Heat Map selected",
                         Toast.LENGTH_LONG).show();
                 return true;
             case R.id.normal_map:
+                clearHeatmap(); // clear the current heatmap
                 item.setChecked(true);
                 Toast.makeText(getApplicationContext(),
                         "Normal map selected",
@@ -245,6 +249,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public void clearHeatmap(){
+
+    }
+
     public void updateHeatmap() {
         ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
         // These are just example locations and only creates heatmap overlay surrounding the current location. We will need to query the server to get the actual latitude, longitude, as well as the price.
@@ -338,13 +346,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     //Update as the device is moving
     public void onLocationChanged(Location location) {
+//        GeoPt pt = new GeoPt();
+//        new UpdateMapTask().execute()
         //push current location
-        UserLocation l = new UserLocation();
-        l.setId((long) 1);
-        l.setLatitude(location.getLatitude());
-        l.setLongitude(location.getLongitude());
-        new UpdateLocationAsyncTask(this).execute(l);//location.getLatitude(),location.getLongitude()));
-//        new UpdateUserLocation().execute(new Pair<Context, Location>(this, location));
+        //        new UpdateUserLocation().execute(new Pair<Context, Location>(this, location));
 
         mCurrentLocation = location; //get current location
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
@@ -352,7 +357,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //map centers in on the current location
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-//            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         }
     }
 
