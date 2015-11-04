@@ -21,8 +21,14 @@ import android.view.View;
 import android.support.v7.app.ActionBar;
 
 
-import com.example.rai.myapplication.backend.model.SalesLocationData;
-import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
+//import com.example.rai.myapplication.backend.model.SalesLocationData;
+//import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
+//import com.example.rai.myapplication.backend.model.SalesLocationData;
+//import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
+
+//import com.example.rai.myapplication.backend.model.SalesInformation;
+import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -37,8 +43,10 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.uni.rai.softwareengineeringproject.tasks.*;
 import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
+import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
+//import com.uni.rai.softwareengineeringproject.tasks.*;
+//import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
 import android.support.v7.app.ActionBarActivity;
 
 import android.widget.Toast;
@@ -54,8 +62,8 @@ import android.view.Menu;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
-    private static final long LOCATION_REQUEST_INTERVAL = 100;//ms
-    private static final long FASTEST_LOCATION_INTERVAL = 100;//ms
+    private static final long LOCATION_REQUEST_INTERVAL = 60000;//ms
+    private static final long FASTEST_LOCATION_INTERVAL = 10000;//ms
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
@@ -117,7 +125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //.execute(geoLocationHelper.getCurrentLocation());
+        new UpdateLocationAsyncTask(this).execute();//TODO remove this line as only used to populate DB
     }
 
     @Override
@@ -265,12 +273,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
     public void clearHeatmap(){
-        tOverlay.remove();
+        if(tOverlay!=null) {
+            tOverlay.remove();
+        }
 
     }
 
     public void updateHeatmap() throws ExecutionException, InterruptedException {
-        List<SalesLocationData> data = new UpdateMapTask(this).execute(new GeoPt((float)mCurrentLocation.getLatitude(),(float)mCurrentLocation.getLongitude())).get();
+//        new UpdateMapTask(this).execute();
+
+
+
+        //not needed now, populating DB
+        /*
+     List<SalesLocationData> data = new UpdateMapTask(this).execute(new GeoPt((float)mCurrentLocation.getLatitude(),(float)mCurrentLocation.getLongitude())).get();
         ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
 
         for(SalesLocationData d:data){
@@ -287,6 +303,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0012, mCurrentLocation.getLongitude() - 0.0018), 217));
 
         createHeatmap(llList);
+        */
+
+
     }
 
     // check for internet connection using the isInternetConnected method, if not connected, show a warning message

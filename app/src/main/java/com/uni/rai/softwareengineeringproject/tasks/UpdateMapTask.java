@@ -5,9 +5,13 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 
-import com.example.rai.myapplication.backend.model.SalesInformation;
-import com.example.rai.myapplication.backend.model.SalesLocationData;
+//import com.example.rai.myapplication.backend.model.SalesInformation;
+//import com.example.rai.myapplication.backend.model.SalesLocationData;
+//import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
+//import com.google.api.client.extensions.android.http.AndroidHttp;
+//import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.appengine.api.datastore.GeoPt;
@@ -21,7 +25,7 @@ import java.util.List;
  */
 
 
-public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<com.example.rai.myapplication.backend.model.SalesLocationData>> {
+public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<SalesLocationData>> {
     private static SalesInformationApi myApiService = null;
     private Context context;
 
@@ -36,7 +40,7 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<com.example.rai.m
     }
 
     @Override
-    protected List<com.example.rai.myapplication.backend.model.SalesLocationData> doInBackground(GeoPt... params) {
+    protected List<SalesLocationData> doInBackground(GeoPt... params) {
         GeoPt location = params[0];
         float longitude;
         float latitude;
@@ -64,7 +68,7 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<com.example.rai.m
 //        myApiService.getPointsIn
         List<SalesLocationData> result = new ArrayList<>();
 
-//            SalesInformationApi.SalesInformation.GetPointsInRange
+//            result = SalesInformationApi.GetPointsInRange();
 
         try {
 
@@ -82,3 +86,4 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<com.example.rai.m
 //            Toast.makeText(context, q.getWho() + " : " + q.getWhat(), Toast.LENGTH_LONG).show();
 //        }
 }
+//TODO uncomment

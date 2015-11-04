@@ -4,23 +4,23 @@ import com.example.rai.myapplication.backend.model.SalesInformation;
 import com.example.rai.myapplication.backend.model.SalesLocationData;
 //import com.example.rai.myapplication.
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationDataCollection;
+import com.example.rai.myapplication.backend.model.SalesInformation;
+import com.example.rai.myapplication.backend.model.SalesLocationData;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.GeoPt;
-import com.google.appengine.api.datastore.QueryResultIterator;
-import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.cmd.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
+import com.google.api.server.spi.config.Named;
+import com.google.appengine.api.datastore.QueryResultIterator;
+import com.googlecode.objectify.cmd.Query;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
@@ -60,11 +60,12 @@ public class SalesInformationEndpoint {
             httpMethod = ApiMethod.HttpMethod.GET)
     public SalesInformation get(@Named("id") Long id) throws NotFoundException {
         logger.info("Getting SalesInformation with ID: " + id);
-        SalesInformation salesInformation = ofy().load().type(SalesInformation.class).id(id).now();
-        if (salesInformation == null) {
-            throw new NotFoundException("Could not find SalesInformation with ID: " + id);
-        }
-        return salesInformation;
+//        SalesInformation salesInformation = ofy().load().type(SalesInformation.class).id(id).now();
+//        if (salesInformation == null) {
+//            throw new NotFoundException("Could not find SalesInformation with ID: " + id);
+//        }
+//        return salesInformation;
+        return null;
     }
 
     @ApiMethod(
@@ -96,57 +97,15 @@ public class SalesInformationEndpoint {
         // Objectify ID generator, e.g. long or String, then you should generate the unique ID yourself prior to saving.
         //
         // If your client provides the ID then you should probably use PUT instead.
-        ofy().save().entity(salesInformation).now();
-        logger.info("Created SalesInformation with ID: " + salesInformation.getId());
-
-        return ofy().load().entity(salesInformation).now();
+//        ofy().save().entity(salesInformation).now();
+//        logger.info("Created SalesInformation with ID: " + salesInformation.getId());
+//
+//        return ofy().load().entity(salesInformation).now();
+        return null;
     }
 
-    /**
-     * Updates an existing {@code SalesInformation}.
-     *
-     * @param id               the ID of the entity to be updated
-     * @param salesInformation the desired state of the entity
-     * @return the updated version of the entity
-     * @throws NotFoundException if the {@code id} does not correspond to an existing
-     *                           {@code SalesInformation}
-     */
-    @ApiMethod(
-            name = "update",
-            path = "salesInformation/{id}",
-            httpMethod = ApiMethod.HttpMethod.PUT)
-    public SalesInformation update(@Named("id") Long id, SalesInformation salesInformation) throws NotFoundException {
-        // TODO: You should validate your ID parameter against your resource's ID here.
-        checkExists(id);
-        ofy().save().entity(salesInformation).now();
-        logger.info("Updated SalesInformation: " + salesInformation);
-        return ofy().load().entity(salesInformation).now();
-    }
 
-    /**
-     * Deletes the specified {@code SalesInformation}.
-     *
-     * @param id the ID of the entity to delete
-     * @throws NotFoundException if the {@code id} does not correspond to an existing
-     *                           {@code SalesInformation}
-     */
-    @ApiMethod(
-            name = "remove",
-            path = "salesInformation/{id}",
-            httpMethod = ApiMethod.HttpMethod.DELETE)
-    public void remove(@Named("id") Long id) throws NotFoundException {
-        checkExists(id);
-        ofy().delete().type(SalesInformation.class).id(id).now();
-        logger.info("Deleted SalesInformation with ID: " + id);
-    }
 
-    /**
-     * List all entities.
-     *
-     * @param cursor used for pagination to determine which page to return
-     * @param limit  the maximum number of entries to return
-     * @return a response that encapsulates the result list and the next page token/cursor
-     */
     @ApiMethod(
             name = "list",
             path = "salesInformation",

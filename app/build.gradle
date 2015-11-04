@@ -10,7 +10,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-        multiDexEnabled = true
+        multiDexEnabled  true
     }
 
     dexOptions {
@@ -28,7 +28,8 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile project(path: ':backend', configuration: 'android-endpoints')
+        compile project(path: ':backend', configuration: 'android-endpoints')
+    compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
     compile 'com.google.android.gms:play-services:8.1.0'
@@ -37,5 +38,4 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:8.1.0'
     compile 'com.google.maps.android:android-maps-utils:0.4+'
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.18'
-    compile project(':backend')
 }
