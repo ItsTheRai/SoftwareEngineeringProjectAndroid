@@ -1,6 +1,9 @@
 package com.example.rai.myapplication.backend;
 
 import com.example.rai.myapplication.backend.model.SalesInformation;
+import com.example.rai.myapplication.backend.model.SalesLocationData;
+//import com.example.rai.myapplication.
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationDataCollection;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -44,11 +47,6 @@ public class SalesInformationEndpoint {
 
     private static final int DEFAULT_LIST_LIMIT = 20;
 
-    static {
-        // Typically you would register this inside an OfyServive wrapper. See: https://code.google.com/p/objectify-appengine/wiki/BestPractices
-        ObjectifyService.register(SalesInformation.class);
-    }
-
     /**
      * Returns the {@link SalesInformation} with the corresponding ID.
      *
@@ -70,13 +68,20 @@ public class SalesInformationEndpoint {
     }
 
     @ApiMethod(
-            name="getPointsInRange",
-            path = "salesInformation{}",
+            name ="getPointsInRange",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public List<SalesInformation> getPointsInRange(@Named("rangeInMiles") float rangeInMiles,GeoPt currentLocation, @Named("maxLength") int maxLength){
-    return null;//temp value
-    }
+    public List<SalesLocationData> getPointsInRange(@Named("rangeInMiles") float rangeInMiles,
+                                                        @Named("latitude")float latitude,
+                                                        @Named("longitude")float longitude,
+                                                        @Named("maxLength") int maxLength){
 
+
+
+        List<SalesLocationData> places = NearPlacesFinder
+                .getPlaces(new GeoPt(latitude,longitude), rangeInMiles, maxLength);   //returns point in range of the user in specific range
+        return places;
+//        return null;//temp value
+    }
 
     /**
      * Inserts a new {@code SalesInformation}.

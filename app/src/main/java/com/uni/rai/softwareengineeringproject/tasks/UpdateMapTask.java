@@ -5,19 +5,15 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesInformation;
-import com.example.rai.myapplication.backend.userLocationApi.UserLocationApi;
-import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
-import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
+import com.example.rai.myapplication.backend.model.SalesInformation;
+import com.example.rai.myapplication.backend.model.SalesLocationData;
 import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.appengine.api.datastore.GeoPt;
-import com.uni.rai.softwareengineeringproject.MainActivity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,11 +21,11 @@ import java.util.List;
  */
 
 
-public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<SalesInformation>> {
+public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<com.example.rai.myapplication.backend.model.SalesLocationData>> {
     private static SalesInformationApi myApiService = null;
     private Context context;
 
-    UpdateMapTask(Context context) {
+    public UpdateMapTask(Context context) {
         this.context = context;
     }
 
@@ -40,7 +36,24 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<SalesInformation>
     }
 
     @Override
-    protected List<SalesInformation> doInBackground(GeoPt... params) {
+    protected List<com.example.rai.myapplication.backend.model.SalesLocationData> doInBackground(GeoPt... params) {
+        GeoPt location = params[0];
+        float longitude;
+        float latitude;
+
+        if (location == null) {
+            // This is used to easily simulate a location in the emulator
+            // when developing. For real devices deployment,
+            // this temporary code should be removed and the function
+            // should just return null.
+            longitude = (float) 0.0;
+            latitude = (float) 0.0;
+            // return null;
+        } else {
+            latitude = (float) location.getLatitude();
+            longitude = (float) location.getLongitude();
+        }
+
         if(myApiService == null) { // Only do this once
             SalesInformationApi.Builder builder = new SalesInformationApi.Builder(
                     AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
@@ -48,13 +61,19 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<SalesInformation>
                     .setRootUrl("https://software-engineering-1102.appspot.com/_ah/api/");    //for servlet
             myApiService = builder.build();
         }
-//        try {
-////            myApiService.get()
-////
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        return null;
+//        myApiService.getPointsIn
+        List<SalesLocationData> result = new ArrayList<>();
+
+//            SalesInformationApi.SalesInformation.GetPointsInRange
+
+        try {
+
+            result = (List<SalesLocationData>) myApiService.getPointsInRange((float)100.0, latitude,longitude,50);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
 //    @Override

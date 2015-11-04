@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-
 import com.example.rai.myapplication.backend.salesInformationApi.model.SalesInformation;
 import com.example.rai.myapplication.backend.userLocationApi.UserLocationApi;
 import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;

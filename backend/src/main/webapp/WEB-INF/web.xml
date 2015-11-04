@@ -32,7 +32,15 @@
         <url-pattern>/_ah/spi/*</url-pattern>
     </servlet-mapping>
 
-
+    <servlet>
+        <servlet-name>MaintenanceTasksServlet</servlet-name>
+        <servlet-class>com.example.rai.myapplication.backend.IndexingServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MaintenanceTasksServlet</servlet-name>
+        <url-pattern>/buildsearchindex</url-pattern>
+    </servlet-mapping>
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

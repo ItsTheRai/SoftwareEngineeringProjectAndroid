@@ -21,6 +21,7 @@ import android.view.View;
 import android.support.v7.app.ActionBar;
 
 
+import com.example.rai.myapplication.backend.model.SalesLocationData;
 import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -46,6 +47,9 @@ import android.view.MenuItem;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import android.view.Menu;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
@@ -105,9 +109,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //call onMapReady()
         mapFragment.getMapAsync(this);
 
-
-
-
+        this.clearHeatmap();
+        try {
+            this.updateHeatmap();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //.execute(geoLocationHelper.getCurrentLocation());
     }
 
     @Override
@@ -121,7 +131,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch (item.getItemId()) {
             case R.id.heat_map:
 //                clearHeatmap();
-                updateHeatmap();    //querries the DB to update the heatmap
+                try {
+                    updateHeatmap();    //querries the DB to update the heatmap
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 item.setChecked(true);
                 Toast.makeText(getApplicationContext(),
                         "Heat Map selected",
@@ -222,10 +238,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return true;
             }
         });
-        
+
     }
 
-    public void showUser(){
+    public void showUser() {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
         mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
 //        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
@@ -253,16 +269,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void updateHeatmap() {
+    public void updateHeatmap() throws ExecutionException, InterruptedException {
+        List<SalesLocationData> data = new UpdateMapTask(this).execute(new GeoPt((float)mCurrentLocation.getLatitude(),(float)mCurrentLocation.getLongitude())).get();
         ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
+
+        for(SalesLocationData d:data){
+            llList.add(new WeightedLatLng(new LatLng((double)d.getLocation().getLatitude(),(double)d.getLocation().getLongitude()),
+                    d.getPriceInPouds()/10000));
+        }
         // These are just example locations and only creates heatmap overlay surrounding the current location. We will need to query the server to get the actual latitude, longitude, as well as the price.
-        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 237));
-        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0008, mCurrentLocation.getLongitude() - 0.0025), 182));
-        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0007, mCurrentLocation.getLongitude() - 0.005), 82));
-        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0005, mCurrentLocation.getLongitude() - 0.0021), 167));
-        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude() - 0.001), 192));
-        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.001, mCurrentLocation.getLongitude() - 0.0005), 142));
-        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0012, mCurrentLocation.getLongitude() - 0.0018), 217));
+//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 237));
+//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0008, mCurrentLocation.getLongitude() - 0.0025), 182));
+//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0007, mCurrentLocation.getLongitude() - 0.005), 82));
+//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0005, mCurrentLocation.getLongitude() - 0.0021), 167));
+//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude() - 0.001), 192));
+//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.001, mCurrentLocation.getLongitude() - 0.0005), 142));
+//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0012, mCurrentLocation.getLongitude() - 0.0018), 217));
 
         createHeatmap(llList);
     }
