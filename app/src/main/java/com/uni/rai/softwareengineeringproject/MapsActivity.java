@@ -121,14 +121,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         this.clearHeatmap();
-//        try {
-//            this.updateHeatmap();
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        new UpdateLocationAsyncTask(this).execute();//TODO remove this line as only used to populate DB
     }
 
     @Override
