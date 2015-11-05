@@ -2,30 +2,21 @@ package com.uni.rai.softwareengineeringproject.tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
-
-//import com.example.rai.myapplication.backend.model.SalesInformation;
-//import com.example.rai.myapplication.backend.model.SalesLocationData;
-//import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
-//import com.google.api.client.extensions.android.http.AndroidHttp;
-//import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.appengine.api.datastore.GeoPt;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by rai on 21/10/15.
  */
 
 
-public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<SalesLocationData>> {
+public class UpdateMapTask extends AsyncTask<GeoPt, Void, SalesDataShortCollection> {
     private static SalesInformationApi myApiService = null;
     private Context context;
 
@@ -40,7 +31,7 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<SalesLocationData
     }
 
     @Override
-    protected List<SalesLocationData> doInBackground(GeoPt... params) {
+    protected SalesDataShortCollection doInBackground(GeoPt... params) {
         GeoPt location = params[0];
         float longitude;
         float latitude;
@@ -63,16 +54,21 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<SalesLocationData
                     AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
                     // options for running against local devappserver
                     .setRootUrl("https://software-engineering-1102.appspot.com/_ah/api/");    //for servlet
+//            .setRootUrl("http://192.168.0.4:8080/_ah/api/")//for local wifi
+//                    - turn off compression when running against local devappserver
+//                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+//                                                           @Override
+//                                                           public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+//                                                               abstractGoogleClientRequest.setDisableGZipContent(true);
+//                                                           }
+//                                                       }
+//                    );
             myApiService = builder.build();
         }
-//        myApiService.getPointsIn
-        List<SalesLocationData> result = new ArrayList<>();
-
-//            result = SalesInformationApi.GetPointsInRange();
+        SalesDataShortCollection result = null;
 
         try {
-
-            result = (List<SalesLocationData>) myApiService.getPointsInRange((float)100.0, latitude,longitude,50);
+            result = myApiService.getPointsInRange((float) 100.0, latitude, longitude, 50).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,4 +82,3 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, List<SalesLocationData
 //            Toast.makeText(context, q.getWho() + " : " + q.getWhat(), Toast.LENGTH_LONG).show();
 //        }
 }
-//TODO uncomment
