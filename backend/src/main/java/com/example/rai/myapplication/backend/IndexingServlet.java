@@ -13,7 +13,9 @@ package com.example.rai.myapplication.backend;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.example.rai.myapplication.backend.model.SalesLocationData;
+import com.example.rai.myapplication.backend.model.SalesData;
+import com.example.rai.myapplication.backend.model.SalesDataShort;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.GetRequest;
 import com.google.appengine.api.search.GetResponse;
@@ -53,16 +55,16 @@ public class IndexingServlet extends HttpServlet {
     @SuppressWarnings({"cast", "unchecked"})
     private boolean buildSearchIndexForPlaces() {
         Index index = NearPlacesFinder.getIndex();
-
+//
         removeAllDocumentsFromIndex();
-
-        List<SalesLocationData> places = OfyService.ofy().load().type(SalesLocationData.class).list();
+//
+        List<SalesData> places = OfyService.ofy().load().type(SalesData.class).list();
 
         try {
-            for (SalesLocationData place : places) {
+            for (SalesData place : places) {
                 Document placeAsDocument = NearPlacesFinder.buildDocument(
-                        place.getId(), place.getTransId(), place.getPriceInPouds(),
-                        place.getLocation());
+                        place.getId(), place.getPostcode(), place.getPrice(),
+                        new GeoPt(place.getLatitude(),place.getLongitude()));
 
                 try {
                     index.put(placeAsDocument);
