@@ -1,6 +1,6 @@
 package com.example.rai.myapplication.backend;
 
-import com.example.rai.myapplication.backend.model.SalesLocationData;
+import com.example.rai.myapplication.backend.model.SalesDataShort;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
@@ -39,13 +39,12 @@ public class NearPlacesFinder {
     /**
      * Builds a new Place document to insert in the Places index.
      * @param placeId      the identifier of the place in the database.
-     * @param placeName    the name of the place.
 //     * @param placeAddress the address of the place.
      * @param location     the GPS location of the place, as a GeoPt.
      * @return the Place document created.
      */
     public static Document buildDocument(
-            final Long placeId, final String placeName,
+            final Long placeId, final String postcode,
             final int priceInPouds, final GeoPt location) {
         GeoPoint geoPoint = new GeoPoint(location.getLatitude(),
                 location.getLongitude());
@@ -54,7 +53,7 @@ public class NearPlacesFinder {
                 .addField(Field.newBuilder().setName("id")
                         .setText(placeId.toString()))
 
-                .addField(Field.newBuilder().setName("transactionID").setText(placeName))
+                .addField(Field.newBuilder().setName("postcode").setText(postcode))
 
                 .addField(Field.newBuilder().setName("price")
                         .setText(String.valueOf(priceInPouds)))
@@ -62,26 +61,20 @@ public class NearPlacesFinder {
                 .addField(Field.newBuilder().setName("place_location")
                         .setGeoPoint(geoPoint));
 
-        // geo-location doesn't work under dev_server, so let's add another
-        // field to use for retrieving documents
-//        if (environment.value() == Development) {
-//            builder.addField(Field.newBuilder().setName("value").setNumber(1));
-//        }
-
         return builder.build();
     }
 
     /**
      * Returns the nearest places to the location of the user.
      * @param location the location of the user.
-     * @param distanceInMeters the maximum distance to the user.
+     * @param distanceInMiles the maximum distance to the user.
      * @param resultCount the maximum number of places returned.
      * @return List of up to resultCount places in the datastore ordered by
      *      the distance to the location parameter and less than
      *      distanceInMeters meters to the location parameter.
      */
-    public static List<SalesLocationData> getPlaces(final GeoPt location,
-                                            final float distanceInMeters, final int resultCount) {
+    public static List<SalesDataShort> getPlaces(final GeoPt location,
+                                            final float distanceInMiles, final int resultCount) {
 
         // Optional: use memcache
 
@@ -95,7 +88,7 @@ public class NearPlacesFinder {
                 .addSortExpression(SortExpression.newBuilder()
                         .setExpression(locExpr)
                         .setDirection(SortExpression.SortDirection.ASCENDING)
-                        .setDefaultValueNumeric(distanceInMeters + 1))
+                        .setDefaultValueNumeric(distanceInMiles + 1))
                 .setLimit(resultCount)
                 .build();
         // Build the QueryOptions
@@ -104,22 +97,13 @@ public class NearPlacesFinder {
                 .build();
         // Query string
         String searchQuery = "distance(place_location, " + geoPoint + ") < "
-                + distanceInMeters;
+                + distanceInMiles;
 
         Query query = Query.newBuilder().setOptions(options).build(searchQuery);
 
         Results<ScoredDocument> results = getIndex().search(query);
 
-        if (results.getNumberFound() == 0) {
-            // geo-location doesn't work under dev_server
-//            if (environment.value() == Development) {
-//                // return all documents
-//                results = getIndex().search("value > 0");
-//            }
-        }
-
-        List<SalesLocationData> places = new ArrayList<>();
-//        SalesLocationDataCollection places = new SalesLocationDataCollection();
+        List<SalesDataShort> places = new ArrayList<>();
 
         for (ScoredDocument document : results) {
             if (places.size() >= resultCount) {
@@ -128,39 +112,12 @@ public class NearPlacesFinder {
 
             GeoPoint p = document.getOnlyField("place_location").getGeoPoint();
 
-            SalesLocationData place = new SalesLocationData();
+            SalesDataShort place = new SalesDataShort();
             place.setId(Long.valueOf(document.getOnlyField("id")
                     .getText()));
             place.setPriceInPouds(Integer.parseInt(document.getOnlyField("price").getText()));  //parse string data to an int
-//            place.set.setName(document.getOnlyField("name").getText());
-//            place.setAddress(document.getOnlyField("address").getText());
-            //set up location
             place.setLocation(new GeoPt((float) p.getLatitude(),
                     (float) p.getLongitude()));
-
-            // GeoPoints are not implemented on dev server and latitude and
-            // longitude are set to zero
-            // But since those are doubles let's play safe
-            // and use double comparison with epsilon set to EPSILON
-//            if (Math.abs(p.getLatitude()) <= EPSILON
-//                    && Math.abs(p.getLongitude()) <= EPSILON) {
-//                // set a fake distance of 5+ km
-//                place.setDistanceInKilometers(FAKE_DISTANCE_FOR_DEV + places
-//                        .size());
-//            } else {
-//                double distance = distanceInMeters / METERS_IN_KILOMETER;
-//                try {
-//                    distance = getDistanceInKm(
-//                            p.getLatitude(), p.getLongitude(),
-//                            location.getLatitude(),
-//                            location.getLongitude());
-//                } catch (Exception e) {
-//                    LOG.warning("Exception when calculating a distance: " + e
-//                            .getMessage());
-//                }
-//
-//                place.setDistanceInKilometers(distance);
-//            }
 
             places.add(place);
         }
