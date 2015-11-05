@@ -28,7 +28,10 @@ import android.support.v7.app.ActionBar;
 
 //import com.example.rai.myapplication.backend.model.SalesInformation;
 import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -62,8 +65,8 @@ import android.view.Menu;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
-    private static final long LOCATION_REQUEST_INTERVAL = 60000;//ms
-    private static final long FASTEST_LOCATION_INTERVAL = 10000;//ms
+    private static final long LOCATION_REQUEST_INTERVAL = 3000;//ms
+    private static final long FASTEST_LOCATION_INTERVAL = 3000;//ms
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
@@ -118,14 +121,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         this.clearHeatmap();
-        try {
-            this.updateHeatmap();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        new UpdateLocationAsyncTask(this).execute();//TODO remove this line as only used to populate DB
+//        try {
+//            this.updateHeatmap();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        new UpdateLocationAsyncTask(this).execute();//TODO remove this line as only used to populate DB
     }
 
     @Override
@@ -280,16 +283,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void updateHeatmap() throws ExecutionException, InterruptedException {
+//        new UpdateLocationAsyncTask(this).execute();
 //        new UpdateMapTask(this).execute();
 
 
 
         //not needed now, populating DB
-        /*
-     List<SalesLocationData> data = new UpdateMapTask(this).execute(new GeoPt((float)mCurrentLocation.getLatitude(),(float)mCurrentLocation.getLongitude())).get();
+//        new UpdateLocationAsyncTask(this).execute();
+     SalesDataShortCollection data = new UpdateMapTask(this).execute(new GeoPt((float)mCurrentLocation.getLatitude(),(float)mCurrentLocation.getLongitude())).get();
+        List<SalesDataShort> places = data.getItems();
+
         ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
 
-        for(SalesLocationData d:data){
+        for(SalesDataShort d:places){
             llList.add(new WeightedLatLng(new LatLng((double)d.getLocation().getLatitude(),(double)d.getLocation().getLongitude()),
                     d.getPriceInPouds()/10000));
         }
@@ -303,7 +309,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0012, mCurrentLocation.getLongitude() - 0.0018), 217));
 
         createHeatmap(llList);
-        */
+
 
 
     }
