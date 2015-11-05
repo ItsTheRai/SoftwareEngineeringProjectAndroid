@@ -1,6 +1,7 @@
 package com.example.rai.myapplication.backend.model;
 
 import com.google.appengine.api.datastore.GeoPt;
+import com.google.appengine.repackaged.com.google.api.client.util.DateTime;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
@@ -8,12 +9,12 @@ import com.googlecode.objectify.annotation.Id;
  * Created by rai on 28/10/15.
  */
 @Entity
-public class SalesInformation {
+public class SalesData {
     @Id
-    private Long id;
+    private Long ID;
     private String UniqueRef;
-    private String price;
-    private String Date;
+    private int price;
+    private DateTime dateTime;
     private String postcode;
     private String propertyType;
     private String oldOrNew;
@@ -26,18 +27,20 @@ public class SalesInformation {
     private String district;
     private String  county;
     private String PPDCategory;
-    private GeoPt location;
+    private float latitude;
+    private float longitude;
+//    private GeoPt location;
 
-    public SalesInformation(){
+    public SalesData(){
     }
 
     public Long getId() {
-        return id;
+        return ID;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
 
     public String getUniqueRef() {
         return UniqueRef;
@@ -47,20 +50,20 @@ public class SalesInformation {
         UniqueRef = uniqueRef;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
-    public String getDate() {
-        return Date;
+    public DateTime getDate() {
+        return dateTime;
     }
 
-    public void setDate(String date) {
-        Date = date;
+    public void setDate(DateTime date) {
+        dateTime = date;
     }
 
     public String getPostcode() {
@@ -159,11 +162,28 @@ public class SalesInformation {
         this.PPDCategory = PPDCategory;
     }
 
-    public GeoPt getLocation() {
-        return location;
+
+    public DateTime getDateTime() {
+        return dateTime;
     }
 
-    public void setLocation(GeoPt location) {
-        this.location = location;
+    public void setDateTime(DateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
     }
 }
