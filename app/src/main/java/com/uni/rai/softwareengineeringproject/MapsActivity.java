@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.support.v7.app.ActionBar;
 
 
 //import com.example.rai.myapplication.backend.model.SalesLocationData;
@@ -27,7 +26,6 @@ import android.support.v7.app.ActionBar;
 //import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
 
 //import com.example.rai.myapplication.backend.model.SalesInformation;
-import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
 import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
 import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
@@ -44,14 +42,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.appengine.api.datastore.GeoPt;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
 import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
 //import com.uni.rai.softwareengineeringproject.tasks.*;
 //import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
-import android.support.v7.app.ActionBarActivity;
 
 import android.widget.Toast;
 import android.view.MenuItem;
@@ -63,6 +58,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import android.view.Menu;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
@@ -80,48 +76,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //start the back end task
+
+            super.onCreate(savedInstanceState);
+            //start the back end task
 
 //
-        //set tracking flag
-        isLockedOn=false;
-        //since API 23, need to ask for user permission to use location
-        //so create a check and dialog box
+            //set tracking flag
+            isLockedOn = false;
+            //since API 23, need to ask for user permission to use location
+            //so create a check and dialog box
 
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Show an explenation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0   //could not find the right constant, 0 seems to work for now
-                );//MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    // Show an explenation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+                } else {
+                    // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0   //could not find the right constant, 0 seems to work for now
+                    );//MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
             }
-        }
 
 //        reate a new location request for the map locator
-        createLocationRequest();
-        //build a google api client
-        buildGoogleApiClient();
-        //set view as the map activity
-        setContentView(R.layout.activity_maps);
-        //init the map
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
-        //call onMapReady()
-        mapFragment.getMapAsync(this);
+            createLocationRequest();
+            //build a google api client
+            buildGoogleApiClient();
+            //set view as the map activity
+            setContentView(R.layout.activity_maps);
+            //init the map
+            MapFragment mapFragment = (MapFragment) getFragmentManager()
+                    .findFragmentById(R.id.map);
+            //call onMapReady()
+            mapFragment.getMapAsync(this);
 
-        this.clearHeatmap();
+            this.clearHeatmap();
+
+
     }
 
     @Override
@@ -164,12 +163,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart fired ..............");
-        //check if connected
-        checkInternet(); // check to see if connected to internet
-        //connect to the server
-        mGoogleApiClient.connect();
+
+            super.onStart();
+            Log.d(TAG, "onStart fired ..............");
+            //check if connected
+            checkInternet(); // check to see if connected to internet
+            //connect to the server
+            mGoogleApiClient.connect();
+
     }
 
 
@@ -188,10 +189,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         stopLocationUpdates();
     }
 
-    protected void stopLocationUpdates() {
+    protected boolean stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
         Log.d(TAG, "Location update stopped .......................");
+        return true;
     }
 
     @Override
@@ -205,20 +207,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    protected synchronized void buildGoogleApiClient() {
+    protected synchronized boolean buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+        return true;
     }
 
     //create a callback to google and set parameters for frequency
-    protected void createLocationRequest() {
+    protected boolean createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(LOCATION_REQUEST_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_LOCATION_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);   //request highest possible accuracy from device
+        return true;
     }
 
     @Override
@@ -245,11 +249,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void showUser() {
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+    public boolean  showUser() {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
 //        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        return true;
     }
+
 
     @Override
     //updated the location variables once a connection is established with the google server
@@ -268,14 +274,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            mMap.getCameraPosition().zoom;
         }
     }
-    public void clearHeatmap(){
+    public boolean clearHeatmap(){
         if(tOverlay!=null) {
             tOverlay.remove();
+        }else {
+            return false;
         }
-
+    return true;
     }
 
-    public void updateHeatmap() throws ExecutionException, InterruptedException {
+    public boolean updateHeatmap() throws ExecutionException, InterruptedException {
         //not needed now, populating DB
 //        new UpdateLocationAsyncTask(this).execute();
 //    new UpdateLocationAsyncTask(this).execute();
@@ -301,11 +309,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.001, mCurrentLocation.getLongitude() - 0.0005), 142));
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0012, mCurrentLocation.getLongitude() - 0.0018), 217));
             createHeatmap(llList);
+        }else {
+            return false;
         }
+        return true;
     }
 
     // check for internet connection using the isInternetConnected method, if not connected, show a warning message
-    private void checkInternet() {
+    private boolean checkInternet() {
         if (!isInternetConnected()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Unable to connect to the internet");
@@ -327,7 +338,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Dialog dialog = builder.create();
             dialog.setCanceledOnTouchOutside(false);
             dialog.show();
+        }else{
+            return false;
         }
+        return true;
     }
 
     // return true if connected to the internet, false otherwise
@@ -339,7 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // check if GPS is on, if it's on, this method should do nothing, otherwise display a dialog that redirect the user to the location setting screen
-    private void checkGPS() {
+    private boolean checkGPS() {
         System.out.println("checking GPS");
         LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (!locManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
@@ -357,11 +371,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.setCanceledOnTouchOutside(false);
             dialog.setCancelable(false);
             dialog.show();
+        }else {
+            return false;
         }
+        return true;
     }
 
     //request location udates from google
-    protected void startLocationUpdates() {
+    protected boolean startLocationUpdates() {
         //request google to start receiving regular updates
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -377,7 +394,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
 //        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
 //        mMap.animateCamera(CameraUpdateFactory.zoomTo(25));
-
+    return true;
     }
 
     @Override
@@ -396,12 +413,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         }
+
     }
 
     //  create heatmap using the list taken from a parameter
-    public void createHeatmap(ArrayList<WeightedLatLng> pointsList) {
+    public boolean createHeatmap(ArrayList<WeightedLatLng> pointsList) {
         HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).build();
         tOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tProvider));
+        return true;
     }
 
 
@@ -413,8 +432,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(ConnectionResult connectionResult) {
     }
 
-    public void ScreenPage (View view){
+    public boolean ScreenPage (View view){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        return true;
     }
 }
