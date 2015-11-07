@@ -54,17 +54,20 @@ public class IndexingServlet extends HttpServlet {
      */
     @SuppressWarnings({"cast", "unchecked"})
     private boolean buildSearchIndexForPlaces() {
+//        OfyService ofy = new OfyService.ofy();
         Index index = NearPlacesFinder.getIndex();
 //
-        removeAllDocumentsFromIndex();
+//        removeAllDocumentsFromIndex();
 //
         List<SalesData> places = OfyService.ofy().load().type(SalesData.class).list();
 
         try {
             for (SalesData place : places) {
                 Document placeAsDocument = NearPlacesFinder.buildDocument(
-                        place.getId(), place.getPostcode(), place.getPrice(),
-                        new GeoPt(place.getLatitude(),place.getLongitude()));
+                        //next to lines are for testing TODO remove
+                        (long)344321434,"bbbbb",9999999,new GeoPt((float)0.11,(float)0.11));
+//                        place.getId(), place.getPostcode(), place.getPrice(),
+//                        new GeoPt(place.getLatitude(),place.getLongitude()));
 
                 try {
                     index.put(placeAsDocument);
@@ -78,7 +81,6 @@ public class IndexingServlet extends HttpServlet {
         } catch (Exception e) {
             return false;
         }
-
         return true;
     }
 

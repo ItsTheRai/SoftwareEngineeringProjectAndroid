@@ -1,13 +1,16 @@
 package com.uni.rai.softwareengineeringproject.tasks;
 
 import android.content.Context;
+import android.location.Location;
 import android.os.AsyncTask;
 
 import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.appengine.api.datastore.GeoPt;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
 import java.io.IOException;
 
@@ -16,7 +19,8 @@ import java.io.IOException;
  */
 
 
-public class UpdateMapTask extends AsyncTask<GeoPt, Void, SalesDataShortCollection> {
+public class UpdateMapTask extends AsyncTask<Location, Void, SalesDataCollection> {
+    private static long range =1000000000;
     private static SalesInformationApi myApiService = null;
     private Context context;
 
@@ -31,8 +35,8 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, SalesDataShortCollecti
     }
 
     @Override
-    protected SalesDataShortCollection doInBackground(GeoPt... params) {
-        GeoPt location = params[0];
+    protected SalesDataCollection doInBackground(Location... params) {
+        Location location = params[0];
         float longitude;
         float latitude;
 
@@ -63,16 +67,15 @@ public class UpdateMapTask extends AsyncTask<GeoPt, Void, SalesDataShortCollecti
 //                                                           }
 //                                                       }
 //                    );
-            myApiService = builder.build();
+//
+        myApiService = builder.build();
         }
-        SalesDataShortCollection result = null;
-
+        SalesDataCollection result = null;
         try {
-            result = myApiService.getPointsInRange((float) 100.0, latitude, longitude, 50).execute();
+            result = myApiService.getPointsInRange( Float.toString(latitude), Float.toString(longitude), range, 50).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return result;
     }
 

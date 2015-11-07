@@ -11,7 +11,7 @@ import com.googlecode.objectify.annotation.Id;
 @Entity
 public class SalesData {
     @Id
-    private Long ID;
+    private Long id;
     private String UniqueRef;
     private int price;
     private DateTime dateTime;
@@ -29,13 +29,14 @@ public class SalesData {
     private String PPDCategory;
     private float latitude;
     private float longitude;
+    private GeoPt locationGeo;
 //    private GeoPt location;
 
     public SalesData(){
     }
 
     public Long getId() {
-        return ID;
+        return id;
     }
 
 //    public void setId(Long id) {
@@ -185,5 +186,13 @@ public class SalesData {
 
     public void setLongitude(float longitude) {
         this.longitude = longitude;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setLocation(GeoPt location) {
+        this.locationGeo = location;
     }
 }

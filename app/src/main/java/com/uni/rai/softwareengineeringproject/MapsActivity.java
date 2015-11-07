@@ -29,9 +29,10 @@ import android.support.v7.app.ActionBar;
 //import com.example.rai.myapplication.backend.model.SalesInformation;
 import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
 import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -275,23 +276,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void updateHeatmap() throws ExecutionException, InterruptedException {
-//        new UpdateLocationAsyncTask(this).execute();
-//        new UpdateMapTask(this).execute();
-
-
-
         //not needed now, populating DB
 //        new UpdateLocationAsyncTask(this).execute();
-     SalesDataShortCollection data = new UpdateMapTask(this).execute(new GeoPt((float)mCurrentLocation.getLatitude(),(float)mCurrentLocation.getLongitude())).get();
-        List<SalesDataShort> places = data.getItems();
+//    new UpdateLocationAsyncTask(this).execute();
+//        Location l = mCurrentLocation;
+        SalesDataCollection data = new UpdateMapTask(this).execute(mCurrentLocation).get();
+        if(!data.isEmpty()) {
+            List<SalesData> places = data.getItems();
 
-        ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
+            ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
 
-        for(SalesDataShort d:places){
-            llList.add(new WeightedLatLng(new LatLng((double)d.getLocation().getLatitude(),(double)d.getLocation().getLongitude()),
-                    d.getPriceInPouds()/10000));
-        }
-        // These are just example locations and only creates heatmap overlay surrounding the current location. We will need to query the server to get the actual latitude, longitude, as well as the price.
+            for (SalesData d : places) {
+                llList.add(new WeightedLatLng(new LatLng((double) d.getLocation().getLatitude(),
+                        (double) d.getLocation().getLongitude()),
+                        d.getPrice() / 10000));
+            }
+
+            // These are just example locations and only creates heatmap overlay surrounding the current location. We will need to query the server to get the actual latitude, longitude, as well as the price.
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 237));
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0008, mCurrentLocation.getLongitude() - 0.0025), 182));
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0007, mCurrentLocation.getLongitude() - 0.005), 82));
@@ -299,11 +300,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude() - 0.001), 192));
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.001, mCurrentLocation.getLongitude() - 0.0005), 142));
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0012, mCurrentLocation.getLongitude() - 0.0018), 217));
-
-        createHeatmap(llList);
-
-
-
+            createHeatmap(llList);
+        }
     }
 
     // check for internet connection using the isInternetConnected method, if not connected, show a warning message

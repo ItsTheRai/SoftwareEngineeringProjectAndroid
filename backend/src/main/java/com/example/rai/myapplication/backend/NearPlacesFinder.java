@@ -1,5 +1,6 @@
 package com.example.rai.myapplication.backend;
 
+import com.example.rai.myapplication.backend.model.SalesData;
 import com.example.rai.myapplication.backend.model.SalesDataShort;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.search.Document;
@@ -31,7 +32,7 @@ public class NearPlacesFinder {
      * @return The index to use to search places in the datastore.
      */
     public static Index getIndex() {
-        IndexSpec indexSpec = IndexSpec.newBuilder().setName("INDEX_NAME")
+        IndexSpec indexSpec = IndexSpec.newBuilder().setName("Places")
                 .build();
         return SearchServiceFactory.getSearchService().getIndex(indexSpec);
     }
@@ -46,20 +47,20 @@ public class NearPlacesFinder {
     public static Document buildDocument(
             final Long placeId, final String postcode,
             final int priceInPouds, final GeoPt location) {
-        GeoPoint geoPoint = new GeoPoint(location.getLatitude(),
-                location.getLongitude());
+        GeoPoint geoPoint = new GeoPoint((double)location.getLatitude(),
+                (double)location.getLongitude());
 
         Document.Builder builder = Document.newBuilder()
-                .addField(Field.newBuilder().setName("id")
+                .addField(Field.newBuilder().setName("place_location")
+                        .setGeoPoint(geoPoint))
+
+            .addField(Field.newBuilder().setName("id")
                         .setText(placeId.toString()))
 
                 .addField(Field.newBuilder().setName("postcode").setText(postcode))
 
-                .addField(Field.newBuilder().setName("price")
-                        .setText(String.valueOf(priceInPouds)))
-
-                .addField(Field.newBuilder().setName("place_location")
-                        .setGeoPoint(geoPoint));
+                .addField(Field.newBuilder().setName(String.valueOf(priceInPouds))
+                        .setText(String.valueOf(priceInPouds)));
 
         return builder.build();
     }
@@ -73,8 +74,8 @@ public class NearPlacesFinder {
      *      the distance to the location parameter and less than
      *      distanceInMeters meters to the location parameter.
      */
-    public static List<SalesDataShort> getPlaces(final GeoPt location,
-                                            final float distanceInMiles, final int resultCount) {
+    public static List<SalesData> getPlaces(final GeoPt location,
+                                            final long distanceInMiles, final int resultCount) {
 
         // Optional: use memcache
 
@@ -97,13 +98,13 @@ public class NearPlacesFinder {
                 .build();
         // Query string
         String searchQuery = "distance(place_location, " + geoPoint + ") < "
-                + distanceInMiles;
+                + distanceInMiles;//distance mile metres
 
         Query query = Query.newBuilder().setOptions(options).build(searchQuery);
 
         Results<ScoredDocument> results = getIndex().search(query);
 
-        List<SalesDataShort> places = new ArrayList<>();
+        List<SalesData> places = new ArrayList<>();
 
         for (ScoredDocument document : results) {
             if (places.size() >= resultCount) {
@@ -112,13 +113,15 @@ public class NearPlacesFinder {
 
             GeoPoint p = document.getOnlyField("place_location").getGeoPoint();
 
-            SalesDataShort place = new SalesDataShort();
+            SalesData place = new SalesData();
+
             place.setId(Long.valueOf(document.getOnlyField("id")
                     .getText()));
-            place.setPriceInPouds(Integer.parseInt(document.getOnlyField("price").getText()));  //parse string data to an int
+
+            place.setPrice(Integer.parseInt(document.getOnlyField("price").getText()));  //parse string data to an int
+
             place.setLocation(new GeoPt((float) p.getLatitude(),
                     (float) p.getLongitude()));
-
             places.add(place);
         }
         return places;

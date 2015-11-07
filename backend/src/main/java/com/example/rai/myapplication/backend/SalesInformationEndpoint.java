@@ -1,11 +1,16 @@
 package com.example.rai.myapplication.backend;
 
+//import com.example.rai.myapplication.backend.model.SalesData;
+//import com.example.rai.myapplication.backend.model.SalesDataShort;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
 import com.example.rai.myapplication.backend.model.SalesData;
 import com.example.rai.myapplication.backend.model.SalesDataShort;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Nullable;
+import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.datastore.Cursor;
@@ -60,10 +65,37 @@ public class SalesInformationEndpoint {
     @ApiMethod(
             name ="getPointsInRange",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public List<SalesDataShort> getPointsInRange(@Named("rangeInMiles") float rangeInMiles, @Named("latitude")float latitude,
-                                                        @Named("longitude")float longitude, @Named("maxLength") int maxLength){
+    public List<SalesData> getPointsInRange(@Named("latitude")String latitudeString,
+                                                 @Named("longitude")String longitudeString,
+                                                 @Named("rangeInMiles") long rangeInMiles,
+                                                 @Named("maxLength") int maxLength) throws BadRequestException {
         //returns point in range of the user using helper class
-        List<SalesDataShort> places = NearPlacesFinder.getPlaces(new GeoPt(latitude, longitude), rangeInMiles, maxLength);
+        float latitude;
+        float longitude;
+        GeoPt location;
+        int count = maxLength;
+
+        try {
+            latitude = (float) Double.parseDouble(latitudeString);
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    "Invalid value of 'latitude' argument");
+        }
+
+        try {
+            longitude = (float) Double.parseDouble(longitudeString);
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    "Invalid value of 'longitude' argument");
+        }
+
+        try {
+            location = new GeoPt(latitude, longitude);
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    "Invalid pair of 'latitude' and 'longitude' arguments");
+        }
+        List<SalesData> places = NearPlacesFinder.getPlaces(location, rangeInMiles, count);
         return places;
     }
 
@@ -80,9 +112,9 @@ public class SalesInformationEndpoint {
         // Objectify ID generator, e.g. long or String, then you should generate the unique ID yourself prior to saving.
         //
         // If your client provides the ID then you should probably use PUT instead.
-        checkExists(salesData.getId());
+//        checkExists(salesData.getId());
         ofy().save().entity(salesData).now();
-        logger.info("Created SalesData with ID: " + salesData.getId());
+//        logger.info("Created SalesData with ID: " + salesData.getId());
         return ofy().load().entity(salesData).now();
     }
 

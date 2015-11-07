@@ -32,11 +32,6 @@ public class UpdateLocationAsyncTask extends AsyncTask<Void, Void, Void> {
         this.context = context;
     }
 
-//    @Override
-//    protected List<UserLocation> doInBackground(Void... params) {
-//
-//    }
-
     @Override
     protected Void doInBackground(Void... params) {
 //        if(myApiService == null) { // Only do this once
@@ -86,27 +81,31 @@ public class UpdateLocationAsyncTask extends AsyncTask<Void, Void, Void> {
 //        );
             myApiService2 = builder.build();
         }
-//            SalesData a = new SalesData();
-//            a.setCounty("couty");
-////            a.setDate("Date");
-//            a.setDistrict("District");
-//            a.setDuration("Duration");
-//            a.setLocality("Locality");
-//            GeoPt pt = new GeoPt();
-//            a.setLatitude((float) 50.8680860);
-//            a.setLongitude((float) -0.0904250);
-////            a.setLocation(pt);
-//            a.setOldOrNew("OldOrNew");
-//            a.setPaon("PAON");
-//            a.setPostcode("POSTCODE");
-//            a.setPpdcategory("PPDCat");
-//            a.setPrice(000);
-//            a.setPropertyType("PriopertyType");
-//            a.setSaon("SAON");
-//            a.setStreet("Street");
-//            a.setTown("Town");
-//            a.setUniqueRef("UNIQUREF");
-//            myApiService2.insert(a).execute();
+            SalesData a = new SalesData();
+            a.setCounty("couty");
+//            a.setDate("Date");
+            a.setDistrict("District");
+            a.setDuration("Duration");
+            a.setLocality("Locality");
+            GeoPt pt = new GeoPt();
+            a.setLatitude((float) 50.8680860);
+            a.setLongitude((float) -0.0904210);
+//            a.setLocation(pt);
+            a.setOldOrNew("OldOrNew");
+            a.setPaon("PAON");
+            a.setPostcode("POSTCODE");
+            a.setPpdcategory("PPDCat");
+            a.setPrice(321321321);
+            a.setPropertyType("PriopertyType");
+            a.setSaon("SAON");
+            a.setStreet("Street");
+            a.setTown("Town");
+            a.setUniqueRef("UNIQUREF");
+        try {
+            myApiService2.insert(a).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
