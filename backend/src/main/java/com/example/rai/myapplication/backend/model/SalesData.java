@@ -4,6 +4,7 @@ import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.repackaged.com.google.api.client.util.DateTime;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
 /**
  * Created by rai on 28/10/15.
@@ -12,36 +13,55 @@ import com.googlecode.objectify.annotation.Id;
 public class SalesData {
     @Id
     private Long id;
-    private String UniqueRef;
-    private int price;
-    private DateTime dateTime;
-    private String postcode;
-    private String propertyType;
-    private String oldOrNew;
-    private String duration;
+    private String County;
+    private DateTime Datetime;
+    private String District;
+    private String Duration;
+    private double Latitude;
+    private String Locality;
+    private double Longitude;
+    private String Old_or_new;
     private String PAON;
+    private String Postcode;
+    private int Price;
+    private String Property_type;
     private String SAON;
-    private String street;
-    private String locality;
-    private String town;
-    private String district;
-    private String  county;
-    private String PPDCategory;
-    private float latitude;
-    private float longitude;
-    private GeoPt locationGeo;
-//    private GeoPt location;
+    private String Street;
+    private String Town;
+    private String UniqueRef;
+    private String PDD_category;
 
-    public SalesData(){
+    public SalesData() {
+    }
+
+    public SalesData(Long id, String county, DateTime datetime, String district, String duration, float latitude, String locality, float longitude, String old_or_new, String PAON, String postcode, int price, String property_type, String SAON, String street, String town, String uniqueRef, String PDD_category) {
+        this.id = id;
+        County = county;
+        Datetime = datetime;
+        District = district;
+        Duration = duration;
+        Latitude = latitude;
+        Locality = locality;
+        Longitude = longitude;
+        Old_or_new = old_or_new;
+        this.PAON = PAON;
+        Postcode = postcode;
+        Price = price;
+        Property_type = property_type;
+        this.SAON = SAON;
+        Street = street;
+        Town = town;
+        UniqueRef = uniqueRef;
+        this.PDD_category = PDD_category;
     }
 
     public Long getId() {
         return id;
     }
 
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUniqueRef() {
         return UniqueRef;
@@ -52,51 +72,67 @@ public class SalesData {
     }
 
     public int getPrice() {
-        return price;
+        return Price;
     }
 
     public void setPrice(int price) {
-        this.price = price;
+        Price = price;
     }
 
-    public DateTime getDate() {
-        return dateTime;
+    public DateTime getDatetime() {
+        return Datetime;
     }
 
-    public void setDate(DateTime date) {
-        dateTime = date;
+    public void setDatetime(DateTime datetime) {
+        Datetime = datetime;
+    }
+
+    public double getLatitude() {
+        return Latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        Latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return Longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        Longitude = longitude;
     }
 
     public String getPostcode() {
-        return postcode;
+        return Postcode;
     }
 
     public void setPostcode(String postcode) {
-        this.postcode = postcode;
+        Postcode = postcode;
     }
 
-    public String getPropertyType() {
-        return propertyType;
+    public String getProperty_type() {
+        return Property_type;
     }
 
-    public void setPropertyType(String propertyType) {
-        this.propertyType = propertyType;
+    public void setProperty_type(String property_type) {
+        Property_type = property_type;
     }
 
-    public String getOldOrNew() {
-        return oldOrNew;
+    public String getOld_or_new() {
+        return Old_or_new;
     }
 
-    public void setOldOrNew(String oldOrNew) {
-        this.oldOrNew = oldOrNew;
+    public void setOld_or_new(String old_or_new) {
+        Old_or_new = old_or_new;
     }
 
     public String getDuration() {
-        return duration;
+        return Duration;
     }
 
     public void setDuration(String duration) {
-        this.duration = duration;
+        Duration = duration;
     }
 
     public String getPAON() {
@@ -116,83 +152,50 @@ public class SalesData {
     }
 
     public String getStreet() {
-        return street;
+        return Street;
     }
 
     public void setStreet(String street) {
-        this.street = street;
+        Street = street;
     }
 
     public String getLocality() {
-        return locality;
+        return Locality;
     }
 
     public void setLocality(String locality) {
-        this.locality = locality;
+        Locality = locality;
     }
 
     public String getTown() {
-        return town;
+        return Town;
     }
 
     public void setTown(String town) {
-        this.town = town;
+        Town = town;
     }
 
     public String getDistrict() {
-        return district;
+        return District;
     }
 
     public void setDistrict(String district) {
-        this.district = district;
+        District = district;
     }
 
     public String getCounty() {
-        return county;
+        return County;
     }
 
     public void setCounty(String county) {
-        this.county = county;
+        County = county;
     }
 
-    public String getPPDCategory() {
-        return PPDCategory;
+    public String getPDD_category() {
+        return PDD_category;
     }
 
-    public void setPPDCategory(String PPDCategory) {
-        this.PPDCategory = PPDCategory;
-    }
-
-
-    public DateTime getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(DateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public float getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
-    }
-
-    public float getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setLocation(GeoPt location) {
-        this.locationGeo = location;
+    public void setPDD_category(String PPD_category) {
+        this.PDD_category = PPD_category;
     }
 }

@@ -7,45 +7,18 @@ import com.googlecode.objectify.annotation.Id;
 /**
  * Created by rai on 03/11/15.
  */
-@Entity
 public class SalesDataShort {
-    @Id
-    private Long id;
-    String transId;
-    int priceInPouds;
-    GeoPt location;
+    Long id;
+    int price;
+    GeoPt locationGeo;
 
     public SalesDataShort(){
     }
 
-    public SalesDataShort(String transId, int priceInPouds, GeoPt location) {
-        this.transId = transId;
-        this.priceInPouds = priceInPouds;
-        this.location = location;
-    }
-
-    public String getTransId() {
-        return transId;
-    }
-
-    public void setTransId(String transId) {
-        this.transId = transId;
-    }
-
-    public int getPriceInPouds() {
-        return priceInPouds;
-    }
-
-    public void setPriceInPounds(int priceInPouds) {
-        this.priceInPouds = priceInPouds;
-    }
-
-    public GeoPt getLocation() {
-        return location;
-    }
-
-    public void setLocation(GeoPt location) {
-        this.location = location;
+    public SalesDataShort(Long transId, int priceInPouds, GeoPt location) {
+        this.id = transId;
+        this.price = priceInPouds;
+        this.locationGeo = location;
     }
 
     public Long getId() {
@@ -56,4 +29,19 @@ public class SalesDataShort {
         this.id = id;
     }
 
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public GeoPt getLocationGeo() {
+        return locationGeo;
+    }
+
+    public void setLocationGeo(GeoPt locationGeo) {
+        this.locationGeo = locationGeo;
+    }
 }

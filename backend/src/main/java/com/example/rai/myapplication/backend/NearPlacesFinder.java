@@ -32,7 +32,7 @@ public class NearPlacesFinder {
      * @return The index to use to search places in the datastore.
      */
     public static Index getIndex() {
-        IndexSpec indexSpec = IndexSpec.newBuilder().setName("Places")
+        IndexSpec indexSpec = IndexSpec.newBuilder().setName("PlacesIndex")
                 .build();
         return SearchServiceFactory.getSearchService().getIndex(indexSpec);
     }
@@ -46,9 +46,9 @@ public class NearPlacesFinder {
      */
     public static Document buildDocument(
             final Long placeId, final String postcode,
-            final int priceInPouds, final GeoPt location) {
-        GeoPoint geoPoint = new GeoPoint((double)location.getLatitude(),
-                (double)location.getLongitude());
+            final int priceInPouds, final GeoPoint location) {
+        GeoPoint geoPoint = new GeoPoint(location.getLatitude(),
+                location.getLongitude());
 
         Document.Builder builder = Document.newBuilder()
                 .addField(Field.newBuilder().setName("place_location")
@@ -59,9 +59,10 @@ public class NearPlacesFinder {
 
                 .addField(Field.newBuilder().setName("postcode").setText(postcode))
 
-                .addField(Field.newBuilder().setName(String.valueOf(priceInPouds))
-                        .setText(String.valueOf(priceInPouds)));
-
+                .addField(Field.newBuilder().setName("price")
+                        .setText(String.valueOf(priceInPouds))
+                )
+         ;
         return builder.build();
     }
 
@@ -74,7 +75,7 @@ public class NearPlacesFinder {
      *      the distance to the location parameter and less than
      *      distanceInMeters meters to the location parameter.
      */
-    public static List<SalesData> getPlaces(final GeoPt location,
+    public static List<SalesDataShort> getPlaces(final GeoPt location,
                                             final long distanceInMiles, final int resultCount) {
 
         // Optional: use memcache
@@ -104,7 +105,7 @@ public class NearPlacesFinder {
 
         Results<ScoredDocument> results = getIndex().search(query);
 
-        List<SalesData> places = new ArrayList<>();
+        List<SalesDataShort> places = new ArrayList<>();
 
         for (ScoredDocument document : results) {
             if (places.size() >= resultCount) {
@@ -113,14 +114,14 @@ public class NearPlacesFinder {
 
             GeoPoint p = document.getOnlyField("place_location").getGeoPoint();
 
-            SalesData place = new SalesData();
+            SalesDataShort place = new SalesDataShort();
 
             place.setId(Long.valueOf(document.getOnlyField("id")
                     .getText()));
 
             place.setPrice(Integer.parseInt(document.getOnlyField("price").getText()));  //parse string data to an int
 
-            place.setLocation(new GeoPt((float) p.getLatitude(),
+            place.setLocationGeo(new GeoPt((float) p.getLatitude(),
                     (float) p.getLongitude()));
             places.add(place);
         }

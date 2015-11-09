@@ -5,8 +5,9 @@ import android.location.Location;
 import android.os.AsyncTask;
 
 import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
@@ -19,7 +20,7 @@ import java.io.IOException;
  */
 
 
-public class UpdateMapTask extends AsyncTask<Location, Void, SalesDataCollection> {
+public class UpdateMapTask extends AsyncTask<Location, Void, SalesDataShortCollection> {
     private static long range =1000000000;
     private static SalesInformationApi myApiService = null;
     private Context context;
@@ -35,7 +36,7 @@ public class UpdateMapTask extends AsyncTask<Location, Void, SalesDataCollection
     }
 
     @Override
-    protected SalesDataCollection doInBackground(Location... params) {
+    protected SalesDataShortCollection doInBackground(Location... params) {
         Location location = params[0];
         float longitude;
         float latitude;
@@ -70,7 +71,7 @@ public class UpdateMapTask extends AsyncTask<Location, Void, SalesDataCollection
 //
         myApiService = builder.build();
         }
-        SalesDataCollection result = null;
+        SalesDataShortCollection result = null;
         try {
             result = myApiService.getPointsInRange( Float.toString(latitude), Float.toString(longitude), range, 50).execute();
         } catch (IOException e) {
