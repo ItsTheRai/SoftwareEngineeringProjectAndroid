@@ -27,10 +27,12 @@ import android.view.View;
 
 //import com.example.rai.myapplication.backend.model.SalesInformation;
 import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
+import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -44,6 +46,7 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
+import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
 import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
 //import com.uni.rai.softwareengineeringproject.tasks.*;
 //import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
@@ -288,15 +291,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        new UpdateLocationAsyncTask(this).execute();
 //    new UpdateLocationAsyncTask(this).execute();
 //        Location l = mCurrentLocation;
-        SalesDataCollection data = new UpdateMapTask(this).execute(mCurrentLocation).get();
+        SalesDataShortCollection data = new UpdateMapTask(this).execute(mCurrentLocation).get();
         if(!data.isEmpty()) {
-            List<SalesData> places = data.getItems();
+            List<SalesDataShort> places = data.getItems();
 
-            ArrayList<WeightedLatLng> llList = new ArrayList<WeightedLatLng>();
+            ArrayList<WeightedLatLng> llList = new ArrayList<>();
 
-            for (SalesData d : places) {
-                llList.add(new WeightedLatLng(new LatLng((double) d.getLocation().getLatitude(),
-                        (double) d.getLocation().getLongitude()),
+            for (SalesDataShort d : places) {
+                llList.add(new WeightedLatLng(new LatLng((double) d.getLocationGeo().getLatitude(),
+                        (double) d.getLocationGeo().getLongitude()),
                         d.getPrice() / 10000));
             }
 

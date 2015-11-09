@@ -3,6 +3,7 @@ package com.example.rai.myapplication.backend;
 /**
  * Created by rai on 21/10/15.
  */
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
 import com.example.rai.myapplication.backend.model.SalesData;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
@@ -13,7 +14,7 @@ import com.googlecode.objectify.ObjectifyService;
  * More on Objectify here : https://code.google.com/p/objectify-appengine/
  *
  */
-public class OfyService {
+public final class OfyService {
 
     static {
         ObjectifyService.register(SalesData.class);

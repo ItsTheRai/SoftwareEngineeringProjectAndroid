@@ -1,22 +1,9 @@
-package com.example.rai.myapplication.backend;/*
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package com.example.rai.myapplication.backend;
+
 import com.example.rai.myapplication.backend.model.SalesData;
-import com.example.rai.myapplication.backend.model.SalesDataShort;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.GeoPoint;
 import com.google.appengine.api.search.GetRequest;
 import com.google.appengine.api.search.GetResponse;
 import com.google.appengine.api.search.Index;
@@ -31,9 +18,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * HttpServlet for handling maintenance tasks.
- */
+import static com.example.rai.myapplication.backend.OfyService.ofy;
+//import static com.google.sample.mobileassistantbackend.OfyService.ofy;
 public class IndexingServlet extends HttpServlet {
 
     @Override
@@ -54,21 +40,22 @@ public class IndexingServlet extends HttpServlet {
      */
     @SuppressWarnings({"cast", "unchecked"})
     private boolean buildSearchIndexForPlaces() {
-//        OfyService ofy = new OfyService.ofy();
         Index index = NearPlacesFinder.getIndex();
-//
-//        removeAllDocumentsFromIndex();
-//
-        List<SalesData> places = OfyService.ofy().load().type(SalesData.class).list();
+
+        removeAllDocumentsFromIndex();
+
+        List<SalesData> places = ofy().load().type(SalesData.class).list();
 
         try {
             for (SalesData place : places) {
-                Document placeAsDocument = NearPlacesFinder.buildDocument(
-                        //next to lines are for testing TODO remove
-                        (long)344321434,"bbbbb",9999999,new GeoPt((float)0.11,(float)0.11));
-//                        place.getId(), place.getPostcode(), place.getPrice(),
-//                        new GeoPt(place.getLatitude(),place.getLongitude()));
+//                place.setPostcode("aaaaa");
 
+                Document placeAsDocument = NearPlacesFinder.buildDocument(
+
+//                        1231231L,"bnbnbn",11111,new GeoPt((float)1.1,(float)1.1)
+                        place.getId(), place.getPostcode(), place.getPrice(),
+                        new GeoPoint(place.getLatitude(),place.getLongitude())
+                );
                 try {
                     index.put(placeAsDocument);
                 } catch (PutException e) {
@@ -81,6 +68,7 @@ public class IndexingServlet extends HttpServlet {
         } catch (Exception e) {
             return false;
         }
+
         return true;
     }
 

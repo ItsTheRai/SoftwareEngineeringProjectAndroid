@@ -23,7 +23,7 @@ import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.cmd.Query;
 
-import static com.googlecode.objectify.ObjectifyService.ofy;
+import static com.example.rai.myapplication.backend.OfyService.ofy;
 
 
 @Api(
@@ -65,7 +65,7 @@ public class SalesInformationEndpoint {
     @ApiMethod(
             name ="getPointsInRange",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public List<SalesData> getPointsInRange(@Named("latitude")String latitudeString,
+    public List<SalesDataShort> getPointsInRange(@Named("latitude")String latitudeString,
                                                  @Named("longitude")String longitudeString,
                                                  @Named("rangeInMiles") long rangeInMiles,
                                                  @Named("maxLength") int maxLength) throws BadRequestException {
@@ -95,7 +95,7 @@ public class SalesInformationEndpoint {
             throw new BadRequestException(
                     "Invalid pair of 'latitude' and 'longitude' arguments");
         }
-        List<SalesData> places = NearPlacesFinder.getPlaces(location, rangeInMiles, count);
+        List<SalesDataShort> places = NearPlacesFinder.getPlaces(location, rangeInMiles, count);
         return places;
     }
 
@@ -113,9 +113,9 @@ public class SalesInformationEndpoint {
         //
         // If your client provides the ID then you should probably use PUT instead.
 //        checkExists(salesData.getId());
-        ofy().save().entity(salesData).now();
+          ofy().save().entity(salesData).now();
 //        logger.info("Created SalesData with ID: " + salesData.getId());
-        return ofy().load().entity(salesData).now();
+        return salesData;
     }
 
     @ApiMethod(

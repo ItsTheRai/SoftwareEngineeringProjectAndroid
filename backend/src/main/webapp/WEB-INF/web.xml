@@ -1,22 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
-    <filter>
-        <filter-name>ObjectifyFilter</filter-name>
-        <filter-class>com.googlecode.objectify.ObjectifyFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>ObjectifyFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <servlet>
-        <servlet-name>RemoteApi</servlet-name>
-        <servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>RemoteApi</servlet-name>
-        <url-pattern>/remote_api</url-pattern>
-    </servlet-mapping>
 
     <servlet>
         <servlet-name>SystemServiceServlet</servlet-name>
@@ -24,7 +7,8 @@
         <init-param>
             <param-name>services</param-name>
             <param-value>com.example.rai.myapplication.backend.UserLocationEndpoint,
-                com.example.rai.myapplication.backend.SalesInformationEndpoint</param-value>
+                com.example.rai.myapplication.backend.SalesInformationEndpoint
+            </param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
@@ -41,6 +25,24 @@
         <servlet-name>MaintenanceTasksServlet</servlet-name>
         <url-pattern>/buildsearchindex</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RemoteApi</servlet-name>
+        <servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RemoteApi</servlet-name>
+        <url-pattern>/remote_api</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>ObjectifyFilter</filter-name>
+        <filter-class>com.googlecode.objectify.ObjectifyFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ObjectifyFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
