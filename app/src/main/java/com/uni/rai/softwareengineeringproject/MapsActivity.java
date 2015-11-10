@@ -19,18 +19,6 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 
-
-//import com.example.rai.myapplication.backend.model.SalesLocationData;
-//import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
-//import com.example.rai.myapplication.backend.model.SalesLocationData;
-//import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
-
-//import com.example.rai.myapplication.backend.model.SalesInformation;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
 import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.google.android.gms.common.ConnectionResult;
@@ -41,15 +29,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
 import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
-//import com.uni.rai.softwareengineeringproject.tasks.*;
-//import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
 
 import android.widget.Toast;
 import android.view.MenuItem;
@@ -67,6 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
     private static final long LOCATION_REQUEST_INTERVAL = 3000;//ms
     private static final long FASTEST_LOCATION_INTERVAL = 3000;//ms
+    private static final double EARTH_RADIUS = 6378.1;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
@@ -81,14 +68,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
 
             super.onCreate(savedInstanceState);
-            //start the back end task
-
-//
             //set tracking flag
             isLockedOn = false;
             //since API 23, need to ask for user permission to use location
             //so create a check and dialog box
-
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -120,10 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .findFragmentById(R.id.map);
             //call onMapReady()
             mapFragment.getMapAsync(this);
-
-            this.clearHeatmap();
-
-
+            //heatmap gets displayed when map is ready
     }
 
     @Override
@@ -136,7 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.heat_map:
-//                clearHeatmap();
+                clearHeatmap();
                 try {
                     updateHeatmap();    //querries the DB to update the heatmap
                 } catch (ExecutionException e) {
@@ -162,8 +142,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
-
     @Override
     public void onStart() {
 
@@ -173,7 +151,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             checkInternet(); // check to see if connected to internet
             //connect to the server
             mGoogleApiClient.connect();
-
     }
 
 
@@ -233,6 +210,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 //        mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setMyLocationEnabled(true);
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            //add listener to update camera when the user zooms in/out
+            @Override
+            public void onCameraChange(CameraPosition pos) {
+                try {
+                    updateHeatmap();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        //create button listener to lock on/off user
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
@@ -274,9 +266,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-//            mMap.getCameraPosition().zoom;
         }
     }
+
     public boolean clearHeatmap(){
         if(tOverlay!=null) {
             tOverlay.remove();
@@ -287,35 +279,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public boolean updateHeatmap() throws ExecutionException, InterruptedException {
-        //not needed now, populating DB
-//        new UpdateLocationAsyncTask(this).execute();
-//    new UpdateLocationAsyncTask(this).execute();
-//        Location l = mCurrentLocation;
-        SalesDataShortCollection data = new UpdateMapTask(this).execute(mCurrentLocation).get();
+        //calculate necassary range to load data
+        double rangeInKm=getRange(mMap);
+        //make sure that first parameter is the current location and the second one - the range of results in km
+        SalesDataShortCollection data = new UpdateMapTask(this).execute(mCurrentLocation,2*rangeInKm).get();
         if(!data.isEmpty()) {
             List<SalesDataShort> places = data.getItems();
-
-            ArrayList<WeightedLatLng> llList = new ArrayList<>();
-
-            for (SalesDataShort d : places) {
-                llList.add(new WeightedLatLng(new LatLng((double) d.getLocationGeo().getLatitude(),
-                        (double) d.getLocationGeo().getLongitude()),
-                        d.getPrice() / 10000));
+            //check if matches found
+            if (places !=null) {
+                ArrayList<WeightedLatLng> llList = new ArrayList<>();
+                for (SalesDataShort d : places) {
+                    llList.add(new WeightedLatLng(new LatLng((double) d.getLocationGeo().getLatitude(),
+                            (double) d.getLocationGeo().getLongitude()),
+                            d.getPrice() / 10000));//TODO this is not a great heuristic, find something that scales based on data
+                }
+                createHeatmap(llList);
             }
-
-            // These are just example locations and only creates heatmap overlay surrounding the current location. We will need to query the server to get the actual latitude, longitude, as well as the price.
-//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 237));
-//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0008, mCurrentLocation.getLongitude() - 0.0025), 182));
-//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0007, mCurrentLocation.getLongitude() - 0.005), 82));
-//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0005, mCurrentLocation.getLongitude() - 0.0021), 167));
-//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude() - 0.001), 192));
-//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.001, mCurrentLocation.getLongitude() - 0.0005), 142));
-//        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0012, mCurrentLocation.getLongitude() - 0.0018), 217));
-            createHeatmap(llList);
         }else {
             return false;
         }
         return true;
+    }
+
+    //this method returns the distance in kilometers from the top left to the bottom right corners of the visible map as double
+    public double getRange(GoogleMap map){
+        double leftLat = map.getProjection().getVisibleRegion().farLeft.latitude;
+        double leftLon = map.getProjection().getVisibleRegion().farLeft.longitude;
+        double rightLat = map.getProjection().getVisibleRegion().farRight.latitude;
+        double rightLon = map.getProjection().getVisibleRegion().farRight.longitude;
+        //calculate distance from LatLong values
+        return getDistanceInKm(leftLat, leftLon, rightLat, rightLon);
+    }
+
+    /**
+     * Computes the geodesic distance between two GPS coordinates.
+     * @param latitude1 the latitude of the first point.
+     * @param longitude1 the longitude of the first point.
+     * @param latitude2 the latitude of the second point.
+     * @param longitude2 the longitude of the second point.
+     * @return the geodesic distance between the two points, in kilometers.
+     */
+    public static double getDistanceInKm(
+            final double latitude1, final double longitude1,
+            final double latitude2, final double longitude2) {
+
+        double lat1 = Math.toRadians(latitude1);
+        double lat2 = Math.toRadians(latitude2);
+        double long1 = Math.toRadians(longitude1);
+        double long2 = Math.toRadians(longitude2);
+
+        return EARTH_RADIUS * Math
+                .acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1)
+                        * Math.cos(lat2) * Math.cos(Math.abs(long1 - long2)));
     }
 
     // check for internet connection using the isInternetConnected method, if not connected, show a warning message
