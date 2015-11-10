@@ -40,7 +40,11 @@ public class SalesInformationEndpoint {
 
     private static final Logger logger = Logger.getLogger(SalesInformationEndpoint.class.getName());
 
-    private static final int DEFAULT_LIST_LIMIT = 20;
+    //defines the largest number of items returned
+    private static final int DEFAULT_LIST_LIMIT = 1000;
+
+    //defines the range of the furthers possible result
+    private static final long MAXIMUM_DISTANCE = 20000;
 
     /**
      * Returns the {@link SalesData} with the corresponding ID.
@@ -67,13 +71,14 @@ public class SalesInformationEndpoint {
             httpMethod = ApiMethod.HttpMethod.GET)
     public List<SalesDataShort> getPointsInRange(@Named("latitude")String latitudeString,
                                                  @Named("longitude")String longitudeString,
-                                                 @Named("rangeInMiles") long rangeInMiles,
+                                                 @Named("rangeInKilometers") double rangeInKilometers,
                                                  @Named("maxLength") int maxLength) throws BadRequestException {
         //returns point in range of the user using helper class
         float latitude;
         float longitude;
         GeoPt location;
         int count = maxLength;
+        double rangeInKm = rangeInKilometers;
 
         try {
             latitude = (float) Double.parseDouble(latitudeString);
@@ -95,7 +100,11 @@ public class SalesInformationEndpoint {
             throw new BadRequestException(
                     "Invalid pair of 'latitude' and 'longitude' arguments");
         }
-        List<SalesDataShort> places = NearPlacesFinder.getPlaces(location, rangeInMiles, count);
+
+        if (rangeInKilometers > MAXIMUM_DISTANCE) {
+            rangeInKilometers = MAXIMUM_DISTANCE;
+        }
+        List<SalesDataShort> places = NearPlacesFinder.getPlaces(location, rangeInKm*1000, count);
         return places;
     }
 
