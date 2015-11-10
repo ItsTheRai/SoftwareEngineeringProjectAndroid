@@ -76,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationRequest mLocationRequest;
     private boolean isLockedOn;
     private TileOverlay tOverlay;
+    private  AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -274,7 +275,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-//            mMap.getCameraPosition().zoom;
+
+
         }
     }
     public boolean clearHeatmap(){
@@ -319,11 +321,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // check for internet connection using the isInternetConnected method, if not connected, show a warning message
-    private boolean checkInternet() {
+    public boolean checkInternet() {
         if (!isInternetConnected()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder = new AlertDialog.Builder(this);
             builder.setTitle("Unable to connect to the internet");
             builder.setMessage("If you see a white screen instead of a map, please enable wifi or mobile data and try again");
+
+
             builder.setPositiveButton("Wifi", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -338,9 +343,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //  Do nothing
                 }
             });
+
             Dialog dialog = builder.create();
             dialog.setCanceledOnTouchOutside(false);
-            dialog.show();
+
+            builder.show();
         }else{
             return false;
         }
@@ -348,7 +355,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // return true if connected to the internet, false otherwise
-    private boolean isInternetConnected() {
+    public boolean isInternetConnected() {
         ConnectivityManager conManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = conManager.getActiveNetworkInfo();
         //use && netInfo.isConnected() since as this may not get the right results (airplane mode etc)
@@ -356,7 +363,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // check if GPS is on, if it's on, this method should do nothing, otherwise display a dialog that redirect the user to the location setting screen
-    private boolean checkGPS() {
+    public boolean checkGPS() {
         System.out.println("checking GPS");
         LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (!locManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
@@ -433,6 +440,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
+
+    public AlertDialog.Builder getDialog(){
+        return builder;
     }
 
     public boolean ScreenPage (View view){
