@@ -1,35 +1,144 @@
 package com.uni.rai.softwareengineeringproject;
 
-import android.app.Application;
-import android.os.Build;
-import android.test.ApplicationTestCase;
+import android.test.ActivityInstrumentationTestCase2;
 
-import com.uni.rai.softwareengineeringproject.MapsActivity;
 
-//import org.junit.runner.RunWith;
+import java.lang.Exception;
+import java.lang.Override;
+import android.test.suitebuilder.annotation.SmallTest;
+import android.test.suitebuilder.annotation.MediumTest;
+import android.widget.Button;
+import android.content.Intent;
+import junit.framework.Assert;
+import android.app.Instrumentation;
+import android.app.Activity;
+import android.test.UiThreadTest;
+import android.app.Instrumentation.ActivityMonitor;
+import android.location.Location;
+import android.location.LocationManager;
+
+import android.net.wifi.WifiManager;
+
+
+public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivity> {
+
+    MainActivity mainActivity;
+
+
+    public ApplicationTest() {
+        super(MainActivity.class);
+
+    }
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        mainActivity = getActivity();
+    }
+
+    @SmallTest
+    public void testActivityExists() {
+        assertNotNull(mainActivity);
+    }
+
+    @SmallTest
+    public void testButtonExists() {
+        Button button = (Button) mainActivity.findViewById(R.id.button);
+        assertNotNull(button);
+    }
+    @SmallTest
+    public void testStartActivity()throws Exception {
+        ActivityMonitor activityMonitor = getInstrumentation().addMonitor(MapsActivity.class.getName(), null, false);
+        MainActivity myActivity = getActivity();
+        final Button button = (Button) mainActivity.findViewById(R.id.button);
+        myActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                button.performClick();
+            }
+        });
+
+        MapsActivity nextActivity = (MapsActivity) getInstrumentation().waitForMonitorWithTimeout(activityMonitor, 5000);
+        // next activity is opened and captured.
+        assertNotNull(nextActivity);
+        nextActivity.finish();
+    }
+
+    @SmallTest
+    public void checkScreenPage() {
+
+
+
+    }
+
+
+
 
 /**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
+    public void testMaidenhead() {
+        // this is a single test which doesn't really validate the algorithm
+        // identifying a bunch of edge cases would do that
+        publishMockLocation();
+        final String expectedMH = "CM87wk";
 
-//@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
-//@RunWith(RobolectricGradleTestRunner.class)
-public class ApplicationTest extends ApplicationTestCase<Application> {
-    private MapsActivity mapsActivity;
 
-    public ApplicationTest(Class<Application> applicationClass) {
-        super(applicationClass);
+        // final String actualMH = mActivity.gridSquare(mLocation);
+        assertEquals(expectedMH, actualMH);
     }
 
-    //@Before
-    public void setup() {
-        // Convenience method to run MainActivity through the Activity Lifecycle methods:
-        // onCreate(...) => onStart() => onPostCreate(...) => onResume()
-      //  activity = Robolectric.setupActivity(MapsActivity.class);
+
+    protected void publishMockLocation() {
+        final double TEST_LONGITUDE = -122.084095;
+        final double TEST_LATITUDE = 37.422006;
+        final String TEST_PROVIDER = "test";
+        final Location mLocation;
+        final LocationManager mLocationManager;
+
+        mLocationManager = (LocationManager) MapsActivity.getSystemService(Context.LOCATION_SERVICE);
+        if (mLocationManager.getProvider(TEST_PROVIDER) != null) {
+            mLocationManager.removeTestProvider(TEST_PROVIDER);
+        }
+        if (mLocationManager.getProvider(TEST_PROVIDER) == null) {
+            mLocationManager.addTestProvider(TEST_PROVIDER,
+                    false, //requiresNetwork,
+                    false, // requiresSatellite,
+                    false, // requiresCell,
+                    false, // hasMonetaryCost,
+                    false, // supportsAltitude,
+                    false, // supportsSpeed,
+                    false, // supportsBearing,
+                    android.location.Criteria.POWER_MEDIUM, // powerRequirement
+                    android.location.Criteria.ACCURACY_FINE); // accuracy
+        }
+        mLocation = new Location(TEST_PROVIDER);
+        mLocation.setLatitude(TEST_LATITUDE);
+        mLocation.setLongitude(TEST_LONGITUDE);
+        mLocation.setTime(System.currentTimeMillis());
+        mLocation.setAccuracy(25);
+        mLocationManager.setTestProviderEnabled(TEST_PROVIDER, true);
+        mLocationManager.setTestProviderStatus(TEST_PROVIDER, LocationProvider.AVAILABLE, null, System.currentTimeMillis());
+        mLocationManager.setTestProviderLocation(TEST_PROVIDER, mLocation);
     }
 
-    //@Test
-    public void testStart(){
-        assertEquals(1,1);
-    }
+
+
+
+**/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
