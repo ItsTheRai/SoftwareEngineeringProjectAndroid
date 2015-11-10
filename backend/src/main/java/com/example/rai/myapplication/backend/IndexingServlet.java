@@ -19,13 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.example.rai.myapplication.backend.OfyService.ofy;
-//import static com.google.sample.mobileassistantbackend.OfyService.ofy;
 public class IndexingServlet extends HttpServlet {
 
     @Override
     public final void doGet(final HttpServletRequest req,
                             final HttpServletResponse resp) throws IOException {
         resp.setContentType("text/plain");
+        removeAllDocumentsFromIndex();
         if (!buildSearchIndexForPlaces()) {
             resp.getWriter().println(
                     "MaintenanceTasks failed. Try again by refreshing.");
@@ -48,11 +48,7 @@ public class IndexingServlet extends HttpServlet {
 
         try {
             for (SalesData place : places) {
-//                place.setPostcode("aaaaa");
-
                 Document placeAsDocument = NearPlacesFinder.buildDocument(
-
-//                        1231231L,"bnbnbn",11111,new GeoPt((float)1.1,(float)1.1)
                         place.getId(), place.getPostcode(), place.getPrice(),
                         new GeoPoint(place.getLatitude(),place.getLongitude())
                 );
@@ -68,7 +64,6 @@ public class IndexingServlet extends HttpServlet {
         } catch (Exception e) {
             return false;
         }
-
         return true;
     }
 
