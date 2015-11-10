@@ -11,14 +11,16 @@ public class SalesDataShort {
     Long id;
     int price;
     GeoPt locationGeo;
+    double distanceInKilometers;
 
     public SalesDataShort(){
     }
 
-    public SalesDataShort(Long transId, int priceInPouds, GeoPt location) {
-        this.id = transId;
-        this.price = priceInPouds;
-        this.locationGeo = location;
+    public SalesDataShort(Long id, int price, GeoPt locationGeo, double distanceInKilometers) {
+        this.id = id;
+        this.price = price;
+        this.locationGeo = locationGeo;
+        this.distanceInKilometers = distanceInKilometers;
     }
 
     public Long getId() {
@@ -43,5 +45,13 @@ public class SalesDataShort {
 
     public void setLocationGeo(GeoPt locationGeo) {
         this.locationGeo = locationGeo;
+    }
+
+    public double getDistanceInKilometers() {
+        return distanceInKilometers;
+    }
+
+    public void setDistanceInKilometers(double distanceInKilometers) {
+        this.distanceInKilometers = distanceInKilometers;
     }
 }
