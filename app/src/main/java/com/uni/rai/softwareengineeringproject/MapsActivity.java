@@ -279,14 +279,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public boolean updateHeatmap() throws ExecutionException, InterruptedException {
-        //calculate necassary range to load data
+        //calculate necassary range to load data from screen size and zoom
         double rangeInKm=getRange(mMap);
-        //make sure that first parameter is the current location and the second one - the range of results in km
-        SalesDataShortCollection data = new UpdateMapTask(this).execute(mCurrentLocation,2*rangeInKm).get();
+        //query DB with async taks
+        SalesDataShortCollection data = getDataInRange(mMap.getMyLocation(),rangeInKm*2);
         if(!data.isEmpty()) {
             List<SalesDataShort> places = data.getItems();
             //check if matches found
             if (places !=null) {
+                //add mathcs to heatmap
                 ArrayList<WeightedLatLng> llList = new ArrayList<>();
                 for (SalesDataShort d : places) {
                     llList.add(new WeightedLatLng(new LatLng((double) d.getLocationGeo().getLatitude(),
@@ -299,6 +300,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return false;
         }
         return true;
+    }
+
+    ///return a collection of SalesDataShort objects within a specific range
+    //make sure that first parameter is the current location and the second one - the range of results in km
+    public SalesDataShortCollection getDataInRange(Location location, double range) throws ExecutionException, InterruptedException {
+        return new UpdateMapTask(this).execute(location,2*range).get();
     }
 
     //this method returns the distance in kilometers from the top left to the bottom right corners of the visible map as double
