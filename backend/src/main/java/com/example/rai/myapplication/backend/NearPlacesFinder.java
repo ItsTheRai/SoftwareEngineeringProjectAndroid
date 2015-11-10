@@ -24,6 +24,7 @@ import java.util.List;
  */
 public class NearPlacesFinder {
 
+    private static final double EARTH_RADIUS = 6378.1;
     private NearPlacesFinder(){
     }
 
@@ -41,12 +42,12 @@ public class NearPlacesFinder {
      * Builds a new Place document to insert in the Places index.
      * @param placeId      the identifier of the place in the database.
 //     * @param placeAddress the address of the place.
-     * @param location     the GPS location of the place, as a GeoPt.
-     * @return the Place document created.
+     * @param priceInPouds
+     *@param location     the GPS location of the place, as a GeoPt.  @return the Place document created.
      */
     public static Document buildDocument(
             final Long placeId, final String postcode,
-            final int priceInPouds, final GeoPoint location) {
+            final long priceInPouds, final GeoPoint location) {
         GeoPoint geoPoint = new GeoPoint(location.getLatitude(),
                 location.getLongitude());
 
@@ -54,13 +55,13 @@ public class NearPlacesFinder {
                 .addField(Field.newBuilder().setName("place_location")
                         .setGeoPoint(geoPoint))
 
-            .addField(Field.newBuilder().setName("id")
+                .addField(Field.newBuilder().setName("id")
                         .setText(placeId.toString()))
 
                 .addField(Field.newBuilder().setName("postcode").setText(postcode))
 
                 .addField(Field.newBuilder().setName("price")
-                        .setText(String.valueOf(priceInPouds))
+                                .setText(String.valueOf(priceInPouds))
                 )
          ;
         return builder.build();
@@ -69,14 +70,14 @@ public class NearPlacesFinder {
     /**
      * Returns the nearest places to the location of the user.
      * @param location the location of the user.
-     * @param distanceInMiles the maximum distance to the user.
+     * @param distanceInMeters the maximum distance to the user.
      * @param resultCount the maximum number of places returned.
      * @return List of up to resultCount places in the datastore ordered by
      *      the distance to the location parameter and less than
      *      distanceInMeters meters to the location parameter.
      */
     public static List<SalesDataShort> getPlaces(final GeoPt location,
-                                            final long distanceInMiles, final int resultCount) {
+                                            final double distanceInMeters, final int resultCount) {
 
         // Optional: use memcache
 
@@ -90,7 +91,7 @@ public class NearPlacesFinder {
                 .addSortExpression(SortExpression.newBuilder()
                         .setExpression(locExpr)
                         .setDirection(SortExpression.SortDirection.ASCENDING)
-                        .setDefaultValueNumeric(distanceInMiles + 1))
+                        .setDefaultValueNumeric((int)distanceInMeters + 1))
                 .setLimit(resultCount)
                 .build();
         // Build the QueryOptions
@@ -99,7 +100,7 @@ public class NearPlacesFinder {
                 .build();
         // Query string
         String searchQuery = "distance(place_location, " + geoPoint + ") < "
-                + distanceInMiles;//distance mile metres
+                + distanceInMeters;
 
         Query query = Query.newBuilder().setOptions(options).build(searchQuery);
 
@@ -123,8 +124,33 @@ public class NearPlacesFinder {
 
             place.setLocationGeo(new GeoPt((float) p.getLatitude(),
                     (float) p.getLongitude()));
+
+            double distance = getDistanceInKm(p.getLatitude(), p.getLongitude(), location.getLatitude(), location.getLongitude());
+            place.setDistanceInKilometers(distance);
             places.add(place);
         }
         return places;
+    }
+
+    /**
+     * Computes the geodesic between two GPS coordinates.
+     * @param latitude1 the latitude of the first point.
+     * @param longitude1 the longitude of the first point.
+     * @param latitude2 the latitude of the second point.
+     * @param longitude2 the longitude of the second point.
+     * @return the geodesic distance between the two points, in kilometers.
+     */
+    public static double getDistanceInKm(
+            final double latitude1, final double longitude1,
+            final double latitude2, final double longitude2) {
+
+        double lat1 = Math.toRadians(latitude1);
+        double lat2 = Math.toRadians(latitude2);
+        double long1 = Math.toRadians(longitude1);
+        double long2 = Math.toRadians(longitude2);
+
+        return EARTH_RADIUS * Math
+                .acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1)
+                        * Math.cos(lat2) * Math.cos(Math.abs(long1 - long2)));
     }
 }

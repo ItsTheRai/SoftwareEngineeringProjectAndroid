@@ -20,8 +20,9 @@ import java.io.IOException;
  */
 
 
-public class UpdateMapTask extends AsyncTask<Location, Void, SalesDataShortCollection> {
-    private static long range =1000000000;
+public class UpdateMapTask extends AsyncTask<Object, Void, SalesDataShortCollection> {
+//    private static long range =1000000000;
+    private static final int NUMBER_OF_RESULTS = 10000;
     private static SalesInformationApi myApiService = null;
     private Context context;
 
@@ -36,8 +37,10 @@ public class UpdateMapTask extends AsyncTask<Location, Void, SalesDataShortColle
     }
 
     @Override
-    protected SalesDataShortCollection doInBackground(Location... params) {
-        Location location = params[0];
+    //not type safe but gets the job done
+    protected SalesDataShortCollection doInBackground(Object... params) {
+        Location location = (Location)params[0];
+        double distanceInKm = (double) params[1];
         float longitude;
         float latitude;
 
@@ -73,7 +76,8 @@ public class UpdateMapTask extends AsyncTask<Location, Void, SalesDataShortColle
         }
         SalesDataShortCollection result = null;
         try {
-            result = myApiService.getPointsInRange( Float.toString(latitude), Float.toString(longitude), range, 50).execute();
+            result = myApiService.getPointsInRange( Float.toString(latitude), Float.toString(longitude),
+                    distanceInKm, NUMBER_OF_RESULTS).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
