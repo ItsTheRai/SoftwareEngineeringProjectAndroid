@@ -59,17 +59,10 @@ public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivi
         });
 
         MapsActivity nextActivity = (MapsActivity) getInstrumentation().waitForMonitorWithTimeout(activityMonitor, 5000);
-        // next activity is opened and captured.
         assertNotNull(nextActivity);
         nextActivity.finish();
     }
 
-    @SmallTest
-    public void checkScreenPage() {
-
-
-
-    }
 
 
 
