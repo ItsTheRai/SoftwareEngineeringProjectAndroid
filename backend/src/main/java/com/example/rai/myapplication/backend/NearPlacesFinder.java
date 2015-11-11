@@ -25,8 +25,8 @@ import java.util.List;
 public class NearPlacesFinder {
 
     private static final double EARTH_RADIUS = 6378.1;
-    private NearPlacesFinder(){
-    }
+    //private NearPlacesFinder(){
+    //}
 
     /**
      * Returns the Places index in the datastore.
