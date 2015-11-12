@@ -130,6 +130,15 @@ public class unitTests {
     {
         placefinder = new NearPlacesFinder();
 
-        assertNotNull(placefinder.getPlaces(new GeoPt(3.6f, 1.2f), 100000L, 1));
+        assertNotNull(placefinder.getPlaces(new GeoPt(51f, -1f), 10000000L, 1));
+    }
+
+    //Check to see if the distance between two locations return something.
+    @Test
+    public void checkGetDistance()
+    {
+        placefinder= new NearPlacesFinder();
+
+        assertNotNull(placefinder.getDistanceInKm(51.5034070, -0.1275920, 50.8646070,-0.0828680));
     }
 }
