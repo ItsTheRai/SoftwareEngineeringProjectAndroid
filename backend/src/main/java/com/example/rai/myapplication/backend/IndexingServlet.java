@@ -39,7 +39,7 @@ public class IndexingServlet extends HttpServlet {
      * @return a boolean indicating the success or failure of the method.
      */
     @SuppressWarnings({"cast", "unchecked"})
-    private boolean buildSearchIndexForPlaces() {
+    public boolean buildSearchIndexForPlaces() {
         Index index = NearPlacesFinder.getIndex();
 
         removeAllDocumentsFromIndex();

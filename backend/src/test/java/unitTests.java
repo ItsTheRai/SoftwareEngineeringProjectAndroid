@@ -7,12 +7,18 @@ import com.example.rai.myapplication.backend.NearPlacesFinder;
 import com.example.rai.myapplication.backend.OfyService;
 import com.example.rai.myapplication.backend.SalesInformationEndpoint;
 import com.example.rai.myapplication.backend.UserLocationEndpoint;
+import com.example.rai.myapplication.backend.model.SalesData;
+import com.google.appengine.api.search.GeoPoint;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.Assert.*;
 
@@ -112,4 +118,14 @@ public class unitTests {
         assertNull(user);
     }
     **/
+
+    //Checks that CheckBuildDocument() returns Long, String, Int, GeoPoint
+    @Test
+    public void checkBuildDocument()
+    {
+        placefinder = new NearPlacesFinder();
+
+        assertNotNull(NearPlacesFinder.buildDocument(0L, "" ,1, new com.google.appengine.api.search.GeoPoint(51.5034070,-0.1275920)));
+
+    }
 }
