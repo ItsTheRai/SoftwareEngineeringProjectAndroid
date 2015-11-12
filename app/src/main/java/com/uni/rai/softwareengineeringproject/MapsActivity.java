@@ -70,70 +70,79 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
-//    private Location mLastLocation;
-    private Location mCurrentLocation;
+    //    private Location mLastLocation;
+    public Location mCurrentLocation;
     private String mLastUpdateTime;
     private LocationRequest mLocationRequest;
-    private boolean isLockedOn;
+    public boolean isLockedOn;
     private TileOverlay tOverlay;
+    public MenuItem item;
+    public View view;
+    public Menu menu;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-            super.onCreate(savedInstanceState);
-            //start the back end task
+        super.onCreate(savedInstanceState);
+        //start the back end task
 
 //
-            //set tracking flag
-            isLockedOn = false;
-            //since API 23, need to ask for user permission to use location
-            //so create a check and dialog box
+        //set tracking flag
+        isLockedOn = false;
+        //since API 23, need to ask for user permission to use location
+        //so create a check and dialog box
 
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    // Show an explenation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-                } else {
-                    // No explanation needed, we can request the permission.
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0   //could not find the right constant, 0 seems to work for now
-                    );//MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                    // app-defined int constant. The callback method gets the
-                    // result of the request.
-                }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Show an explenation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0   //could not find the right constant, 0 seems to work for now
+                );//MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
             }
+        }
 
 //        reate a new location request for the map locator
-            createLocationRequest();
-            //build a google api client
-            buildGoogleApiClient();
-            //set view as the map activity
-            setContentView(R.layout.activity_maps);
-            //init the map
-            MapFragment mapFragment = (MapFragment) getFragmentManager()
-                    .findFragmentById(R.id.map);
-            //call onMapReady()
-            mapFragment.getMapAsync(this);
+        createLocationRequest();
+        //build a google api client
+        buildGoogleApiClient();
+        //set view as the map activity
+        setContentView(R.layout.activity_maps);
+        //init the map
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        //call onMapReady()
+        mapFragment.getMapAsync(this);
 
-            this.clearHeatmap();
+        this.clearHeatmap();
 
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.map_activity, menu);
         return true;
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        this.item = item;
+        getItem(item);
         switch (item.getItemId()) {
             case R.id.heat_map:
 //                clearHeatmap();
@@ -158,21 +167,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return true;
 
             default:
-                return super.onOptionsItemSelected(item);
+                return false;
         }
     }
 
-
+    public boolean getItem(MenuItem i) {
+        switch (i.getItemId()) {
+            case R.id.heat_map:
+                return true;
+            case R.id.normal_map:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     @Override
     public void onStart() {
 
-            super.onStart();
-            Log.d(TAG, "onStart fired ..............");
-            //check if connected
-            checkInternet(); // check to see if connected to internet
-            //connect to the server
-            mGoogleApiClient.connect();
+        super.onStart();
+        Log.d(TAG, "onStart fired ..............");
+        //check if connected
+        checkInternet(); // check to see if connected to internet
+        //connect to the server
+        mGoogleApiClient.connect();
 
     }
 
@@ -253,8 +271,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public boolean  showUser() {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
 //        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         return true;
     }
@@ -283,7 +301,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }else {
             return false;
         }
-    return true;
+        return true;
     }
 
     public boolean updateHeatmap() throws ExecutionException, InterruptedException {
@@ -298,9 +316,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ArrayList<WeightedLatLng> llList = new ArrayList<>();
 
             for (SalesDataShort d : places) {
-                llList.add(new WeightedLatLng(new LatLng((double) d.getLocationGeo().getLatitude(),
-                        (double) d.getLocationGeo().getLongitude()),
-                        d.getPrice() / 10000));
+                try {
+                    llList.add(new WeightedLatLng(new LatLng((double) d.getLocationGeo().getLatitude(),
+                            (double) d.getLocationGeo().getLongitude()),
+                            d.getPrice() / 10000));
+                }catch (ArrayIndexOutOfBoundsException e){
+                    Log.e(TAG,"Error out of bound .... ");
+                }
             }
 
             // These are just example locations and only creates heatmap overlay surrounding the current location. We will need to query the server to get the actual latitude, longitude, as well as the price.
@@ -312,10 +334,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.001, mCurrentLocation.getLongitude() - 0.0005), 142));
 //        llList.add(new WeightedLatLng(new LatLng(mCurrentLocation.getLatitude() - 0.0012, mCurrentLocation.getLongitude() - 0.0018), 217));
             createHeatmap(llList);
+            return true;
         }else {
             return false;
         }
-        return true;
+
     }
 
     // check for internet connection using the isInternetConnected method, if not connected, show a warning message
@@ -397,7 +420,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
 //        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
 //        mMap.animateCamera(CameraUpdateFactory.zoomTo(25));
-    return true;
+        return true;
     }
 
     @Override
@@ -436,6 +459,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public boolean ScreenPage (View view){
+        this.view = view;
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         return true;
