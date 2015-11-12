@@ -7,18 +7,12 @@ import com.example.rai.myapplication.backend.NearPlacesFinder;
 import com.example.rai.myapplication.backend.OfyService;
 import com.example.rai.myapplication.backend.SalesInformationEndpoint;
 import com.example.rai.myapplication.backend.UserLocationEndpoint;
-import com.example.rai.myapplication.backend.model.SalesData;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.search.GeoPoint;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.Assert.*;
 
@@ -125,7 +119,17 @@ public class unitTests {
     {
         placefinder = new NearPlacesFinder();
 
-        assertNotNull(NearPlacesFinder.buildDocument(0L, "" ,1, new com.google.appengine.api.search.GeoPoint(51.5034070,-0.1275920)));
+        assertNotNull(NearPlacesFinder.buildDocument(0L, "", 1, new GeoPoint(51.5034070, -0.1275920)));
 
+    }
+
+    //Checks to see if the getPlaces returns correctly.
+    //Returns null pointer.
+    @Test
+    public void checkGetPlaces()
+    {
+        placefinder = new NearPlacesFinder();
+
+        assertNotNull(placefinder.getPlaces(new GeoPt(3.6f, 1.2f), 100000L, 1));
     }
 }
