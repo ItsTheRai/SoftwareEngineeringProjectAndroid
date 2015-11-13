@@ -25,8 +25,10 @@ import java.util.List;
 public class NearPlacesFinder {
 
     private static final double EARTH_RADIUS = 6378.1;
-    //private NearPlacesFinder(){
-    //}
+    private static final int RESULTS_LIMIT = 1000;
+
+    public NearPlacesFinder(){
+    }
 
     /**
      * Returns the Places index in the datastore.
@@ -97,6 +99,7 @@ public class NearPlacesFinder {
         // Build the QueryOptions
         QueryOptions options = QueryOptions.newBuilder()
                 .setSortOptions(sortOptions)
+                .setLimit(RESULTS_LIMIT)
                 .build();
         // Query string
         String searchQuery = "distance(place_location, " + geoPoint + ") < "
@@ -109,9 +112,9 @@ public class NearPlacesFinder {
         List<SalesDataShort> places = new ArrayList<>();
 
         for (ScoredDocument document : results) {
-            if (places.size() >= resultCount) {
-                break;
-            }
+//            if (places.size() >= resultCount) {
+//                break;
+//            }
 
             GeoPoint p = document.getOnlyField("place_location").getGeoPoint();
 

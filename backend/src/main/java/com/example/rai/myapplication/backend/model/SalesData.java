@@ -14,7 +14,8 @@ public class SalesData {
     @Id
     private Long id;
     private String County;
-    private DateTime Datetime;
+    //cant persist datetime object
+    private String Datetime;
     private String District;
     private String Duration;
     private double Latitude;
@@ -34,7 +35,7 @@ public class SalesData {
     public SalesData() {
     }
 
-    public SalesData(Long id, String county, DateTime datetime, String district, String duration, float latitude, String locality, float longitude, String old_or_new, String PAON, String postcode, int price, String property_type, String SAON, String street, String town, String uniqueRef, String PDD_category) {
+    public SalesData(Long id, String county, String datetime, String district, String duration, float latitude, String locality, float longitude, String old_or_new, String PAON, String postcode, int price, String property_type, String SAON, String street, String town, String uniqueRef, String PDD_category) {
         this.id = id;
         County = county;
         Datetime = datetime;
@@ -79,11 +80,11 @@ public class SalesData {
         Price = price;
     }
 
-    public DateTime getDatetime() {
+    public String getDatetime() {
         return Datetime;
     }
 
-    public void setDatetime(DateTime datetime) {
+    public void setDatetime(String datetime) {
         Datetime = datetime;
     }
 

@@ -1,19 +1,19 @@
-package com.uni.rai.softwareengineeringproject.tasks;
+ package com.uni.rai.softwareengineeringproject.tasks;
 
-import android.content.Context;
-import android.location.Location;
-import android.os.AsyncTask;
+        import android.content.Context;
+        import android.location.Location;
+        import android.os.AsyncTask;
 
-import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
+        import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+        import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
+        import com.google.api.client.extensions.android.http.AndroidHttp;
+        import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+        import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+        import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
-import java.io.IOException;
+        import java.io.IOException;
 
 /**
  * Created by rai on 21/10/15.
@@ -21,7 +21,7 @@ import java.io.IOException;
 
 
 public class UpdateMapTask extends AsyncTask<Object, Void, SalesDataShortCollection> {
-//    private static long range =1000000000;
+    //    private static long range =1000000000;
     private static final int NUMBER_OF_RESULTS = 10000;
     private static SalesInformationApi myApiService = null;
     private Context context;
@@ -72,7 +72,7 @@ public class UpdateMapTask extends AsyncTask<Object, Void, SalesDataShortCollect
 //                                                       }
 //                    );
 //
-        myApiService = builder.build();
+            myApiService = builder.build();
         }
         SalesDataShortCollection result = null;
         try {
@@ -90,3 +90,4 @@ public class UpdateMapTask extends AsyncTask<Object, Void, SalesDataShortCollect
 //            Toast.makeText(context, q.getWho() + " : " + q.getWhat(), Toast.LENGTH_LONG).show();
 //        }
 }
+
