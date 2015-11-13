@@ -67,12 +67,21 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
         mContext = getInstrumentation().getTargetContext().getApplicationContext();
     }
 
+
+    /**
+     * Check if the maps activity is exist
+     *
+     */
+
     @SmallTest
     public void testActivityExists() {
         assertNotNull(mapsActivity);
     }
 
-
+    /**
+     * return false if is not connected to the internet, true otherwise
+     *
+     */
     @SmallTest
     public void testConnectionTest() {
         ConnectivityManager connectivity = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -87,7 +96,10 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
         }
     }
 
-
+    /**
+     * User attempts to load the map activity with location(GPS) turned off.
+     *
+     */
     @SmallTest
     public void testGPS() {
         LocationManager locManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
@@ -101,7 +113,7 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
     }
 
     /**
-     * Review later
+     * testing request location udates from google
      *
      */
     @SmallTest
@@ -110,6 +122,11 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
 
     }
 
+
+    /**
+     * testing a callback to google and set parameters for frequency
+     * and also the the highest possible accuracy from device
+     */
     @SmallTest
     public void testcreateLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -124,6 +141,10 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
     }
 
 
+    /**
+     * testing once a connection is established with the google server
+     *
+     */
     @SmallTest
     public void testonConnected() {
 
@@ -155,12 +176,17 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
 
     }
 
+    /**
+     * Google Map is loaded after initial checks are carried out.
+     */
     @SmallTest
     public void testonMapReady() throws ExecutionException, InterruptedException {
         MapFragment mMap = (MapFragment) mapsActivity.getFragmentManager()
                 .findFragmentById(R.id.map);
         assertNotNull(mMap);
     }
+
+
 /**
  @SmallTest
  public void testScreenPage (){
