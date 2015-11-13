@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 public class unitTests {
 
     IndexingServlet indexingServlet;
-    NearPlacesFinder placefinder;
+    NearPlacesFinder placeFinder;
     OfyService ofy;
     SalesInformationEndpoint sales;
     UserLocationEndpoint user;
@@ -60,8 +60,8 @@ public class unitTests {
     public void checkNearPlaces()
     {
         System.out.println("checkNearPlaces() Test");
-        placefinder = new NearPlacesFinder();
-        assertNotNull(placefinder);
+        placeFinder = new NearPlacesFinder();
+        assertNotNull(placeFinder);
 
     }
 
@@ -137,7 +137,7 @@ public class unitTests {
     public void checkBuildDocument()
     {
         System.out.println("checkBuildDocument() Test");
-        placefinder = new NearPlacesFinder();
+        placeFinder = new NearPlacesFinder();
 
         assertNotNull(NearPlacesFinder.buildDocument(0L, "", 1, new GeoPoint(51.5034070, -0.1275920)));
 
@@ -160,8 +160,8 @@ public class unitTests {
     public void checkGetDistance()
     {
         System.out.println("checkGetDistance() Test");
-        placefinder= new NearPlacesFinder();
+        placeFinder= new NearPlacesFinder();
 
-        assertNotNull(placefinder.getDistanceInKm(51.5034070, -0.1275920, 50.8646070,-0.0828680));
+        assertNotNull(placeFinder.getDistanceInKm(51.5034070, -0.1275920, 50.8646070,-0.0828680));
     }
 }
