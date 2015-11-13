@@ -7,15 +7,18 @@ import com.example.rai.myapplication.backend.NearPlacesFinder;
 import com.example.rai.myapplication.backend.OfyService;
 import com.example.rai.myapplication.backend.SalesInformationEndpoint;
 import com.example.rai.myapplication.backend.UserLocationEndpoint;
-import com.google.appengine.api.datastore.GeoPt;
+import com.example.rai.myapplication.backend.model.SalesDataShort;
 import com.google.appengine.api.search.GeoPoint;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class unitTests {
 
@@ -164,4 +167,28 @@ public class unitTests {
 
         assertNotNull(placeFinder.getDistanceInKm(51.5034070, -0.1275920, 50.8646070,-0.0828680));
     }
+
+    @Test
+    public void testSalesGetIDBounds() throws Exception {
+        //Finding whether or not the correct SalesData list has been returned (within the right KM distance).
+        //Important to note that both search range in KM & house return limit are both constrictions on data return.
+        //Both can override each other, which is fine within the context of this program.
+        //Should return
+        sales = new SalesInformationEndpoint();
+        List<SalesDataShort> methodOutput = sales.getPointsInRange("53.724276876242600", "-1.269308676070620", 2, 1000);
+
+        //INSIDE 2KM AREA = Vale Walk, Knottingley (53.7075914,-1.2656739000000243)
+        //OUTSIDE 2KM AREA = Cleveland Avenue, Knottingley (53.70670579999999,-1.2518277000000353)
+
+        for(SalesDataShort sales : methodOutput){
+
+            if(sales.getLocationGeo().getLatitude() == 53.7075914 && sales.getLocationGeo().getLongitude() == -1.2656739000000243){
+                assertTrue(1==1);
+            }
+            if(sales.getLocationGeo().getLatitude() == 53.70670579999999 && sales.getLocationGeo().getLongitude() == -1.2518277000000353) {
+                assertFalse(1==1);
+            }
+        }
+    }
+
 }
