@@ -36,16 +36,28 @@ public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivi
         mainActivity = getActivity();
     }
 
+
+    /**
+     * Check if the main activity is exist
+     */
     @SmallTest
     public void testActivityExists() {
         assertNotNull(mainActivity);
     }
 
+
+    /**
+     * Check to see the button is exist
+     */
     @SmallTest
     public void testButtonExists() {
         Button button = (Button) mainActivity.findViewById(R.id.button);
         assertNotNull(button);
     }
+
+    /**
+     * when you click on the button the button should work
+     */
     @SmallTest
     public void testStartActivity()throws Exception {
         ActivityMonitor activityMonitor = getInstrumentation().addMonitor(MapsActivity.class.getName(), null, false);
