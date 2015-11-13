@@ -39,6 +39,7 @@ public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivi
 
     /**
      * Check if the main activity is exist
+     *
      */
     @SmallTest
     public void testActivityExists() {
@@ -48,6 +49,7 @@ public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivi
 
     /**
      * Check to see the button is exist
+     *
      */
     @SmallTest
     public void testButtonExists() {
@@ -57,6 +59,7 @@ public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivi
 
     /**
      * when you click on the button the button should work
+     *
      */
     @SmallTest
     public void testStartActivity()throws Exception {
