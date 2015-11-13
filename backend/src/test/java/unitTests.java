@@ -7,12 +7,12 @@ import com.example.rai.myapplication.backend.NearPlacesFinder;
 import com.example.rai.myapplication.backend.OfyService;
 import com.example.rai.myapplication.backend.SalesInformationEndpoint;
 import com.example.rai.myapplication.backend.UserLocationEndpoint;
+import com.google.appengine.api.datastore.GeoPt;
+import com.google.appengine.api.search.GeoPoint;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 
 import static org.junit.Assert.*;
 
@@ -112,4 +112,33 @@ public class unitTests {
         assertNull(user);
     }
     **/
+
+    //Checks that CheckBuildDocument() returns Long, String, Int, GeoPoint
+    @Test
+    public void checkBuildDocument()
+    {
+        placefinder = new NearPlacesFinder();
+
+        assertNotNull(NearPlacesFinder.buildDocument(0L, "", 1, new GeoPoint(51.5034070, -0.1275920)));
+
+    }
+
+    //Checks to see if the getPlaces returns correctly.
+    //Returns null pointer.
+    @Test
+    public void checkGetPlaces()
+    {
+        placefinder = new NearPlacesFinder();
+
+        assertNotNull(placefinder.getPlaces(new GeoPt(51f, -1f), 10000000L, 1));
+    }
+
+    //Check to see if the distance between two locations return something.
+    @Test
+    public void checkGetDistance()
+    {
+        placefinder= new NearPlacesFinder();
+
+        assertNotNull(placefinder.getDistanceInKm(51.5034070, -0.1275920, 50.8646070,-0.0828680));
+    }
 }
