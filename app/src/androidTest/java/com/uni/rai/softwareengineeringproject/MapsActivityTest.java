@@ -70,6 +70,7 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
 
     /**
      * Check if the maps activity is exist
+     *
      */
 
     @SmallTest
@@ -79,6 +80,7 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
 
     /**
      * return false if is not connected to the internet, true otherwise
+     *
      */
     @SmallTest
     public void testConnectionTest() {

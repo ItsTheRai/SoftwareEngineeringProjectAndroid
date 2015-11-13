@@ -59,7 +59,6 @@ public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivi
 
     /**
      * when you click on the button the button should work
-     *
      */
     @SmallTest
     public void testStartActivity()throws Exception {
