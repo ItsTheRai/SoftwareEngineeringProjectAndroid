@@ -49,22 +49,23 @@ public class NearPlacesFinder {
      */
     public static Document buildDocument(
             final Long placeId, final String postcode,
-            final long priceInPouds, final GeoPoint location) {
+            final double priceInPouds, final GeoPoint location) {
         GeoPoint geoPoint = new GeoPoint(location.getLatitude(),
                 location.getLongitude());
 
         Document.Builder builder = Document.newBuilder()
                 .addField(Field.newBuilder().setName("place_location")
-                        .setGeoPoint(geoPoint))
+                        .setText("aaaaaaaaaaa"))
+//                        .setGeoPoint(geoPoint))
 
-                .addField(Field.newBuilder().setName("id")
-                        .setText(placeId.toString()))
+//                .addField(Field.newBuilder().setName("id")
+//                        .setText(placeId.toString()))
+//
+//                .addField(Field.newBuilder().setName("postcode").setText(postcode))
+//
+//                .addField(Field.newBuilder().setName("price")
+//                                .setText(String.valueOf(priceInPouds))
 
-                .addField(Field.newBuilder().setName("postcode").setText(postcode))
-
-                .addField(Field.newBuilder().setName("price")
-                                .setText(String.valueOf(priceInPouds))
-                )
          ;
         return builder.build();
     }

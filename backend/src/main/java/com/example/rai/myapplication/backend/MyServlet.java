@@ -37,7 +37,7 @@ public class    MyServlet extends HttpServlet {
     public final void doGet(final HttpServletRequest req,
                             final HttpServletResponse resp) throws IOException {
         resp.setContentType("text/plain");
-        removeAllDocumentsFromIndex();
+//        removeAllDocumentsFromIndex();
 //        if (buildSearchIndexForPlaces()=="null") {
         resp.getWriter().println(buildSearchIndexForPlaces());
         return;
@@ -53,31 +53,33 @@ public class    MyServlet extends HttpServlet {
     private String buildSearchIndexForPlaces() {
 
 
-        removeAllDocumentsFromIndex();
+//        removeAllDocumentsFromIndex();
 
         Cursor cursor = null;
         int cnt = 0;
-        while (true) {
+//        while (true) {
             Index index = NearPlacesFinder.getIndex();
-            Query<SalesData> query = ofy().load().type(SalesData.class).chunk(100); // should i call 'chunk' or not?
-            if (cursor != null) { // for first time cursor is null
-//                 for second (and more) time, cursor is not null
-                query = query.startAt(cursor);
-            }
-            query = query.limit(100);
+//            Query<SalesData> query = ofy().load().type(SalesData.class).chunk(100); // should i call 'chunk' or not?
+//            if (cursor != null) { // for first time cursor is null,for second (and more) time, cursor is not null
+//                query = query.startAt(cursor);
+//            }
+//            query = query.limit(100);
+//
+//            final QueryResultIterator<SalesData> it = query.iterator();
+//            if (!it.hasNext()) {
+//                break;
+//            }
+//
+//            while (it.hasNext()) {
+//                final SalesData place = it.next();
+//                Document placeAsDocument = NearPlacesFinder.buildDocument(
+//                        place.getId(), place.getPostcode(), place.getPrice(),
+//                        new GeoPoint(place.getLatitude(),place.getLongitude())
+//                );
 
-            final QueryResultIterator<SalesData> it = query.iterator();
-            if (!it.hasNext()) {
-                break;
-            }
 
-            while (it.hasNext()) {
-                final SalesData place = it.next();
-                Document placeAsDocument = NearPlacesFinder.buildDocument(
-                        place.getId(), place.getPostcode(), place.getPrice(),
-                        new GeoPoint(place.getLatitude(),place.getLongitude())
-                );
-
+            //
+            Document placeAsDocument = NearPlacesFinder.buildDocument(123L,"abbab",321L,new GeoPoint(50.0D,-1.0D));
                 try {
                     index.put(placeAsDocument);
                 } catch (DatastoreTimeoutException e){
@@ -91,7 +93,8 @@ public class    MyServlet extends HttpServlet {
                     }
                 }
                 catch(com.googlecode.objectify.LoadException e){
-                    continue;
+//                    continue
+                    return "error";
                 }
                 catch (Exception e){
                     return String.valueOf(cnt);
@@ -99,13 +102,13 @@ public class    MyServlet extends HttpServlet {
 //                final SalesData entity = it.next();
                 cnt++; // ok, here we are do nothig! just incrementing 'cnt'
 
-            }
+//            }
 
             // take current cursor before next iteration
 
-            cursor = it.getCursor();
-            ofy().clear();
-        }
+//            cursor = it.getCursor();
+//            ofy().clear();
+//        }
         return "done";
     }
 
@@ -142,7 +145,7 @@ public class    MyServlet extends HttpServlet {
             throws IOException {
         String name = req.getParameter("act");
         resp.setContentType("text/plain");
-        removeAllDocumentsFromIndex();
+//        removeAllDocumentsFromIndex();
 //        if (buildSearchIndexForPlaces()=="null") {
         resp.getWriter().println(buildSearchIndexForPlaces());
         return;

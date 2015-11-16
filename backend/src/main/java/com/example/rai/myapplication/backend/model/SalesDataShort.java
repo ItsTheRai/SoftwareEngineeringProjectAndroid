@@ -9,7 +9,7 @@ import com.googlecode.objectify.annotation.Id;
  */
 public class SalesDataShort {
     Long id;
-    int price;
+    double price;
     GeoPt locationGeo;
     double distanceInKilometers;
 
@@ -31,7 +31,7 @@ public class SalesDataShort {
         this.id = id;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 

@@ -24,7 +24,7 @@ public class SalesData {
     private String Old_or_new;
     private String PAON;
     private String Postcode;
-    private long Price;
+    private double Price;
     private String Property_type;
     private String SAON;
     private String Street;
@@ -72,7 +72,7 @@ public class SalesData {
         UniqueRef = uniqueRef;
     }
 
-    public long getPrice() {
+    public double getPrice() {
         return Price;
     }
 
