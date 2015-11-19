@@ -69,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
     private static final long LOCATION_REQUEST_INTERVAL = 20000;//ms
     private static final long FASTEST_LOCATION_INTERVAL = 20000;//ms
     private static final double EARTH_RADIUS = 6378.1;
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    public GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
 //    private Location mLastLocation;

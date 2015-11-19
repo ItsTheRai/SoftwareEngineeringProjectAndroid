@@ -50,6 +50,18 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
     private GoogleMap mMap;
     private LatLng coordinates;
     private Menu menu;
+    private static final double EARTH_RADIUS = 6378.1;
+    private double latitude1 = 0;
+    private double longitude1 = 0;
+    private double latitude2 = 0;
+    private double longitude2 = 0;
+
+
+
+
+
+
+
 
 
 
@@ -186,13 +198,33 @@ public class MapsActivityTest  extends ActivityInstrumentationTestCase2<MapsActi
         assertNotNull(mMap);
     }
 
+    @SmallTest
+    public void testgetDistanceInKm() {
+
+        double lat1 = Math.toRadians(latitude1);
+        double lat2 = Math.toRadians(latitude2);
+        double long1 = Math.toRadians(longitude1);
+        double long2 = Math.toRadians(longitude2);
+
+        assertEquals(mapsActivity.getDistanceInKm(latitude1,longitude1,latitude2,longitude2), EARTH_RADIUS * Math
+                .acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1)
+                        * Math.cos(lat2) * Math.cos(Math.abs(long1 - long2))));
+
+    }
+
+
+
+
+
+
+
 
 /**
  @SmallTest
  public void testScreenPage (){
  assertEquals(mapsActivity.ScreenPage(mapsActivity.view), true);
  }
- /**
+
 
  @SmallTest
  public  void testonCreateOptionsMenu() {
