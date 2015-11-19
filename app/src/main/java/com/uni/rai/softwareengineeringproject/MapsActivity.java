@@ -169,7 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
                 return true;
 
             default:
-                return true;
+                return super.onOptionsItemSelected(item);
         }
     }
 
