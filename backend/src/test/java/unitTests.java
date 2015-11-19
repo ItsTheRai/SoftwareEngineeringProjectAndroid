@@ -2,7 +2,8 @@
  * Created by Luke on 08/11/2015.
  */
 
-import com.example.rai.myapplication.backend.IndexingServlet;
+//import com.example.rai.myapplication.backend.IndexingServlet;
+import com.example.rai.myapplication.backend.MyServlet;
 import com.example.rai.myapplication.backend.NearPlacesFinder;
 import com.example.rai.myapplication.backend.OfyService;
 import com.example.rai.myapplication.backend.SalesInformationEndpoint;
@@ -22,7 +23,8 @@ import static org.junit.Assert.assertTrue;
 
 public class unitTests {
 
-    IndexingServlet indexingServlet;
+    //IndexingServlet indexingServlet;
+    MyServlet myServlet;
     NearPlacesFinder placeFinder;
     OfyService ofy;
     SalesInformationEndpoint sales;
@@ -45,8 +47,8 @@ public class unitTests {
     @Test
     public void checkIndexServlet() {
         System.out.println("checkIndexServlet() Test");
-        indexingServlet = new IndexingServlet();
-        assertNotNull(indexingServlet);
+        myServlet = new MyServlet();
+        assertNotNull(myServlet);
 
     }
     /**
