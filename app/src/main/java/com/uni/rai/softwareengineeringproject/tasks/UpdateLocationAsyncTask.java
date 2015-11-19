@@ -122,7 +122,7 @@ public class UpdateLocationAsyncTask extends AsyncTask<Void, Void, Void> {
     a.setPaon("PAON");
     a.setPostcode("POSTCODE");
     a.setPddCategory("pdd");
-    a.setPrice(321321321L);
+    a.setPrice(321321321.0);
     a.setPropertyType("PriopertyType");
     a.setSaon("SAON");
     a.setStreet("Street");
