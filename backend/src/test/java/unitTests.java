@@ -2,12 +2,14 @@
  * Created by Luke on 08/11/2015.
  */
 
-import com.example.rai.myapplication.backend.IndexingServlet;
+//import com.example.rai.myapplication.backend.IndexingServlet;
+import com.example.rai.myapplication.backend.MyServlet;
 import com.example.rai.myapplication.backend.NearPlacesFinder;
 import com.example.rai.myapplication.backend.OfyService;
 import com.example.rai.myapplication.backend.SalesInformationEndpoint;
 import com.example.rai.myapplication.backend.UserLocationEndpoint;
 import com.example.rai.myapplication.backend.model.SalesDataShort;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.search.GeoPoint;
 
 import org.junit.After;
@@ -22,7 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 public class unitTests {
 
-    IndexingServlet indexingServlet;
+    //IndexingServlet indexingServlet;
+    MyServlet myServlet;
     NearPlacesFinder placeFinder;
     OfyService ofy;
     SalesInformationEndpoint sales;
@@ -45,8 +48,8 @@ public class unitTests {
     @Test
     public void checkIndexServlet() {
         System.out.println("checkIndexServlet() Test");
-        indexingServlet = new IndexingServlet();
-        assertNotNull(indexingServlet);
+        myServlet = new MyServlet();
+        assertNotNull(myServlet);
 
     }
     /**
@@ -148,19 +151,20 @@ public class unitTests {
 
     //Checks to see if the getPlaces returns correctly.
     //Returns null pointer - cannot access Google app engine.
-    /**
+
     @Test
     public void checkGetPlaces()
     {
-        placefinder = new NearPlacesFinder();
+        placeFinder = new NearPlacesFinder();
 
-        assertNotNull(placefinder.getPlaces(new GeoPt(51f, -1f), 10000000L, 1));
+        assertNotNull(placeFinder.getPlaces(new GeoPt(51f, -1f), 10000000L, 1));
     }
-    **/
+
 
     //Check to see if the distance between two locations returns.
     @Test
     public void checkGetDistance()
+
     {
         System.out.println("checkGetDistance() Test");
         placeFinder= new NearPlacesFinder();
