@@ -55,6 +55,10 @@ import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
 import android.widget.Toast;
 import android.view.MenuItem;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,9 +70,10 @@ import android.view.Menu;
 
 public class MapsActivity extends FragmentActivity implements OnTaskCompleted, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
-    private static final long LOCATION_REQUEST_INTERVAL = 20000;//ms
-    private static final long FASTEST_LOCATION_INTERVAL = 20000;//ms
+    private static final long LOCATION_REQUEST_INTERVAL = 10;//ms
+    private static final long FASTEST_LOCATION_INTERVAL = 10;//ms
     private static final double EARTH_RADIUS = 6378.1;
+    private static final int TEN_SECONDS = 10 * 1000;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
@@ -154,18 +159,22 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
                 item.setChecked(true);
-                Toast.makeText(getApplicationContext(),
-                        "Heat Map selected",
-                        Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(),
+//                        "Heat Map selected",
+//                        Toast.LENGTH_LONG).show();
                 return true;
             case R.id.normal_map:
                 clearHeatmap(); // clear the current heatmap
                 item.setChecked(true);
-                Toast.makeText(getApplicationContext(),
-                        "Normal map selected",
-                        Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(),
+//                        "Normal map selected",
+//                        Toast.LENGTH_LONG).show();
                 return true;
 
             default:
@@ -257,21 +266,28 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
         isLockedOn=false;
 //        showUser();
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+
             //add listener to update camera when the user zooms in/out
             @Override
             public void onCameraChange(CameraPosition pos) {
                 //TODO uncomment method
                 float minZoom = 15.0f;
-                if(pos.zoom<minZoom){
-                    mMap.animateCamera((CameraUpdateFactory.zoomTo(minZoom)));
-                }
+                if (!firstRequest) {
+                    if (pos.zoom < minZoom) {
+                        mMap.animateCamera((CameraUpdateFactory.zoomTo(minZoom)));
+                    }
 //                pos.target
-                try {
-                    updateHeatmap();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+//                    try {
+//                        updateHeatmap();
+//                    } catch (ExecutionException e) {
+//                        e.printStackTrace();
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    } catch (ClassNotFoundException e) {
+//                        e.printStackTrace();
+//                    } catch (SQLException e) {
+//                        e.printStackTrace();
+//                    }
                 }
             }
         });
@@ -298,7 +314,7 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
     }
 
     public boolean  showUser() {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
 //        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         return true;
@@ -315,12 +331,12 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
         if (mCurrentLocation == null) {
             checkGPS();
         }
-        else {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+//        else {
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
-//            mMap.getCameraPosition().zoom;
-        }
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(20.0f));
+//          mMap.getCameraPosition().zoom;
+//        }
     }
 
     public boolean clearHeatmap(){
@@ -332,14 +348,27 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
         return true;
     }
 
-    public void updateHeatmap() throws ExecutionException, InterruptedException {
+    public void updateHeatmap() throws ExecutionException, InterruptedException, SQLException, ClassNotFoundException {
+
         //calculate necassary range to load data from screen size and zoom
 //        if(currentSalesData.getItems()!=null){
         double rangeInKm = getRange(mMap);
-        if (rangeInKm > currentRangeInKm) {
+
+        /////////////////
+        Location location =mCurrentLocation;
+        //create rectangel for query
+        double lon1 =  (location.getLongitude()-rangeInKm/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
+        double lon2 =  (location.getLongitude()+rangeInKm/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
+        double lat1 =  (location.getLatitude()-(rangeInKm/69));
+        double lat2 =  (location.getLatitude()+(rangeInKm/69));
+///////////////////////////////////////////////////////////////////////////////////
+
+        //////////////////
+//        if(false) {
+            if (rangeInKm > currentRangeInKm) {
                 currentRangeInKm = rangeInKm;
                 //query DB with async taks
-                SalesDataShortCollection data = getDataInRange(mMap.getMyLocation(), rangeInKm);
+                SalesDataShortCollection data = getDataInRange(mCurrentLocation, rangeInKm);
                 if (data != null) {
                     if (!data.isEmpty()) {
                         List<SalesDataShort> places = data.getItems();
@@ -356,8 +385,7 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
 //                                    if (!items.contains(d)) {
 //                                        items.add(d);
 //                                    }
-                                }
-                                else if(!currentSalesData.contains(d)) {
+                                } else if (!currentSalesData.contains(d)) {
                                     currentSalesData.add(d);
                                 }
                             }
@@ -378,9 +406,10 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
 //        asyncTask.execute(mCurrentLocation,currentRangeInKm*1.5);
 
 //            new UpdateMapTask(this).execute(mCurrentLocation,currentRangeInKm*1.5);
+                }
             }
-        }
-        drawHeatmapOverlay();
+//        }
+        drawHeatmapOverlay(); //TODo set this back to normal
     }
 
     public void drawHeatmapOverlay(){
@@ -519,41 +548,78 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
     @Override
     //Update as the device is moving
     public void onLocationChanged(Location location) {
-        mCurrentLocation = location; //update current location
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
-
+        if(isBetterLocation(location)) {//if new location better than the last or its been a while
+            mCurrentLocation = location; //update current location
+//            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
+        }
         if (mCurrentLocation == null) {
             checkGPS();
         }
         if(firstRequest) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
             firstRequest=false;
+//            try {
+//                updateHeatmap();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ClassNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
         }
-        else {
-            if (isLockedOn) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-            }
-        }
-//        GeoPt pt = new GeoPt();
-//        new UpdateMapTask().execute()
-        //push current location
-        //        new UpdateUserLocation().execute(new Pair<Context, Location>(this, location));
-
-
         if(isLockedOn) {
-            //map centers in on the current location
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-//            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-        }
+             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));         }
     }
 
+    /** Determines whether one Location reading is better than the current Location fix
+     * @param location  The new Location that you want to evaluate
+     */
+    protected boolean isBetterLocation(Location location) {
+        Location currentBestLocation= mCurrentLocation;
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
+        }
+
+        // Check whether the new location fix is newer or older
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > TEN_SECONDS;
+        boolean isSignificantlyOlder = timeDelta < -TEN_SECONDS;
+        boolean isNewer = timeDelta > 0;
+
+        // If it's been more than two minutes since the current location, use the new location
+        // because the user has likely moved
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be worse
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        // Determine location quality using a combination of timeliness and accuracy
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate) {
+            return true;
+        }
+        return false;
+    }
+    
     //  create heatmap using the list taken from a parameter
     public boolean createHeatmap(ArrayList<WeightedLatLng> pointsList) {
-        HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).build();
+        HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).radius(50).build();
         tOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tProvider));
         return true;
     }

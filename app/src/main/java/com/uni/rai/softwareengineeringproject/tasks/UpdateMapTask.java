@@ -8,14 +8,19 @@
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
         import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
+        import com.google.android.gms.maps.model.VisibleRegion;
         import com.google.api.client.extensions.android.http.AndroidHttp;
         import com.google.api.client.extensions.android.json.AndroidJsonFactory;
         import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
         import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
         import java.io.IOException;
+        import java.sql.Connection;
+        import java.sql.DriverManager;
+        import java.sql.ResultSet;
+        import java.sql.SQLException;
 
-/**
+ /**
  * Created by rai on 21/10/15.
  */
 
@@ -40,22 +45,75 @@ public class UpdateMapTask extends AsyncTask<Object, Void, SalesDataShortCollect
     //not type safe but gets the job done
     protected SalesDataShortCollection doInBackground(Object... params) {
         Location location = (Location)params[0];
-        double distanceInKm = (double) params[1];
-        float longitude;
-        float latitude;
+        double distanceInKm =  (double)params[1]; ///////////////////////////////////////////
+//        double rangeInKm=0.5;
+//        double lon1 =  (location.getLongitude()-rangeInKm/1000/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
+//        double lon2 =  (location.getLongitude()+rangeInKm/1000/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
+//        double lat1 =  (location.getLatitude()-(rangeInKm/1000/69));
+//        double lat2 =  (location.getLatitude()+(rangeInKm/1000/69));
+//        String url = null;
+//        try {
+//            Class.forName("com.mysql.jdbc.GoogleDriver");
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        url = "jdbc:google:mysql://software-engineering-1102:final-instance2/sales_data?user=root";
+//        int KM_CONSTANT = 6371;
+//
+//        //create rectangel for query
+//
+//        String poligonString = "'POLYGON(("+lon1+" "+lat1+", "+lon1+" "+lat2+", "+
+//                lon2+" "+lat2+", "+lon2+" "+lat1+", "+lon1+" "+lat1+"))'";
+//
+//        String querySetPolygon = "SET @poly =\n" +
+//                "     'Polygon(("+lon1+" "+lat1+"," +
+//                "                 "+lon2+" "+lat1+"," +
+//                "                 "+lon2+" "+lat2+"," +
+//                "                 "+lon1+" "+lat2+"," +
+//                "                 "+lon1+" "+lat1+"))';";//"SET @bbox = 'POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))';"+
+////                " select Unique_ref, AsText(Coords) FROM SalesData WHERE Intersects(Coords'POLYGON((-1.54324 49.987987, -1.0564 49.987987, -1.0564 50.987987, -1.0564 49.987987, -1.54324 49.987987))' ) );"
+//        String queryDB = "SELECT Unique_ref, AsText(Coords) FROM SalesData WHERE MBRWithin(Coords, GeomFromText(@poly))" +
+//                ";";
+//
+//        Connection conn = null;
+//        try {
+//            conn = DriverManager.getConnection(url);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            conn.createStatement().executeQuery(querySetPolygon);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            ResultSet rs = conn.createStatement().executeQuery(queryDB);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
 
-        if (location == null) {
+        /////////////////////////////////////////////////////////////////////
+
+
+
+
+        //VisibleRegion region = (VisibleRegion)params[2];
+
+        double longitude;
+        double latitude;
+
+//        if (location == null) {
             // This is used to easily simulate a location in the emulator
             // when developing. For real devices deployment,
             // this temporary code should be removed and the function
             // should just return null.
-            longitude = (float) 0.0;
-            latitude = (float) 0.0;
+//            longitude =  0.0f;
+//            latitude =  0.0f;
             // return null;
-        } else {
-            latitude = (float) location.getLatitude();
-            longitude = (float) location.getLongitude();
-        }
+//        } else {
+            latitude =  location.getLatitude();
+            longitude =  location.getLongitude();
+//        }
 
         if(myApiService == null) { // Only do this once
             SalesInformationApi.Builder builder = new SalesInformationApi.Builder(
@@ -76,9 +134,8 @@ public class UpdateMapTask extends AsyncTask<Object, Void, SalesDataShortCollect
         }
         SalesDataShortCollection result = null;
         try {
-            result = myApiService.getPointsInRange( Float.toString(latitude), Float.toString(longitude),
-                    distanceInKm, NUMBER_OF_RESULTS).execute();
-        } catch (IOException e) {
+            result = myApiService.getPointsInRange( latitude, longitude,
+                    distanceInKm, NUMBER_OF_RESULTS).execute();     } catch (IOException e) {
             e.printStackTrace();
         }
         return result;

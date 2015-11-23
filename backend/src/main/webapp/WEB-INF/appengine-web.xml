@@ -4,11 +4,12 @@
     <version>1</version>
     <threadsafe>true</threadsafe>
 
-    <instance-class>B8</instance-class>
-    <manual-scaling>
-        <instances>5</instances>
-    </manual-scaling>
+    <!--<instance-class>B8</instance-class>-->
+    <!--<manual-scaling>-->
+        <!--<instances>5</instances>-->
+    <!--</manual-scaling>-->
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
     </system-properties>
+    <use-google-connector-j>true</use-google-connector-j>
 </appengine-web-app>

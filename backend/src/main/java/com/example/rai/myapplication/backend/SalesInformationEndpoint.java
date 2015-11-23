@@ -16,11 +16,13 @@ import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.GeoPt;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.datastore.QueryResultIterator;
+import com.google.appengine.api.search.GeoPoint;
 import com.googlecode.objectify.cmd.Query;
 
 import static com.example.rai.myapplication.backend.OfyService.ofy;
@@ -69,33 +71,36 @@ public class SalesInformationEndpoint {
     @ApiMethod(
             name ="getPointsInRange",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public List<SalesDataShort> getPointsInRange(@Named("latitude")String latitudeString,
-                                                 @Named("longitude")String longitudeString,
+    public List<SalesDataShort> getPointsInRange(@Named("latitude")double latitudeString,
+                                                 @Named("longitude")double longitudeString,
                                                  @Named("rangeInKilometers") double rangeInKilometers,
-                                                 @Named("maxLength") int maxLength) throws BadRequestException {
+                                                 @Named("maxLength") int maxLength)
+            throws BadRequestException, SQLException, ClassNotFoundException {
         //returns point in range of the user using helper class
-        float latitude;
-        float longitude;
-        GeoPt location;
+
+        double latitude;
+        double longitude;
+//        Location l;
+        GeoPoint location;
         int count = maxLength;
         double rangeInKm = rangeInKilometers;
 
         try {
-            latitude = (float) Double.parseDouble(latitudeString);
+            latitude = latitudeString;
         } catch (Exception e) {
             throw new BadRequestException(
                     "Invalid value of 'latitude' argument");
         }
 
         try {
-            longitude = (float) Double.parseDouble(longitudeString);
+            longitude = longitudeString;
         } catch (Exception e) {
             throw new BadRequestException(
                     "Invalid value of 'longitude' argument");
         }
 
         try {
-            location = new GeoPt(latitude, longitude);
+            location = new GeoPoint(latitude, longitude);
         } catch (Exception e) {
             throw new BadRequestException(
                     "Invalid pair of 'latitude' and 'longitude' arguments");
@@ -104,7 +109,7 @@ public class SalesInformationEndpoint {
         if (rangeInKilometers > MAXIMUM_DISTANCE) {
             rangeInKilometers = MAXIMUM_DISTANCE;
         }
-        List<SalesDataShort> places = NearPlacesFinder.getPlaces(location, rangeInKm*1000, count);
+        List<SalesDataShort> places = NearPlacesFinder.getPlaces(latitude,longitude, rangeInKm*1000, count);
         return places;
     }
 

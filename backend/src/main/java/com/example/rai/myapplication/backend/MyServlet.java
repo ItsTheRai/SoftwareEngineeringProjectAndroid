@@ -18,6 +18,7 @@ import com.google.appengine.api.search.GetResponse;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.PutException;
 import com.google.appengine.api.search.StatusCode;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.cmd.Query;
 
 import java.io.IOException;
@@ -53,62 +54,62 @@ public class    MyServlet extends HttpServlet {
     private String buildSearchIndexForPlaces() {
 
 
-//        removeAllDocumentsFromIndex();
+        removeAllDocumentsFromIndex();
 
         Cursor cursor = null;
         int cnt = 0;
-//        while (true) {
+        while (true) {
             Index index = NearPlacesFinder.getIndex();
-//            Query<SalesData> query = ofy().load().type(SalesData.class).chunk(100); // should i call 'chunk' or not?
-//            if (cursor != null) { // for first time cursor is null,for second (and more) time, cursor is not null
-//                query = query.startAt(cursor);
-//            }
-//            query = query.limit(100);
+//        removeAllDocumentsFromIndex();
+//            Iterable<Key<SalesData>> keys = ofy().load(SalesData.class).filter("startDate !=", null).keys();
+            Query<SalesData> query = ofy().load().type(SalesData.class).chunk(100)
+//                    .filter("Duration!=",null)
+                    ; // should i call 'chunk' or not?
+            if (cursor != null) { // for first time cursor is null,for second (and more) time, cursor is not null
+                query = query.startAt(cursor);
+            }
+            query = query.limit(100);
+
+            final QueryResultIterator<SalesData> it = query.iterator();
+            if (!it.hasNext()) {
+                break;
+            }
 //
-//            final QueryResultIterator<SalesData> it = query.iterator();
-//            if (!it.hasNext()) {
-//                break;
-//            }
-//
-//            while (it.hasNext()) {
-//                final SalesData place = it.next();
-//                Document placeAsDocument = NearPlacesFinder.buildDocument(
-//                        place.getId(), place.getPostcode(), place.getPrice(),
-//                        new GeoPoint(place.getLatitude(),place.getLongitude())
-//                );
+            while (it.hasNext()) {
+
+                final SalesData place = it.next();
+                if (true) {
+//                    String[] tokens = line.split("\",\"");
+//                    tokens.
+                    Document placeAsDocument = NearPlacesFinder.buildDocument(
+                            place.getId(), place.getPrice(),
+                            new GeoPoint(place.getLatitude(), place.getLongitude())
+                    );
 
 
-            //
-            Document placeAsDocument = NearPlacesFinder.buildDocument(123L,"abbab",321L,new GeoPoint(50.0D,-1.0D));
-                try {
-                    index.put(placeAsDocument);
-                } catch (DatastoreTimeoutException e){
-                    return "timeout";
-                }
-                catch (PutException e) {
-                    if (StatusCode.TRANSIENT_ERROR
-                            .equals(e.getOperationResult().getCode())) {
+                    //
+//            Document placeAsDocument = NearPlacesFinder.buildDocument(123L,"abbab",321D,new GeoPoint(50.0D,-1.0D));
+                    try {
+                        index.put(placeAsDocument);
+                    } catch (DatastoreTimeoutException e) {
+                        return "timeout";
+                    } catch (PutException e) {
+                        if (StatusCode.TRANSIENT_ERROR
+                                .equals(e.getOperationResult().getCode())) {
 //                        continue;
-                        return "transiend error";
+                            return "transiend error";
+                        }
                     }
-                }
-                catch(com.googlecode.objectify.LoadException e){
-//                    continue
-                    return "error";
-                }
-                catch (Exception e){
-                    return String.valueOf(cnt);
-                }
 //                final SalesData entity = it.next();
-                cnt++; // ok, here we are do nothig! just incrementing 'cnt'
+                    cnt++; // ok, here we are do nothig! just incrementing 'cnt'
 
-//            }
-
+                }
+            }
             // take current cursor before next iteration
 
-//            cursor = it.getCursor();
-//            ofy().clear();
-//        }
+            cursor = it.getCursor();
+            ofy().clear();
+        }
         return "done";
     }
 

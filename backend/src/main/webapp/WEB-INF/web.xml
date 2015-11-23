@@ -16,23 +16,23 @@
         <url-pattern>/_ah/spi/*</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>MyServlet</servlet-name>
-        <servlet-class>com.example.rai.myapplication.backend.MyServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>MyServlet</servlet-name>
-        <url-pattern>/buildsearchindex</url-pattern>
-    </servlet-mapping>
+    <!--<servlet>-->
+        <!--<servlet-name>MyServlet</servlet-name>-->
+        <!--<servlet-class>com.example.rai.myapplication.backend.MyServlet</servlet-class>-->
+    <!--</servlet>-->
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>MyServlet</servlet-name>-->
+        <!--<url-pattern>/buildsearchindex</url-pattern>-->
+    <!--</servlet-mapping>-->
 
-    <servlet>
-        <servlet-name>TaskRequestServlet</servlet-name>
-        <servlet-class>com.example.rai.myapplication.backend.TaskRequestServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TaskRequestServlet</servlet-name>
-        <url-pattern>/hello</url-pattern>
-    </servlet-mapping>
+    <!--<servlet>-->
+        <!--<servlet-name>TaskRequestServlet</servlet-name>-->
+        <!--<servlet-class>com.example.rai.myapplication.backend.TaskRequestServlet</servlet-class>-->
+    <!--</servlet>-->
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>TaskRequestServlet</servlet-name>-->
+        <!--<url-pattern>/hello</url-pattern>-->
+    <!--</servlet-mapping>-->
 
     <servlet>
         <servlet-name>RemoteApi</servlet-name>

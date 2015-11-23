@@ -8,7 +8,7 @@ import com.googlecode.objectify.annotation.Id;
  * Created by rai on 03/11/15.
  */
 public class SalesDataShort {
-    Long id;
+    String id;
     double price;
     GeoPt locationGeo;
     double distanceInKilometers;
@@ -16,18 +16,18 @@ public class SalesDataShort {
     public SalesDataShort(){
     }
 
-    public SalesDataShort(Long id, int price, GeoPt locationGeo, double distanceInKilometers) {
+    public SalesDataShort(String id, int price, GeoPt locationGeo, double distanceInKilometers) {
         this.id = id;
         this.price = price;
         this.locationGeo = locationGeo;
         this.distanceInKilometers = distanceInKilometers;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -35,7 +35,7 @@ public class SalesDataShort {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
