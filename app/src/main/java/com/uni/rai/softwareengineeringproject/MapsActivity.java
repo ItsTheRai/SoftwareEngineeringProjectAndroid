@@ -31,8 +31,8 @@ import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -55,6 +55,7 @@ import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
 import android.widget.Toast;
 import android.view.MenuItem;
 
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,17 +65,18 @@ import java.util.concurrent.ExecutionException;
 import android.view.Menu;
 
 
-public class MapsActivity extends FragmentActivity implements OnTaskCompleted, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
     private static final long LOCATION_REQUEST_INTERVAL = 20000;//ms
     private static final long FASTEST_LOCATION_INTERVAL = 20000;//ms
     private static final double EARTH_RADIUS = 6378.1;
+    private static final int TEN_SECONDS = 10 * 1000;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG = MapsActivity.class.getSimpleName();
 //    private Location mLastLocation;
 
-    private List<SalesDataShort> currentSalesData;
+    private List<WeightedLatLng> currentSalesData;
 
     private Location mCurrentLocation;
     private String mLastUpdateTime;
@@ -94,7 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
         //set tracking flag
         firstRequest=true;
         isLockedOn = false;currentRangeInKm=0.0;
-        currentSalesData = new ArrayList<SalesDataShort>();
+        currentSalesData = new ArrayList<>();
 
             //since API 23, need to ask for user permission to use location
             //so create a check and dialog box
@@ -261,29 +263,26 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
         isLockedOn=false;
 //        showUser();
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-
             //add listener to update camera when the user zooms in/out
             @Override
             public void onCameraChange(CameraPosition pos) {
                 //TODO uncomment method
-                float minZoom = 15.0f;
-                if (!firstRequest) {
-                    if (pos.zoom < minZoom) {
-                        mMap.animateCamera((CameraUpdateFactory.zoomTo(minZoom)));
-                    }
-//                pos.target
-//                    try {
-//                        updateHeatmap();
-//                    } catch (ExecutionException e) {
-//                        e.printStackTrace();
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    } catch (ClassNotFoundException e) {
-//                        e.printStackTrace();
-//                    } catch (SQLException e) {
-//                        e.printStackTrace();
-//                    }
+                float minZoom = 10.0f;
+                if(pos.zoom<minZoom){
+                    mMap.animateCamera((CameraUpdateFactory.zoomTo(minZoom)));
                 }
+//                pos.target
+//                try {
+//                    updateHeatmap();
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (ClassNotFoundException e) {
+//                    e.printStackTrace();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
             }
         });
 
@@ -309,7 +308,7 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
     }
 
     public boolean  showUser() {
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
 //        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         return true;
@@ -352,10 +351,10 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
         /////////////////
         Location location =mCurrentLocation;
         //create rectangel for query
-        double lon1 =  (location.getLongitude()-rangeInKm/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
-        double lon2 =  (location.getLongitude()+rangeInKm/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
-        double lat1 =  (location.getLatitude()-(rangeInKm/69));
-        double lat2 =  (location.getLatitude()+(rangeInKm/69));
+//        double lon1 =  (location.getLongitude()-rangeInKm/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
+//        double lon2 =  (location.getLongitude()+rangeInKm/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
+//        double lat1 =  (location.getLatitude()-(rangeInKm/69));
+//        double lat2 =  (location.getLatitude()+(rangeInKm/69));
 ///////////////////////////////////////////////////////////////////////////////////
 
         //////////////////
@@ -363,31 +362,32 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
             if (rangeInKm > currentRangeInKm) {
                 currentRangeInKm = rangeInKm;
                 //query DB with async taks
-                SalesDataShortCollection data = getDataInRange(mCurrentLocation, rangeInKm);
-                if (data != null) {
-                    if (!data.isEmpty()) {
-                        List<SalesDataShort> places = data.getItems();
+
+                currentSalesData = getDataInRange(mCurrentLocation, rangeInKm);
+//                if (data != null) {
+//                    if (!data.isEmpty()) {
+//                        List<SalesDataShort> places = data.getItems();
                         //check if matches found
-                        if (places != null) {
+                        if (!currentSalesData.isEmpty()) {
                             Toast.makeText(getApplicationContext(),
-                                    String.valueOf(places.size()),
+                                    String.valueOf(currentSalesData.size()+" houses found"),
                                     Toast.LENGTH_LONG).show();
                             //init add list
 //                                List<SalesDataShort> items = new ArrayList<>();
-                            for (SalesDataShort d : places) {
-                                if (currentSalesData.isEmpty()) {
-                                    currentSalesData.add(d);
-//                                    if (!items.contains(d)) {
-//                                        items.add(d);
-//                                    }
-                                } else if (!currentSalesData.contains(d)) {
-                                    currentSalesData.add(d);
-                                }
-                            }
+//                            for (SalesDataShort d : places) {
+//                                if (currentSalesData.isEmpty()) {
+//                                    currentSalesData.add(d);
+////                                    if (!items.contains(d)) {
+////                                        items.add(d);
+////                                    }
+//                                } else if (!currentSalesData.contains(d)) {
+//                                    currentSalesData.add(d);
+//                                }
+//                            }
 
 //                            drawHeatmapOverlay();
-                        }
-                    }
+//                        }
+//                    }
                     //start new task in background to pre- fetch datapoints
 //            UpdateMapTask asyncTask = new UpdateMapTask(new OnTaskCompleted(){
 //            @Override
@@ -404,26 +404,32 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
                 }
             }
 //        }
-        drawHeatmapOverlay(); //TODo set this back to normal
+        createHeatmap(currentSalesData);
+//        drawHeatmapOverlay(); //TODo set this back to normal
     }
 
     public void drawHeatmapOverlay(){
         ArrayList<WeightedLatLng> llList = new ArrayList<>();
         if(!currentSalesData.isEmpty()) {
-            for (SalesDataShort d : currentSalesData) {
-                llList.add(new WeightedLatLng(new LatLng((double) d.getLocationGeo().getLatitude(),
-                        (double) d.getLocationGeo().getLongitude()),
-                        d.getPrice() / 10000));//TODO this is not a great heuristic, find something that scales based on data
-            }
-            createHeatmap(llList);
+//            for (SalesDataShort d : currentSalesData) {
+//                llList.add(new WeightedLatLng(new LatLng((double) d.getLocationGeo().getLatitude(),
+//                        (double) d.getLocationGeo().getLongitude()),
+//                        d.getPrice() / 10000));//TODO this is not a great heuristic, find something that scales based on data
+//            }
+            createHeatmap(currentSalesData);
         }
 
     }
 
     ///return a collection of SalesDataShort objects within a specific range
     //make sure that first parameter is the current location and the second one - the range of results in km
-    public SalesDataShortCollection getDataInRange(Location location, double range) throws ExecutionException, InterruptedException {
-        return new UpdateMapTask(this).execute(location,range).get();
+    public List<WeightedLatLng> getDataInRange(Location location, double range) throws ExecutionException, InterruptedException {
+        List<List<Double>> temp= new UpdateMapTask(this).execute(location,range).get();
+        List<WeightedLatLng> list = new ArrayList<>();
+        for(List<Double> heat:temp){
+            list.add(new WeightedLatLng(new LatLng(heat.get(0),heat.get(1)),heat.get(2)/10000));
+        }
+        return list;
     }
 
     //this method returns the distance in kilometers from the top left to the bottom right corners of the visible map as double
@@ -543,9 +549,10 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
     @Override
     //Update as the device is moving
     public void onLocationChanged(Location location) {
-        mCurrentLocation = location; //update current location
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
-
+        if(isBetterLocation(location)) {
+            mCurrentLocation = location; //update current location
+            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());  //get last update time
+        }
         if (mCurrentLocation == null) {
             checkGPS();
         }
@@ -612,7 +619,7 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
     }
     
     //  create heatmap using the list taken from a parameter
-    public boolean createHeatmap(ArrayList<WeightedLatLng> pointsList) {
+    public boolean createHeatmap(List<WeightedLatLng> pointsList) {
         HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).radius(50).build();
         tOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tProvider));
         return true;
@@ -634,11 +641,11 @@ public class MapsActivity extends FragmentActivity implements OnTaskCompleted, O
         return true;
     }
 
-    @Override
-    public void onTaskCompleted(SalesDataShortCollection output) {
+//    @Override
+//    public void onTaskCompleted(SalesDataShortCollection output) {
 //        if(((SalesDataShortCollection) output).getItems().size()>currentSalesData.getItems().size()){
 //            currentSalesData=(SalesDataShortCollection)output;
 //            currentRangeInKm=get
 //        }
-    }
+//    }
 }

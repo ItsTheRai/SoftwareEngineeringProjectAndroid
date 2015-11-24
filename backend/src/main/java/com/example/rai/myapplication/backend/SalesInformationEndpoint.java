@@ -23,6 +23,10 @@ import java.util.logging.Logger;
 import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.search.GeoPoint;
+//import com.google.maps.android.heatmaps.WeightedLatLng;
+//import com.google.maps.android.heatmaps.WeightedLatLng;
+//import com.google.maps.android.heatmaps.WeightedLatLng;
+//import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.googlecode.objectify.cmd.Query;
 
 import static com.example.rai.myapplication.backend.OfyService.ofy;
@@ -71,7 +75,7 @@ public class SalesInformationEndpoint {
     @ApiMethod(
             name ="getPointsInRange",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public List<SalesDataShort> getPointsInRange(@Named("latitude")double latitudeString,
+    public List<List<Double>> getPointsInRange(@Named("latitude")double latitudeString,
                                                  @Named("longitude")double longitudeString,
                                                  @Named("rangeInKilometers") double rangeInKilometers,
                                                  @Named("maxLength") int maxLength)
@@ -109,7 +113,7 @@ public class SalesInformationEndpoint {
         if (rangeInKilometers > MAXIMUM_DISTANCE) {
             rangeInKilometers = MAXIMUM_DISTANCE;
         }
-        List<SalesDataShort> places = NearPlacesFinder.getPlaces(latitude,longitude, rangeInKm*1000, count);
+        List<List<Double>> places = NearPlacesFinder.getPlaces(latitude, longitude, rangeInKm * 1000, count);
         return places;
     }
 

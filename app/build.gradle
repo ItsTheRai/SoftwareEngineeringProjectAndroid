@@ -39,5 +39,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:8.3.0'
     compile 'com.google.maps.android:android-maps-utils:0.4'
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.18'
-//    compile 'com.google.appengine:appengine-endpoints:1.9.18'
+    //    compile 'com.google.appengine:appengine-endpoints:1.9.18'
+    //    compile project(':backend')
+//    compile project(':backend')
 }

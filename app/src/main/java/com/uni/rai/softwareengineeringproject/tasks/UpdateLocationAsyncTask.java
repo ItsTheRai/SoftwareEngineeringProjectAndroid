@@ -6,7 +6,7 @@ import android.text.format.Time;
 import android.widget.Toast;
 
 import com.google.appengine.repackaged.com.google.api.client.util.DateTime;
-import com.example.rai.myapplication.backend.salesInformationApi.model.GeoPt;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.GeoPt;
 import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesInformation;
 import com.example.rai.myapplication.backend.userLocationApi.UserLocationApi;
