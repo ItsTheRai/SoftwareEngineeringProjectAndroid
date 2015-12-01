@@ -51,7 +51,7 @@
 //        Cursor cursor = null;
 //        int cnt = 0;
 //        while (true) {
-//            Index index = NearPlacesFinder.getIndex();
+//            Index index = SQLDatabaseQueryHelper.getIndex();
 //            Query<SalesData> query = OfyService.ofy().load().type(SalesData.class).chunk(1000); // should i call 'chunk' or not?
 //            if (cursor != null) { // for first time cursor is null
 //                // for second (and more) time, cursor is not null
@@ -66,7 +66,7 @@
 //
 //            while (it.hasNext()) {
 //                SalesData place = it.next();
-//                Document placeAsDocument = NearPlacesFinder.buildDocument(
+//                Document placeAsDocument = SQLDatabaseQueryHelper.buildDocument(
 //                        place.getId(), place.getPostcode(), place.getPrice(),
 //                        new GeoPoint(place.getLatitude(),place.getLongitude())
 //                );
@@ -101,7 +101,7 @@
 //     * Cleans the index of places from all entries.
 //     */
 //    private void removeAllDocumentsFromIndex() {
-//        Index index = NearPlacesFinder.getIndex();
+//        Index index = SQLDatabaseQueryHelper.getIndex();
 //        // As the request will only return up to 1000 documents,
 //        // we need to loop until there are no more documents in the index.
 //        // We batch delete 1000 documents per iteration.

@@ -5,7 +5,6 @@ package com.example.rai.myapplication.backend;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
 import com.example.rai.myapplication.backend.model.SalesData;
-import com.example.rai.myapplication.backend.model.SalesDataShort;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -14,7 +13,6 @@ import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.GeoPt;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -113,28 +111,28 @@ public class SalesInformationEndpoint {
         if (rangeInKilometers > MAXIMUM_DISTANCE) {
             rangeInKilometers = MAXIMUM_DISTANCE;
         }
-        List<List<Double>> places = NearPlacesFinder.getPlaces(latitude, longitude, rangeInKm * 1000, count);
+        List<List<Double>> places = SQLDatabaseQueryHelper.getPlaces(latitude, longitude, rangeInKm, count);
         return places;
     }
 
     /**
      * Inserts a new {@code SalesData}.
      */
-    @ApiMethod(
-            name = "insert",
-            path = "salesData",
-            httpMethod = ApiMethod.HttpMethod.POST)
-    public SalesData insert(SalesData salesData) throws NotFoundException {
-        // Typically in a RESTful API a POST does not have a known ID (assuming the ID is used in the resource path).
-        // You should validate that salesData.id has not been set. If the ID type is not supported by the
-        // Objectify ID generator, e.g. long or String, then you should generate the unique ID yourself prior to saving.
-        //
-        // If your client provides the ID then you should probably use PUT instead.
-//        checkExists(salesData.getId());
-          ofy().save().entity(salesData).now();
-//        logger.info("Created SalesData with ID: " + salesData.getId());
-        return salesData;
-    }
+//    @ApiMethod(
+//            name = "insert",
+//            path = "salesData",
+//            httpMethod = ApiMethod.HttpMethod.POST)
+//    public SalesData insert(SalesData salesData) throws NotFoundException {
+//        // Typically in a RESTful API a POST does not have a known ID (assuming the ID is used in the resource path).
+//        // You should validate that salesData.id has not been set. If the ID type is not supported by the
+//        // Objectify ID generator, e.g. long or String, then you should generate the unique ID yourself prior to saving.
+//        //
+//        // If your client provides the ID then you should probably use PUT instead.
+////        checkExists(salesData.getId());
+//          ofy().save().entity(salesData).now();
+////        logger.info("Created SalesData with ID: " + salesData.getId());
+//        return salesData;
+//    }
 
     @ApiMethod(
             name = "list",

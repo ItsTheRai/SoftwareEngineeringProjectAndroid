@@ -4,7 +4,7 @@
 
 //import com.example.rai.myapplication.backend.IndexingServlet;
 import com.example.rai.myapplication.backend.MyServlet;
-import com.example.rai.myapplication.backend.NearPlacesFinder;
+import com.example.rai.myapplication.backend.SQLDatabaseQueryHelper;
 import com.example.rai.myapplication.backend.OfyService;
 import com.example.rai.myapplication.backend.SalesInformationEndpoint;
 import com.example.rai.myapplication.backend.UserLocationEndpoint;
@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
@@ -26,7 +27,7 @@ public class unitTests {
 
     //IndexingServlet indexingServlet;
     MyServlet myServlet;
-    NearPlacesFinder placeFinder;
+    SQLDatabaseQueryHelper placeFinder;
     OfyService ofy;
     SalesInformationEndpoint sales;
     UserLocationEndpoint user;
@@ -61,22 +62,22 @@ public class unitTests {
     }
     **/
 
-    //Checks to see if NearPlacesFinder does not return null.
+    //Checks to see if SQLDatabaseQueryHelper does not return null.
     @Test
     public void checkNearPlaces()
     {
         System.out.println("checkNearPlaces() Test");
-        placeFinder = new NearPlacesFinder();
+        placeFinder = new SQLDatabaseQueryHelper();
         assertNotNull(placeFinder);
 
     }
 
     /**
-    //Checks to see if NearPlacesFinder does returns null.  Should fail
+    //Checks to see if SQLDatabaseQueryHelper does returns null.  Should fail
     @Test
     public void checkNearNull()
     {
-        placefinder = new NearPlacesFinder();
+        placefinder = new SQLDatabaseQueryHelper();
         assertNull(placefinder);
     }
     **/
@@ -139,25 +140,24 @@ public class unitTests {
     **/
 
     //Checks that CheckBuildDocument() builds correctly with  Long, String, Int, GeoPoint.
-    @Test
-    public void checkBuildDocument()
-    {
-        System.out.println("checkBuildDocument() Test");
-        placeFinder = new NearPlacesFinder();
-
-        assertNotNull(NearPlacesFinder.buildDocument(0L, "", 1, new GeoPoint(51.5034070, -0.1275920)));
-
-    }
+//    @Test
+//    public void checkBuildDocument()
+//    {
+//        System.out.println("checkBuildDocument() Test");
+//        placeFinder = new SQLDatabaseQueryHelper();
+//
+//        assertNotNull(SQLDatabaseQueryHelper.buildDocument(0L, "", 1, new GeoPoint(51.5034070, -0.1275920)));
+//
+//    }
 
     //Checks to see if the getPlaces returns correctly.
     //Returns null pointer - cannot access Google app engine.
 
     @Test
-    public void checkGetPlaces()
-    {
-        placeFinder = new NearPlacesFinder();
+    public void checkGetPlaces() throws SQLException, ClassNotFoundException {
+        placeFinder = new SQLDatabaseQueryHelper();
 
-        assertNotNull(placeFinder.getPlaces(new GeoPt(51f, -1f), 10000000L, 1));
+        assertNotNull(placeFinder.getPlaces(51f, -1f, 10000000.0, 1));
     }
 
 
@@ -167,32 +167,32 @@ public class unitTests {
 
     {
         System.out.println("checkGetDistance() Test");
-        placeFinder= new NearPlacesFinder();
+        placeFinder= new SQLDatabaseQueryHelper();
 
         assertNotNull(placeFinder.getDistanceInKm(51.5034070, -0.1275920, 50.8646070,-0.0828680));
     }
 
-    @Test
-    public void testSalesGetIDBounds() throws Exception {
-        //Finding whether or not the correct SalesData list has been returned (within the right KM distance).
-        //Important to note that both search range in KM & house return limit are both constrictions on data return.
-        //Both can override each other, which is fine within the context of this program.
-        //Should return
-        sales = new SalesInformationEndpoint();
-        List<SalesDataShort> methodOutput = sales.getPointsInRange("53.724276876242600", "-1.269308676070620", 2, 1000);
-
-        //INSIDE 2KM AREA = Vale Walk, Knottingley (53.7075914,-1.2656739000000243)
-        //OUTSIDE 2KM AREA = Cleveland Avenue, Knottingley (53.70670579999999,-1.2518277000000353)
-
-        for(SalesDataShort sales : methodOutput){
-
-            if(sales.getLocationGeo().getLatitude() == 53.7075914 && sales.getLocationGeo().getLongitude() == -1.2656739000000243){
-                assertTrue(1==1);
-            }
-            if(sales.getLocationGeo().getLatitude() == 53.70670579999999 && sales.getLocationGeo().getLongitude() == -1.2518277000000353) {
-                assertFalse(1==1);
-            }
-        }
-    }
+//    @Test
+//    public void testSalesGetIDBounds() throws Exception {
+//        //Finding whether or not the correct SalesData list has been returned (within the right KM distance).
+//        //Important to note that both search range in KM & house return limit are both constrictions on data return.
+//        //Both can override each other, which is fine within the context of this program.
+//        //Should return
+//        sales = new SalesInformationEndpoint();
+//        List<List<Double>> methodOutput = sales.getPointsInRange(53.724276876242600, -1.269308676070620, 2, 1000);
+//
+//        //INSIDE 2KM AREA = Vale Walk, Knottingley (53.7075914,-1.2656739000000243)
+//        //OUTSIDE 2KM AREA = Cleveland Avenue, Knottingley (53.70670579999999,-1.2518277000000353)
+//
+//        for(List<Double> sales : methodOutput){
+//
+//            if(sales.getLocationGeo().getLatitude() == 53.7075914 && sales.getLocationGeo().getLongitude() == -1.2656739000000243){
+//                assertTrue(1==1);
+//            }
+//            if(sales.getLocationGeo().getLatitude() == 53.70670579999999 && sales.getLocationGeo().getLongitude() == -1.2518277000000353) {
+//                assertFalse(1==1);
+//            }
+//        }
+//    }
 
 }
