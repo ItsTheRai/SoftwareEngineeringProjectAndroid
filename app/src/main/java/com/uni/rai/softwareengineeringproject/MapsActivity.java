@@ -47,8 +47,9 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
 import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
+//import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
+//import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
 //import com.uni.rai.softwareengineeringproject.tasks.*;
 //import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
 
@@ -349,7 +350,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         double rangeInKm = getRange(mMap);
 
         /////////////////
-        Location location =mCurrentLocation;
+        Location location = mCurrentLocation;
+//                =new Location(String.valueOf(""));//=mCurrentLocation;
+//        location.setLatitude(51.50);
+//        location.setLongitude(0.1276);
         //create rectangel for query
 //        double lon1 =  (location.getLongitude()-rangeInKm/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
 //        double lon2 =  (location.getLongitude()+rangeInKm/Math.abs(Math.cos(location.getLatitude()*Math.PI/180.0) * 69));
@@ -363,7 +367,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 currentRangeInKm = rangeInKm;
                 //query DB with async taks
 
-                currentSalesData = getDataInRange(mCurrentLocation, rangeInKm);
+                currentSalesData = getDataInRange(location, rangeInKm);
 //                if (data != null) {
 //                    if (!data.isEmpty()) {
 //                        List<SalesDataShort> places = data.getItems();

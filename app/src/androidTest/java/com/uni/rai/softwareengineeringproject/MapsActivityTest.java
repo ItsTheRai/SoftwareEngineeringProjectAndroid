@@ -12,7 +12,7 @@ import android.net.NetworkInfo;
 import android.content.Context;
 
 import android.view.MenuItem;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,7 +21,7 @@ import com.google.android.gms.maps.model.TileOverlay;
 import java.util.concurrent.ExecutionException;
 import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
 import android.net.wifi.WifiManager;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
+//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.GoogleMapOptions;
