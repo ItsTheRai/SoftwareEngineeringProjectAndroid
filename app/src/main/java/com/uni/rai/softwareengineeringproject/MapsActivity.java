@@ -158,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        currentSalesData = new SalesDataShortCollection();
 
 
-        mNavItems.add(new NavItem("Home", "Meetup destination", R.mipmap.ic_action_picture));
+        mNavItems.add(new NavItem("Home", "Meetup destination", R.mipmap.arrowleft));
 
 
         // DrawerLayout
