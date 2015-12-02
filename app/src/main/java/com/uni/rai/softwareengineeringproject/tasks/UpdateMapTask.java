@@ -1,5 +1,6 @@
  package com.uni.rai.softwareengineeringproject.tasks;
 
+        import android.app.Activity;
         import android.content.Context;
         import android.location.Location;
         import android.os.AsyncTask;
@@ -30,15 +31,20 @@
  */
 
 
-public class UpdateMapTask extends AsyncTask<Object, Void, List<List<Double>>> {
+public class UpdateMapTask extends AsyncTask<Object, List<List<Double>> , List<List<Double>>> {
+     Activity mActivity;
     //    private static long range =1000000000;
-    private static final int NUMBER_OF_RESULTS = 10000;
+    private static final int NUMBER_OF_RESULTS = 50000;
     private static SalesInformationApi myApiService = null;
     private Context context;
+     OnDataSendToActivity dataSendToActivity;
 
-    public UpdateMapTask(Context context) {
-        this.context = context;
-    }
+     public UpdateMapTask(Activity activity){
+         dataSendToActivity = (OnDataSendToActivity)activity;
+     }
+//    public UpdateMapTask(Activity activity){
+//        mActivity=activity;
+//    }
 
     @Override
     protected void onPreExecute() {
@@ -85,10 +91,13 @@ public class UpdateMapTask extends AsyncTask<Object, Void, List<List<Double>>> {
         return result.getItems();
     }
 
-//    @Override
-//    protected void onPostExecute(List<UserLocation> result) {
+    @Override
+    protected void onPostExecute(List<List<Double>> result) {
+        super.onPostExecute(result);
+        dataSendToActivity.sendData(result);
+//        mActivity.getApplication().
 //        for (Quote q : result) {
 //            Toast.makeText(context, q.getWho() + " : " + q.getWhat(), Toast.LENGTH_LONG).show();
-//        }
+        }
 }
 
