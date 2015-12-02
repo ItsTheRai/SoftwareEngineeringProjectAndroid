@@ -19,6 +19,15 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 
+import android.widget.BaseAdapter;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.AdapterView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager.*;
+import android.support.v4.app.FragmentManager;
 
 //import com.example.rai.myapplication.backend.model.SalesLocationData;
 //import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
@@ -64,7 +73,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import android.view.Menu;
-
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
@@ -89,6 +101,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public MenuItem item;
     public View view;
     public Menu menu;
+
+
+
+    ListView mDrawerList;
+    RelativeLayout mDrawerPane;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+
+    ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +147,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //build a google api client
             buildGoogleApiClient();
             //set view as the map activity
-            setContentView(R.layout.activity_maps);
+            setContentView(R.layout.drawer);
             //init the map
             MapFragment mapFragment = (MapFragment) getFragmentManager()
                     .findFragmentById(R.id.map);
@@ -135,6 +156,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //heatmap gets displayed when map is ready
         //init variables
 //        currentSalesData = new SalesDataShortCollection();
+
+
+        mNavItems.add(new NavItem("Home", "Meetup destination", R.mipmap.ic_action_picture));
+
+
+        // DrawerLayout
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+
+        // Populate the Navigtion Drawer with options
+        mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
+        mDrawerList = (ListView) findViewById(R.id.navList);
+        DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
+        mDrawerList.setAdapter(adapter);
+
+/**
+        // Drawer Item click listeners
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItemFromDrawer(position);
+            }
+        });
+ **/
+
+
     }
 
     @Override
@@ -645,6 +691,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
+    private void selectItemFromDrawer(int position) {
+        Fragment fragment = new PreferencesFragment();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.mainContent, fragment)
+                .commit();
+
+        mDrawerList.setItemChecked(position, true);
+        setTitle(mNavItems.get(position).mTitle);
+
+        // Close the drawer
+        mDrawerLayout.closeDrawer(mDrawerPane);
+    }
+
+
+
+
 //    @Override
 //    public void onTaskCompleted(SalesDataShortCollection output) {
 //        if(((SalesDataShortCollection) output).getItems().size()>currentSalesData.getItems().size()){
@@ -652,4 +716,71 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            currentRangeInKm=get
 //        }
 //    }
+
+
+
+    class NavItem {
+        String mTitle;
+        String mSubtitle;
+        int mIcon;
+
+        public NavItem(String title, String subtitle, int icon) {
+            mTitle = title;
+            mSubtitle = subtitle;
+            mIcon = icon;
+        }
+    }
+
+    class DrawerListAdapter extends BaseAdapter {
+
+        Context mContext;
+        ArrayList<NavItem> mNavItems;
+
+        public DrawerListAdapter(Context context, ArrayList<NavItem> navItems) {
+            mContext = context;
+            mNavItems = navItems;
+        }
+
+
+        @Override
+        public int getCount() {
+            return 0;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mNavItems.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view;
+
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = inflater.inflate(R.layout.drawer_item, null);
+            }
+            else {
+                view = convertView;
+            }
+
+            TextView titleView = (TextView) view.findViewById(R.id.title);
+            TextView subtitleView = (TextView) view.findViewById(R.id.subtitle);
+            ImageView iconView = (ImageView) view.findViewById(R.id.icon);
+
+            titleView.setText( mNavItems.get(position).mTitle );
+            subtitleView.setText( mNavItems.get(position).mSubtitle );
+            iconView.setImageResource(mNavItems.get(position).mIcon);
+
+            return view;
+        }
+    }
+
+
+
 }
