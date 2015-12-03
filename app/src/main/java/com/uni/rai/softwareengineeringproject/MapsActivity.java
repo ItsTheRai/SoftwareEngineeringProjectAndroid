@@ -186,7 +186,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
-/**
+
         // Drawer Item click listeners
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -194,11 +194,11 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                 selectItemFromDrawer(position);
             }
         });
- **/
+
 
 
     }
-
+/**
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
@@ -243,6 +243,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         }
     }
 
+
     public boolean getItem(MenuItem i) {
         switch (i.getItemId()) {
             case R.id.heat_map:
@@ -253,6 +254,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                 return false;
         }
     }
+ **/
 
     @Override
     public void onStart() {
@@ -683,6 +685,46 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         }
     }
     private void selectItemFromDrawer(int position) {
+
+
+        switch (position) {
+            case 0:
+                    isHeatmap = true;
+                    Toast toast = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
+                    toast.show();
+
+
+                    try {
+                        updateHeatmap();    //querries the DB to update the heatmap
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+
+                break;
+            case 1:
+
+                    isHeatmap = false;
+                    Toast toast1 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
+                    toast1.show();
+                    clearHeatmap();
+
+                break;
+            case 2:
+                Toast toast2 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
+                toast2.show();
+            default:
+                break;
+        }
+
+
+
+        /**
         Fragment fragment = new PreferencesFragment();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -690,11 +732,13 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                 .replace(R.id.mainContent, fragment)
                 .commit();
 
+
         mDrawerList.setItemChecked(position, true);
         setTitle(mNavItems.get(position).mTitle);
 
         // Close the drawer
         mDrawerLayout.closeDrawer(mDrawerPane);
+         **/
     }
 
 
