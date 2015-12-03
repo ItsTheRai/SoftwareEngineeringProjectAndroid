@@ -112,6 +112,8 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
 
+    private String[] drawerItems;
+
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
 
     @Override
@@ -164,7 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
         mNavItems.add(new NavItem("Home", "Meetup destination", R.mipmap.arrowleft));
 
-
+/**
         // DrawerLayout
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
@@ -173,6 +175,16 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mDrawerList = (ListView) findViewById(R.id.navList);
         DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
         mDrawerList.setAdapter(adapter);
+
+**/
+
+        drawerItems = getResources().getStringArray(R.array.nav_drawer_items);
+        mDrawerList = (ListView)findViewById(R.id.navList);
+        DrawerListAdapter adapter = new DrawerListAdapter(this);
+        mDrawerList.setAdapter(adapter);
+        //listview.setAdapter(new ArrayAdapter<>(this , android.R.layout.simple_list_item_1,drawerItems));
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
 /**
         // Drawer Item click listeners
@@ -710,39 +722,72 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
         Context mContext;
         ArrayList<NavItem> mNavItems;
+        String[] drawerItems;
 
-        public DrawerListAdapter(Context context, ArrayList<NavItem> navItems) {
+        public DrawerListAdapter(Context context) {
             mContext = context;
-            mNavItems = navItems;
+            drawerItems = context.getResources().getStringArray(R.array.nav_drawer_items);
+            //mNavItems = navItems;
         }
 
 
         @Override
         public int getCount() {
-            return 0;
+            return drawerItems.length;
         }
 
         @Override
         public Object getItem(int position) {
-            return mNavItems.get(position);
+            return  drawerItems[position];
         }
 
         @Override
         public long getItemId(int position) {
-            return 0;
+            return position;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view;
+            View view = null;
 
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = inflater.inflate(R.layout.drawer_item, null);
+                //view = inflater.inflate(R.layout.drawer_item, null);
+                view=  inflater.inflate(R.layout.drawer_item,parent, false);
+
             }
             else {
                 view = convertView;
             }
+
+            /**
+             *
+             * View row = null;
+             if(convertView == null){
+             LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+             row=  mInflater.inflate(R.layout.custom_xml,arg2, false);
+
+
+             }
+             else{
+             row = convertView;
+             }
+
+
+             ImageView imgIcon = (ImageView) row.findViewById(R.id.imageView1);
+             TextView txtTitle = (TextView) row.findViewById(R.id.textView1);
+
+             txtTitle.setText(drawerItems[position]);
+             imgIcon.setImageResource(images[position]);
+             *
+             */
+
+            //ImageView imgIcon = (ImageView) view.findViewById(R.id.imageView1);
+            TextView txtTitle = (TextView) view.findViewById(R.id.title);
+
+            txtTitle.setText(drawerItems[position]);
+           // imgIcon.setImageResource(images[position]);
+            /**
 
             TextView titleView = (TextView) view.findViewById(R.id.title);
             TextView subtitleView = (TextView) view.findViewById(R.id.subtitle);
@@ -751,6 +796,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             titleView.setText( mNavItems.get(position).mTitle );
             subtitleView.setText( mNavItems.get(position).mSubtitle );
             iconView.setImageResource(mNavItems.get(position).mIcon);
+             **/
 
             return view;
         }

@@ -11,7 +11,7 @@
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 //        import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
         import com.example.rai.myapplication.backend.salesInformationApi.model.NumberCollectionCollection;
-        import com.example.rai.myapplication.backend.salesInformationApi.model.WeightedLatLngCollection;
+       // import com.example.rai.myapplication.backend.salesInformationApi.model.WeightedLatLngCollection;
         import com.google.android.gms.maps.model.VisibleRegion;
         import com.google.api.client.extensions.android.http.AndroidHttp;
         import com.google.api.client.extensions.android.json.AndroidJsonFactory;

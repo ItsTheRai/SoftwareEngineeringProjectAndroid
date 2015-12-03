@@ -7,4 +7,12 @@
     <string name="title_activity_m">MActivity</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="retrievingPlaces">Loading Data</string>
+
+    <string-array name="nav_drawer_items">
+        <item>Heat Map</item>
+        <item>Normal Map</item>
+        <item>Search</item>
+
+
+    </string-array>
 </resources>
