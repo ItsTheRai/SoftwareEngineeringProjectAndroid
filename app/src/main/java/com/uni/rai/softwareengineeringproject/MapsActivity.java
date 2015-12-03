@@ -212,7 +212,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         getItem(item);
         switch (item.getItemId()) {
             case R.id.heat_map:
-
+                isHeatmap = true;
                 try {
                     updateHeatmap();    //querries the DB to update the heatmap
                 } catch (ExecutionException e) {
@@ -230,6 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 //                        Toast.LENGTH_LONG).show();
                 return true;
             case R.id.normal_map:
+                isHeatmap = false;
                 clearHeatmap(); // clear the current heatmap
                 item.setChecked(true);
                 Toast.makeText(getApplicationContext(),
@@ -347,6 +348,10 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                         }
                     }
                 }
+                else{
+                    //TODO here you put stuff to control queries for the marker view to query db when
+                    //TODO the user moves the map
+                }
             }
         });
 
@@ -354,11 +359,8 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
-                //TODO: Any custom actions
                 isLockedOn = false;
-//                if (isLockedOn) {
                 showUser();
-//                }
                 if (!isLockedOn) {
                     mMap.getUiSettings().setScrollGesturesEnabled(true);
                 } else if (isLockedOn) {
@@ -587,7 +589,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
             firstRequest = false;
-        }else {
+        }else if(isHeatmap){
             try {
                 updateHeatmap();
             } catch (ExecutionException e) {
@@ -671,12 +673,14 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     @Override
     public void sendData(List<List<Double>> list) {
-        this.currentSalesData = this.getWeightedFromList(list);
-        clearHeatmap();
-        createHeatmap(currentSalesData);
-        Toast.makeText(getApplicationContext(),
-                        "Done retrieving results",
-                        Toast.LENGTH_LONG).show();
+        if(isHeatmap) {
+            this.currentSalesData = this.getWeightedFromList(list);
+            clearHeatmap();
+            createHeatmap(currentSalesData);
+            Toast.makeText(getApplicationContext(),
+                    "Done retrieving results",
+                    Toast.LENGTH_LONG).show();
+        }
     }
     private void selectItemFromDrawer(int position) {
         Fragment fragment = new PreferencesFragment();
