@@ -70,6 +70,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -104,7 +105,9 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     public View view;
     public Menu menu;
     private boolean isHeatmap;
-
+    private WeightedLatLng dummy;
+//    private double minPrice = 0;
+//    private double maxPrice = 0;
 
 
     ListView mDrawerList;
@@ -126,40 +129,40 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         currentRangeInKm=0.0;
         isHeatmap=true;
         currentSalesData = new ArrayList<>();
-            //since API 23, need to ask for user permission to use location
-            //so create a check and dialog box
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    // Show an explenation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-                } else {
-                    // No explanation needed, we can request the permission.
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0   //could not find the right constant, 0 seems to work for now
-                    );//MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                    // app-defined int constant. The callback method gets the
-                    // result of the request.
-                }
+        //since API 23, need to ask for user permission to use location
+        //so create a check and dialog box
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Show an explenation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0   //could not find the right constant, 0 seems to work for now
+                );//MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
             }
+        }
 
 //        reate a new location request for the map locator
-            createLocationRequest();
-            //build a google api client
-            buildGoogleApiClient();
-            //set view as the map activity
-            setContentView(R.layout.drawer);
-            //init the map
-            MapFragment mapFragment = (MapFragment) getFragmentManager()
-                    .findFragmentById(R.id.map);
-            //call onMapReady()
-            mapFragment.getMapAsync(this);
-            //heatmap gets displayed when map is ready
+        createLocationRequest();
+        //build a google api client
+        buildGoogleApiClient();
+        //set view as the map activity
+        setContentView(R.layout.drawer);
+        //init the map
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        //call onMapReady()
+        mapFragment.getMapAsync(this);
+        //heatmap gets displayed when map is ready
         //init variables
 //        currentSalesData = new SalesDataShortCollection();
 
@@ -167,16 +170,16 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mNavItems.add(new NavItem("Home", "Meetup destination", R.mipmap.arrowleft));
 
 /**
-        // DrawerLayout
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+ // DrawerLayout
+ mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
-        // Populate the Navigtion Drawer with options
-        mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
-        mDrawerList = (ListView) findViewById(R.id.navList);
-        DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
-        mDrawerList.setAdapter(adapter);
+ // Populate the Navigtion Drawer with options
+ mDrawerPane = (RelativeLayout) findViewById(R.id.drawerPane);
+ mDrawerList = (ListView) findViewById(R.id.navList);
+ DrawerListAdapter adapter = new DrawerListAdapter(this, mNavItems);
+ mDrawerList.setAdapter(adapter);
 
-**/
+ **/
 
         drawerItems = getResources().getStringArray(R.array.nav_drawer_items);
         mDrawerList = (ListView)findViewById(R.id.navList);
@@ -185,8 +188,6 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         //listview.setAdapter(new ArrayAdapter<>(this , android.R.layout.simple_list_item_1,drawerItems));
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-
-
         // Drawer Item click listeners
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -194,67 +195,64 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                 selectItemFromDrawer(position);
             }
         });
-
-
-
     }
-/**
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.map_activity, menu);
-        return true;
-    }
+    /**
+     @Override
+     public boolean onCreateOptionsMenu(Menu menu) {
+     this.menu = menu;
+     getMenuInflater().inflate(R.menu.map_activity, menu);
+     return true;
+     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        this.item = item;
-        getItem(item);
-        switch (item.getItemId()) {
-            case R.id.heat_map:
-                isHeatmap = true;
-                try {
-                    updateHeatmap();    //querries the DB to update the heatmap
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                item.setChecked(true);
-//                Toast.makeText(getApplicationContext(),
-//                        "Heat Map selected",
-//                        Toast.LENGTH_LONG).show();
-                return true;
-            case R.id.normal_map:
-                isHeatmap = false;
-                clearHeatmap(); // clear the current heatmap
-                item.setChecked(true);
-                Toast.makeText(getApplicationContext(),
-                        "Normal map selected",
-                        Toast.LENGTH_LONG).show();
-                return true;
+     @Override
+     public boolean onOptionsItemSelected(MenuItem item) {
+     this.item = item;
+     getItem(item);
+     switch (item.getItemId()) {
+     case R.id.heat_map:
+     isHeatmap = true;
+     try {
+     updateHeatmap();    //querries the DB to update the heatmap
+     } catch (ExecutionException e) {
+     e.printStackTrace();
+     } catch (InterruptedException e) {
+     e.printStackTrace();
+     } catch (ClassNotFoundException e) {
+     e.printStackTrace();
+     } catch (SQLException e) {
+     e.printStackTrace();
+     }
+     item.setChecked(true);
+     //                Toast.makeText(getApplicationContext(),
+     //                        "Heat Map selected",
+     //                        Toast.LENGTH_LONG).show();
+     return true;
+     case R.id.normal_map:
+     isHeatmap = false;
+     clearHeatmap(); // clear the current heatmap
+     item.setChecked(true);
+     Toast.makeText(getApplicationContext(),
+     "Normal map selected",
+     Toast.LENGTH_LONG).show();
+     return true;
 
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+     default:
+     return super.onOptionsItemSelected(item);
+     }
+     }
 
 
-    public boolean getItem(MenuItem i) {
-        switch (i.getItemId()) {
-            case R.id.heat_map:
-                return true;
-            case R.id.normal_map:
-                return true;
-            default:
-                return false;
-        }
-    }
- **/
+     public boolean getItem(MenuItem i) {
+     switch (i.getItemId()) {
+     case R.id.heat_map:
+     return true;
+     case R.id.normal_map:
+     return true;
+     default:
+     return false;
+     }
+     }
+     **/
 
     @Override
     public void onStart() {
@@ -267,7 +265,6 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mGoogleApiClient.connect();
 
     }
-
 
     @Override
     public void onStop() {
@@ -336,21 +333,22 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                     if (pos.zoom < minZoom) {
                         mMap.animateCamera((CameraUpdateFactory.zoomTo(minZoom)));
                     }
-                    if(!firstRequest) {
-                        try {
-                            updateHeatmap();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ClassNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (SQLException e) {
-                            e.printStackTrace();
+                    if (!firstRequest) {
+                        if (pos.zoom >= minZoom) {
+                            try {
+                                updateHeatmap();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ClassNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-                }
-                else{
+                } else {
                     //TODO here you put stuff to control queries for the marker view to query db when
                     //TODO the user moves the map
                 }
@@ -374,9 +372,9 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     }
 
     public boolean  showUser() {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-            return true;
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+        return true;
     }
 
 
@@ -406,21 +404,21 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         //calculate necassary range to load data from screen size and zoom
         double rangeInKm = getRange(mMap);
         Location location = mCurrentLocation;
-            if (rangeInKm > currentRangeInKm) {
-                currentRangeInKm = rangeInKm;
-                //query DB with async taks
+        if (rangeInKm > currentRangeInKm) {
+            currentRangeInKm = rangeInKm;
+            //query DB with async taks
 //                new UpdateMapTask(this).execute(location,range).get();
-                new UpdateMapTask(this).execute(location,currentRangeInKm);
+            new UpdateMapTask(this).execute(location,currentRangeInKm);
 //                new UpdateMapTask(this).execute();//currentSalesData = getDataInRange(location, rangeInKm);
 //                if (data != null) {
 //                    if (!data.isEmpty()) {
 //                        List<SalesDataShort> places = data.getItems();
-                        //check if matches found
+            //check if matches found
 //                        if (!currentSalesData.isEmpty()) {
 //                            Toast.makeText(getApplicationContext(),
 //                                    String.valueOf(currentSalesData.size()+" houses found"),
 //                                    Toast.LENGTH_LONG).show();
-                            //init add list
+            //init add list
 //                                List<SalesDataShort> items = new ArrayList<>();
 //                            for (SalesDataShort d : places) {
 //                                if (currentSalesData.isEmpty()) {
@@ -436,16 +434,40 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 //                            drawHeatmapOverlay();
 //                        }
 //                    }
-                    //start new task in background to pre- fetch datapoints
+            //start new task in background to pre- fetch datapoints
 //            UpdateMapTask asyncTask = new UpdateMapTask(new OnTaskCompleted(){
 //        };
 //        asyncTask.execute(mCurrentLocation,currentRangeInKm*1.5);
 
 //            new UpdateMapTask(this).execute(mCurrentLocation,currentRangeInKm*1.5);
-//                }
-//            }
+        } else {
+            //  remove the dummy lat long if the user zooms in past level 13
+            if (mMap.getCameraPosition().zoom > 13) {
+                if (!currentSalesData.isEmpty()) {
+                    if (dummy != null) {
+                        if (currentSalesData.contains(dummy)) {
+                            currentSalesData.remove(dummy);
+                            clearHeatmap();
+                            createHeatmap(currentSalesData);
+//                        System.out.println("removed dummy lat long");
+                        }
+                    }
+                }
+            } else { // otherwise add it if it's not already in the list
+                if (!currentSalesData.isEmpty()) {
+                    if (dummy != null) {
+                        if (!currentSalesData.contains(dummy)) {
+                            currentSalesData.add(dummy);
+                            clearHeatmap();
+                            createHeatmap(currentSalesData);
+//                        System.out.println("added dummy lat long");
+                        }
+                    }
+                }
+            }
         }
     }
+//        }
 
     public void drawHeatmapOverlay(){
         ArrayList<WeightedLatLng> llList = new ArrayList<>();
@@ -468,9 +490,65 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     }
 
     public List<WeightedLatLng> getWeightedFromList(List<List<Double>> temp){
+        // first normalise the price range between 1 to 30
+        double minPrice = Double.MAX_VALUE;
+        double maxPrice = Double.MIN_VALUE;
+        final double MAX_INTENSITY = 30;
+        final double MIN_INTENSITY = 1;
+        // find out the min and max price of properties in the list retrieved from database
+        for(List<Double> heat:temp) {
+            if (heat.get(2) < minPrice) {
+                minPrice = heat.get(2);
+            } else if (heat.get(2) > maxPrice){
+                maxPrice = heat.get(2);
+            }
+        }
         List<WeightedLatLng> list = new ArrayList<>();
+//        double min = Double.MAX_VALUE;
+//        double max = Double.MIN_VALUE;
+//        double sum = 0;
+        HashMap<String, Double> intensityByArea = new HashMap<String, Double>();
         for(List<Double> heat:temp){
-            list.add(new WeightedLatLng(new LatLng(heat.get(0),heat.get(1)),heat.get(2)/10000));
+            // calculate the normalised intensity
+            double intensity = MIN_INTENSITY + ((heat.get(2) - minPrice) * (MAX_INTENSITY - MIN_INTENSITY)) / (maxPrice - minPrice);
+//            sum += intensity;
+            // find out the sum of intensity of nearby places and store them in a hashmap
+            int lat = (int) (heat.get(0).doubleValue() * 10);
+            int longt = (int) (heat.get(1).doubleValue() * 10);
+            Double currentArea = intensityByArea.get(lat + "," + longt);
+            if (currentArea != null) {
+                intensityByArea.put(lat + "," + longt, currentArea + intensity);
+            } else {
+                intensityByArea.put(lat + "," + longt, intensity);
+            }
+
+            //System.out.println("intensity: " + intensity);
+//            if (intensity < min) {
+//                min = intensity;
+//                System.out.println("min: " + min + ", max: " + max);
+//            } else if (intensity > max) {
+//                max = intensity;
+//                System.out.println("min: " + min + ", max: " + max);
+//            }
+            list.add(new WeightedLatLng(new LatLng(heat.get(0),heat.get(1)), intensity));
+        }
+
+        // find out the area with the greatest sum of intensity and use that sum/10 as the intensity of the dummy weighted lat long
+        double biggestArea = 0;
+//        System.out.println("List Size: " + temp.size());
+//        System.out.println("Map Size: " + intensityByArea.values().size());
+        for (Double d: intensityByArea.values()) {
+//            System.out.println("d: " + d);
+            if (d > biggestArea) {
+                biggestArea = d;
+            }
+        }
+//        System.out.println("biggestArea: " + biggestArea);
+        dummy = new WeightedLatLng(new LatLng(54, -1), biggestArea / 10);
+        // only display the dummy if the user zoomed out past level 13
+        if (mMap.getCameraPosition().zoom < 13) {
+            list.add(dummy);
+//            System.out.println("add dummy");
         }
         return list;
     }
@@ -605,7 +683,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             }
         }
         if(isLockedOn) {
-             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));         }
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));         }
     }
 
     /** Determines whether one Location reading is better than the current Location fix
@@ -649,7 +727,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         }
         return false;
     }
-    
+
     //  create heatmap using the list taken from a parameter
     public boolean createHeatmap(List<WeightedLatLng> pointsList) {
         HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).radius(50).build();
@@ -689,30 +767,29 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
         switch (position) {
             case 0:
-                    isHeatmap = true;
-                    Toast toast = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
-                    toast.show();
+                isHeatmap = true;
+                Toast toast = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
+                toast.show();
 
-
-                    try {
-                        updateHeatmap();    //querries the DB to update the heatmap
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    updateHeatmap();    //querries the DB to update the heatmap
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
                 break;
             case 1:
 
-                    isHeatmap = false;
-                    Toast toast1 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
-                    toast1.show();
-                    clearHeatmap();
+                isHeatmap = false;
+                Toast toast1 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
+                toast1.show();
+                clearHeatmap();
 
                 break;
             case 2:
@@ -725,19 +802,19 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
 
         /**
-        Fragment fragment = new PreferencesFragment();
+         Fragment fragment = new PreferencesFragment();
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.mainContent, fragment)
-                .commit();
+         FragmentManager fragmentManager = getSupportFragmentManager();
+         fragmentManager.beginTransaction()
+         .replace(R.id.mainContent, fragment)
+         .commit();
 
 
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mNavItems.get(position).mTitle);
+         mDrawerList.setItemChecked(position, true);
+         setTitle(mNavItems.get(position).mTitle);
 
-        // Close the drawer
-        mDrawerLayout.closeDrawer(mDrawerPane);
+         // Close the drawer
+         mDrawerLayout.closeDrawer(mDrawerPane);
          **/
     }
 
@@ -834,16 +911,16 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             TextView txtTitle = (TextView) view.findViewById(R.id.title);
 
             txtTitle.setText(drawerItems[position]);
-           // imgIcon.setImageResource(images[position]);
+            // imgIcon.setImageResource(images[position]);
             /**
 
-            TextView titleView = (TextView) view.findViewById(R.id.title);
-            TextView subtitleView = (TextView) view.findViewById(R.id.subtitle);
-            ImageView iconView = (ImageView) view.findViewById(R.id.icon);
+             TextView titleView = (TextView) view.findViewById(R.id.title);
+             TextView subtitleView = (TextView) view.findViewById(R.id.subtitle);
+             ImageView iconView = (ImageView) view.findViewById(R.id.icon);
 
-            titleView.setText( mNavItems.get(position).mTitle );
-            subtitleView.setText( mNavItems.get(position).mSubtitle );
-            iconView.setImageResource(mNavItems.get(position).mIcon);
+             titleView.setText( mNavItems.get(position).mTitle );
+             subtitleView.setText( mNavItems.get(position).mSubtitle );
+             iconView.setImageResource(mNavItems.get(position).mIcon);
              **/
 
             return view;
