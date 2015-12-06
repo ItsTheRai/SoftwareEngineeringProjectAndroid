@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.MenuInflater;
 import android.view.View;
 
 import android.widget.BaseAdapter;
@@ -195,6 +196,14 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                 selectItemFromDrawer(position);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.map_actions, menu);
+        return super.onCreateOptionsMenu(menu);
     }
     /**
      @Override
