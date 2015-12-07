@@ -82,6 +82,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 
 
 public class MapsActivity extends FragmentActivity implements OnDataSendToActivity, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
@@ -124,6 +125,8 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
 
         super.onCreate(savedInstanceState);
         //set tracking flag
@@ -198,6 +201,38 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                 selectItemFromDrawer(position);
             }
         });
+
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.drawer_open, R.string.drawer_close){
+
+            public void onDrawerClosed(View drawerview){
+                super.onDrawerClosed(drawerview);
+                Toast toast = Toast.makeText(MapsActivity.this,"Drawer closed", Toast.LENGTH_LONG);
+                toast.show();
+                invalidateOptionsMenu();
+
+            }
+
+            public void onDrawerOpened(View drawView){
+                super.onDrawerOpened(drawView);
+                Toast toast = Toast.makeText(MapsActivity.this,"Drawer open", Toast.LENGTH_LONG);
+                toast.show();
+                invalidateOptionsMenu();
+
+            }
+
+
+        };
+
+
+
+
+
+
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
     }
 
     /**
@@ -826,8 +861,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             default:
                 break;
         }
-
-
+        mDrawerLayout.closeDrawers();
 
         /**
          Fragment fragment = new PreferencesFragment();
@@ -876,10 +910,15 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         Context mContext;
         ArrayList<NavItem> mNavItems;
         String[] drawerItems;
+        String[] subtile;
+        int[] images= {R.mipmap.heatmap , R.mipmap.normalmap};
+
 
         public DrawerListAdapter(Context context) {
             mContext = context;
             drawerItems = context.getResources().getStringArray(R.array.nav_drawer_items);
+            subtile = context.getResources().getStringArray(R.array.subtile_items);
+            //subtile_items
             //mNavItems = navItems;
         }
 
@@ -935,11 +974,14 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
              *
              */
 
-            //ImageView imgIcon = (ImageView) view.findViewById(R.id.imageView1);
+
             TextView txtTitle = (TextView) view.findViewById(R.id.title);
+            TextView subTitle = (TextView) view.findViewById(R.id.subTitle);
+            ImageView imgIcon = (ImageView) view.findViewById(R.id.icon);
 
             txtTitle.setText(drawerItems[position]);
-            // imgIcon.setImageResource(images[position]);
+            subTitle.setText(subtile[position]);
+            imgIcon.setImageResource(images[position]);
             /**
 
              TextView titleView = (TextView) view.findViewById(R.id.title);
