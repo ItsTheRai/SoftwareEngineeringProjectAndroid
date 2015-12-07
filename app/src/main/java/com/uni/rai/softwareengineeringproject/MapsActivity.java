@@ -3,6 +3,7 @@ package com.uni.rai.softwareengineeringproject;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.AdapterView;
@@ -198,6 +200,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         });
     }
 
+    /**
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -205,6 +208,22 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         menuInflater.inflate(R.menu.map_actions, menu);
         return super.onCreateOptionsMenu(menu);
     }
+    **/
+
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.map_actions, menu);
+
+        //Searchable stuff
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        //Look at search_id if not working.
+        SearchView searchView = (SearchView) menu.findItem(R.id.search_id).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+        return true;
+    }
+
     /**
      @Override
      public boolean onCreateOptionsMenu(Menu menu) {

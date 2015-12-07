@@ -26,6 +26,8 @@
             android:parentActivityName=".MainActivity"
             android:theme="@android:style/Theme.Holo.Light" >
             >
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
 
         <meta-data
