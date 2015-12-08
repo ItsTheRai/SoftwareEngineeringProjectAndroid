@@ -19,11 +19,11 @@ public class SQLDatabaseQueryHelper {
     private static final String URL = "jdbc:google:mysql://software-engineering-1102:final-instance2/sales_data?user=root";
     public SQLDatabaseQueryHelper(){
     }
-    public static List<List<Double>> getPlaces(final double latitud, final double longitud,
+    public static List<List<Double>> getPlaces(final double latitude, final double longitude,
                                                final double distanceInKm, final int resultCount) throws SQLException, ClassNotFoundException {
         int KM_CONSTANT = 6371;
-        double latitude = latitud;//50.8252;
-        double longitude = longitud;//-0.13824;
+//        double latitude = latitud;//50.8252;
+//        double longitude = longitud;//-0.13824;
         String url = null;
         Class.forName(CLASS_NAME);
         url = URL;
@@ -49,7 +49,7 @@ public class SQLDatabaseQueryHelper {
 //        "LIMIT 0 , "+resultCount;
                 "select * from HeatmapData where latitude > " + lat1 +
                 " and latitude < " + lat2 + " and longitude > " + lon1 + " and longitude < " + lon2 +
-                " limit 5000";
+                " ";
         Connection conn = DriverManager.getConnection(url);
         //test with mock queries
         ResultSet rs = conn.createStatement().executeQuery(query);

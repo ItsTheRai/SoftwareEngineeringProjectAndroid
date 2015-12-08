@@ -468,7 +468,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         //calculate necassary range to load data from screen size and zoom
         double rangeInKm = getRange(mMap);
         Location location = mCurrentLocation;
-        if (rangeInKm > currentRangeInKm) {
+        if (rangeInKm > currentRangeInKm*1.6) {
             currentRangeInKm = rangeInKm;
             //query DB with async taks
 //                new UpdateMapTask(this).execute(location,range).get();

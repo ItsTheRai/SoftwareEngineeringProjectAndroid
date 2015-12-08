@@ -1,6 +1,7 @@
  package com.uni.rai.softwareengineeringproject.tasks;
 
         import android.app.Activity;
+        import android.app.ProgressDialog;
         import android.content.Context;
         import android.location.Location;
         import android.os.AsyncTask;
@@ -32,14 +33,17 @@
 
 
 public class UpdateMapTask extends AsyncTask<Object, List<List<Double>> , List<List<Double>>> {
-     Activity mActivity;
+//     Activity mActivity;
     //    private static long range =1000000000;
     private static final int NUMBER_OF_RESULTS = 50000;
     private static SalesInformationApi myApiService = null;
-    private Context context;
+//    private Context context;
+    private ProgressDialog dialog;
      OnDataSendToActivity dataSendToActivity;
+     private Activity context;
 
      public UpdateMapTask(Activity activity){
+         this.context = activity;
          dataSendToActivity = (OnDataSendToActivity)activity;
      }
 //    public UpdateMapTask(Activity activity){
@@ -48,8 +52,10 @@ public class UpdateMapTask extends AsyncTask<Object, List<List<Double>> , List<L
 
     @Override
     protected void onPreExecute() {
-//        placesListLabel.setText(R.string.retrievingPlaces);
-//        MainActivity.setProgressBarIndeterminateVisibility(true);
+        super.onPreExecute();
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("Loading housed in your area");
+        dialog.show();
     }
 
     @Override
@@ -95,6 +101,7 @@ public class UpdateMapTask extends AsyncTask<Object, List<List<Double>> , List<L
     protected void onPostExecute(List<List<Double>> result) {
         super.onPostExecute(result);
         dataSendToActivity.sendData(result);
+        dialog.dismiss();
 //        mActivity.getApplication().
 //        for (Quote q : result) {
 //            Toast.makeText(context, q.getWho() + " : " + q.getWhat(), Toast.LENGTH_LONG).show();
