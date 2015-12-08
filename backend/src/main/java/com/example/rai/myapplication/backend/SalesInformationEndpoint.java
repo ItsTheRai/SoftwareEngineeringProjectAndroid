@@ -101,15 +101,15 @@ public class SalesInformationEndpoint {
                     "Invalid value of 'longitude' argument");
         }
 
-        try {
-            location = new GeoPoint(latitude, longitude);
-        } catch (Exception e) {
-            throw new BadRequestException(
-                    "Invalid pair of 'latitude' and 'longitude' arguments");
-        }
+//        try {
+//            location = new GeoPoint(latitude, longitude);
+//        } catch (Exception e) {
+//            throw new BadRequestException(
+//                    "Invalid pair of 'latitude' and 'longitude' arguments");
+//        }
 
-        if (rangeInKilometers > MAXIMUM_DISTANCE) {
-            rangeInKilometers = MAXIMUM_DISTANCE;
+        if (rangeInKm > MAXIMUM_DISTANCE) {
+            rangeInKm = MAXIMUM_DISTANCE;
         }
         List<List<Double>> places = SQLDatabaseQueryHelper.getPlaces(latitude, longitude, rangeInKm, count);
         return places;
