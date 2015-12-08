@@ -152,6 +152,47 @@ public class SalesInformationEndpoint {
         return CollectionResponse.<SalesData>builder().setItems(salesDataList).setNextPageToken(queryIterator.getCursor().toWebSafeString()).build();
     }
 
+    @ApiMethod(
+            name ="findSales",
+            path = "findSalesPath",
+            httpMethod = ApiMethod.HttpMethod.GET)
+    public List<SalesData> findSales(@Named("paon") String paonString,
+                                               @Named("saon") String saonString,
+                                               @Named("street") String streetString,
+                                               @Named("locality") String localityString,
+                                               @Named("postcode") String postcodeString)
+            throws BadRequestException, SQLException, ClassNotFoundException {
+
+
+//        try {
+//            latitude = latitudeString;
+//        } catch (Exception e) {
+//            throw new BadRequestException(
+//                    "Invalid value of 'latitude' argument");
+//        }
+//
+//        try {
+//            longitude = longitudeString;
+//        } catch (Exception e) {
+//            throw new BadRequestException(
+//                    "Invalid value of 'longitude' argument");
+//        }
+//
+//        try {
+//            location = new GeoPoint(latitude, longitude);
+//        } catch (Exception e) {
+//            throw new BadRequestException(
+//                    "Invalid pair of 'latitude' and 'longitude' arguments");
+//        }
+//
+//        if (rangeInKilometers > MAXIMUM_DISTANCE) {
+//            rangeInKilometers = MAXIMUM_DISTANCE;
+//        }
+        List<SalesData> sales = SQLDatabaseQueryHelper.findProperty(paonString, saonString, streetString, localityString, postcodeString);
+        return sales;
+    }
+
+
     private void checkExists(Long id) throws NotFoundException {
         try {
             ofy().load().type(SalesData.class).id(id).safe();

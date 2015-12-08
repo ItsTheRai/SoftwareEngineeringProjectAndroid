@@ -60,6 +60,7 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.uni.rai.softwareengineeringproject.tasks.OnDataSendToActivity;
+import com.uni.rai.softwareengineeringproject.tasks.SearchSalesTask;
 import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
 //import com.uni.rai.softwareengineeringproject.tasks.UpdateLocationAsyncTask;
 //import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
@@ -880,7 +881,10 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
          **/
     }
 
-
+    public List<SalesData> searchSales(String paon, String saon, String street, String locality, String postcode) throws ExecutionException, InterruptedException {
+        List<SalesData> temp= new SearchSalesTask(this).execute(paon, saon, street, locality, postcode).get();
+        return temp;
+    }
 
 
 //    @Override

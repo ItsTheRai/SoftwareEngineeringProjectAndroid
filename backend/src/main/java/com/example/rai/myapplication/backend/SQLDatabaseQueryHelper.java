@@ -1,5 +1,7 @@
 package com.example.rai.myapplication.backend;
 
+import com.example.rai.myapplication.backend.model.SalesData;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -60,6 +62,77 @@ public class SQLDatabaseQueryHelper {
             s.add(rs.getDouble("averagePrice"));
             places.add(s);
         }return places;
+    }
+
+    public static List<SalesData> findProperty(String paon, String saon, String street, String locality, String postcode) throws SQLException, ClassNotFoundException {
+        String url = null;
+        Class.forName(CLASS_NAME);
+        url = URL;
+
+        String query =  "select * from Sale where ";
+        if (postcode == null) {
+            postcode = "postcode like '%' and ";
+        } else {
+            postcode = "postcode = '" + postcode + "' and ";
+        }
+        query += postcode;
+        if (paon == null || paon.equals("")) {
+            paon = "paon like '%' and ";
+        } else {
+            paon = "paon = '" + paon + "' and ";
+        }
+        query += paon;
+        if (saon == null || saon.equals("")) {
+            saon = "saon like '%' and ";
+        } else {
+            saon = "saon = '" + saon + "' and ";
+        }
+        query += saon;
+        if (street == null || street.equals("")) {
+            street = "street like '%' and ";
+        } else {
+            street = "street = '" + street + "' and ";
+        }
+        query += street;
+        if (locality == null || locality.equals("")) {
+            locality = "locality like '%';";
+        } else {
+            locality = "locality = '" + locality + "';";
+        }
+        query += locality;
+
+        Connection conn = DriverManager.getConnection(url);
+        ResultSet rs = conn.createStatement().executeQuery(query);
+        //define return SalesData list
+        List<SalesData> salesDataList = null;
+        if (rs != null) {
+            while (rs.next()) {
+                SalesData salesdata;
+                long id = 1;
+                String county = rs.getString("county");
+                String datetime = rs.getDate("date").toString();
+                String district = rs.getString("district");
+                String duration = rs.getString("duration");
+                float latitude = 0; // Sale table doesn't have these information
+                String local = rs.getString("locality");
+                float longtitude = 0;
+                String oldNew = rs.getString("age");
+                String PAON = rs.getString("paon");
+                String postCode = rs.getString("postcode");
+                int price = rs.getInt("price");
+                String property_type = rs.getString("type");
+                String SAON = rs.getString("saon");
+                String streetName = rs.getString("street");
+                String town = rs.getString("town");
+                String uniqueRef = rs.getString("reference");
+                String PDD_category = rs.getString("pdd");
+
+                salesdata = new SalesData(id, county, datetime, district, duration, latitude, local, longtitude, oldNew, PAON, postCode, price, property_type, SAON, streetName, town, uniqueRef, PDD_category);
+                salesDataList.add(salesdata);
+            }
+            return salesDataList;
+        }
+        return null; // no rows found
     }
 
     /**
