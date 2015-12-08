@@ -384,7 +384,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.getUiSettings().setScrollGesturesEnabled(true);
         mMap.setMyLocationEnabled(true);
         isLockedOn=false;
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
@@ -450,9 +450,10 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         // if can't find current location, check to see if GPS is turned on
         if (mCurrentLocation == null) {
             checkGPS();
+        } else {
+            showUser();
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(20.0f));
         }
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(20.0f));
     }
 
     public boolean clearHeatmap(){
@@ -834,7 +835,11 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                 isHeatmap = true;
                 Toast toast = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast.show();
-
+                showUser();
+                if (mMap.getCameraPosition().zoom < 10) {
+                    mMap.animateCamera((CameraUpdateFactory.zoomTo(10)));
+                }
+                createHeatmap(currentSalesData);
                 try {
                     updateHeatmap();    //querries the DB to update the heatmap
                 } catch (ExecutionException e) {
