@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
+import java.util.concurrent.ExecutionException;
+
 public class SearchActivity extends AppCompatActivity {
 
     private EditText HouseNumber;
@@ -20,6 +22,7 @@ public class SearchActivity extends AppCompatActivity {
     private EditText City;
     private EditText PostCode;
     private Button submitButton;
+    private MapsActivity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,8 @@ public class SearchActivity extends AppCompatActivity {
         Street = (EditText)findViewById(R.id.StreetTextField);
         City = (EditText)findViewById(R.id.CityTextField);
         PostCode = (EditText)findViewById(R.id.PostcodeTextField);
+
+        activity = new MapsActivity();
 
         submitButton = (Button)findViewById(R.id.SubmitButton);
         submitButton.setOnClickListener(new OnClickListener(){
@@ -50,10 +55,22 @@ public class SearchActivity extends AppCompatActivity {
                                     CityText + "/n" + PostCodeText,
                             Toast.LENGTH_LONG).show();
 
-
+                    try {
+                        activity.searchSales(houseNumberText,FlatNumberText,StreetText,CityText,PostCodeText );
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
-                    intent.putExtra("houseNumberText", houseNumberText);
+//                    intent.putExtra("houseNumberText", houseNumberText);
+//                    intent.putExtra("flatNumberText", FlatNumberText);
+//                    intent.putExtra("StreetText", StreetText);
+//                    intent.putExtra("CityText", CityText);
+//                    intent.putExtra("PostCodeText", PostCodeText);
                     startActivity(intent);
+
+
 
 
                 }

@@ -912,7 +912,20 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     }
 
     public List<SalesData> searchSales(String paon, String saon, String street, String locality, String postcode) throws ExecutionException, InterruptedException {
+        if  (paon == null) {
+            paon = "";
+        }
+        if  (saon == null) {
+            saon = "";
+        }
+        if  (street == null) {
+            street = "";
+        }
+        if  (postcode == null) {
+            postcode = "";
+        }
         List<SalesData> temp= new SearchSalesTask(this).execute(paon, saon, street, locality, postcode).get();
+        System.out.println("List: " + temp.size());
         return temp;
     }
 
