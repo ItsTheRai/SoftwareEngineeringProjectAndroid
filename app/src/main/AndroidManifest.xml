@@ -26,7 +26,8 @@
             android:parentActivityName=".MainActivity"
             android:theme="@android:style/Theme.Holo.Light" >
             >
-            <meta-data android:name="android.app.searchable"
+            <meta-data
+                android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
 
@@ -46,6 +47,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".SearchActivity"
+            android:label="@string/title_activity_search"
+            android:parentActivityName=".MapsActivity">
         </activity>
     </application>
 

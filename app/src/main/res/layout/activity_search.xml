@@ -1,0 +1,134 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.uni.rai.softwareengineeringproject.SearchActivity"
+   >
+
+
+    <TextView
+        android:layout_width="125dp"
+        android:textColor="#000000"
+        android:layout_height="40dp"
+        android:text="House Number"
+        android:id="@+id/houseNumberTextView"
+        android:layout_alignParentLeft="true"
+        android:textSize="15dp"/>
+
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:id="@+id/houseNumberTextField"
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/houseNumberTextView"
+        android:layout_toEndOf="@+id/houseNumberTextView" />
+
+    <TextView
+        android:layout_width="125dp"
+        android:layout_height="40dp"
+        android:text="Flat Number (if required)"
+        android:textColor="#000000"
+        android:id="@+id/FlatNumberTextView"
+        android:textSize="15dp"
+        android:layout_below="@+id/houseNumberTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/FlatNumberTextField" />
+
+
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:id="@+id/FlatNumberTextField"
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:layout_below="@+id/houseNumberTextField"
+        android:layout_alignLeft="@+id/houseNumberTextField"
+        android:layout_alignStart="@+id/houseNumberTextField" />
+
+
+
+
+    <TextView
+        android:layout_width="125dp"
+        android:layout_height="40dp"
+        android:text="Street "
+        android:textColor="#000000"
+        android:id="@+id/StreetTextView"
+        android:textSize="15dp"
+        android:layout_below="@+id/FlatNumberTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:id="@+id/PostcodeTextField"
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:layout_below="@+id/CityTextField"
+        android:layout_toRightOf="@+id/FlatNumberTextView"
+        android:layout_toEndOf="@+id/FlatNumberTextView" />
+
+    <TextView
+        android:layout_width="125dp"
+        android:layout_height="40dp"
+        android:text="City/Town*"
+        android:textColor="#000000"
+        android:id="@+id/CityTextView"
+        android:layout_below="@+id/StreetTextView"
+        android:textSize="15dp"
+        android:textIsSelectable="false"/>
+
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:id="@+id/CityTextField"
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:layout_below="@+id/StreetTextView"
+        android:layout_toRightOf="@+id/StreetTextView"
+        android:layout_toEndOf="@+id/StreetTextView" />
+
+    <TextView
+        android:layout_width="125dp"
+        android:layout_height="40dp"
+        android:text="Postcode"
+        android:id="@+id/PostcodeTextView"
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:layout_alignTop="@+id/PostcodeTextField"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+
+
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:id="@+id/StreetTextField"
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:layout_below="@+id/FlatNumberTextView"
+        android:layout_toRightOf="@+id/FlatNumberTextView"
+        android:layout_toEndOf="@+id/FlatNumberTextView" />
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:id="@+id/SubmitButton"
+        android:textColor="#000000"
+        android:layout_below="@+id/PostcodeTextView"
+        android:textSize="13dp"
+
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/PostcodeTextField"
+        android:layout_alignEnd="@+id/PostcodeTextField" />
+
+</RelativeLayout>

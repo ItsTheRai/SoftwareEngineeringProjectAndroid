@@ -233,6 +233,8 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //houseNumberText = intent.getStringExtra("houseNumberText");
+
 
     }
 
@@ -250,14 +252,15 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.map_actions, menu);
-
+/**
         //Searchable stuff
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        //Look at search_id if not working.
+        //Look at  if not working.
         SearchView searchView = (SearchView) menu.findItem(R.id.search_id).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
-        return true;
+ **/
+        return super.onCreateOptionsMenu(menu);
     }
 
     /**
@@ -267,11 +270,13 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
      getMenuInflater().inflate(R.menu.map_activity, menu);
      return true;
      }
+     **/
 
+/**
      @Override
      public boolean onOptionsItemSelected(MenuItem item) {
      this.item = item;
-     getItem(item);
+
      switch (item.getItemId()) {
      case R.id.heat_map:
      isHeatmap = true;
@@ -304,8 +309,28 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
      return super.onOptionsItemSelected(item);
      }
      }
+**/
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        this.item = item;
+
+        switch (item.getItemId()) {
+            case R.id.search_id:
+                Intent intent = new Intent(getApplicationContext(),SearchActivity.class);
+               // intent.putExtra("preferences_id", preferenceId);
+                startActivity(intent);
+
+                return true;
 
 
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    /**
      public boolean getItem(MenuItem i) {
      switch (i.getItemId()) {
      case R.id.heat_map:
@@ -316,7 +341,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
      return false;
      }
      }
-     **/
+    **/
 
     @Override
     public void onStart() {
