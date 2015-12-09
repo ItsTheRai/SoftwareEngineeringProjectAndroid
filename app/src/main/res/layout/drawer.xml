@@ -19,7 +19,45 @@
     <RelativeLayout
         android:id="@+id/mainContent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Minimum Value:  "
+            android:id="@+id/textView2"
+            android:background="#FFFFFF"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:layout_above="@+id/textView3"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Maximum Value:  "
+            android:id="@+id/textView3"
+            android:textColor="#000000"
+            android:background="#FFFFFF"
+            android:textSize="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Average Value:  "
+            android:id="@+id/textView4"
+            android:textColor="#000000"
+            android:background="#FFFFFF"
+            android:textSize="20dp"
+            android:layout_above="@+id/textView2"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
 
     <!-- The navigation drawer -->
     <RelativeLayout

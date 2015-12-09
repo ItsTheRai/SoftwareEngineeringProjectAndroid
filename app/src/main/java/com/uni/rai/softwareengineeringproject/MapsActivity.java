@@ -176,6 +176,16 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
         mNavItems.add(new NavItem("Home", "Meetup destination", R.mipmap.arrowleft));
 
+        //Heatmap Overlay
+        final TextView minText = (TextView) findViewById(R.id.textView2);
+        final TextView maxText = (TextView) findViewById(R.id.textView3);
+        final TextView averageText = (TextView) findViewById(R.id.textView4);
+
+        //Replace second strings with values.
+        minText.setText("Minimum Value:  " + "MINVALUE");
+        maxText.setText("Maximum Value:  " + "MAXVALUE");
+        averageText.setText("Average Value:  " + "AVERAGEVALUE");
+
 /**
  // DrawerLayout
  mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
