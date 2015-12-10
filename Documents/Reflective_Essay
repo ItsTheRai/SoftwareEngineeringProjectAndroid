@@ -1,0 +1,79 @@
+Software Engineering: Reflective Essay
+
+     Prior to delving into features of the task specification, it is important to build an understanding of the field within 
+which our group worked. The term ‘Software Engineering’ (S.E.) is said to have been coined in a letter sent by Anthony 
+Oettinger (President of ACM), in the lectures of Douglas T. Ross (MIT) and by Margaret Hamilton (Apollo Guidance Software). 
+In order to understand the gravity of their contribution to the field, we must view their work through the lens of their 
+contemporary society, as opposed to ours, which is much more socio-technologically intertwined. During their time, S.E. was a 
+field so new that thinking in terms of time-management, or task scheduling was almost ludicrous. This was due to the fact that 
+making judgements on a project’s completion date was almost impossible. The way in which their computers were built meant 
+that once a new model came out every couple of years, software had to be re-written. This essentially meant that the main 
+thing stifling the ‘packaged’ software industry was ‘the computer’ itself. It is said that the official start of S.E. as a 
+profession can be traced back to two conferences on S.E. in Germany in 1968, sponsored by the NATO Science Committee, which 
+gave the field its initial boost.
+     When we fast forward to modern times, the commercial framework for the production and release of software is almost 
+unrecognisable. Today’s model is often built around writing software in a streamlined, no-waste, adaptable manner and 
+has a far greater onus on testing. The shift between S.E. in the time of Oettinger & his peers and the current state of 
+affairs can largely be accredited to both ‘The Software Crisis’ of 1965-1985 and the reach and availability of the 
+internet. The Software Crisis is a term to summarise the shortfalls of S.E. during this time, originally predominantly 
+concerning productivity, but later evolving to emphasise software quality. The main problems concerned were projects 
+running over budget and schedule, certain projects causing property damage and even the loss of human life due to human 
+error in programming. These, when paired with the economic issue of software costing even more to run and maintain than 
+to build, meant that for some, the field was essentially doomed from the outset. Another reason for the massive change 
+in S.E. practice is the internet. The rise of the internet led to an explosion of demand for international information 
+display and processing software, as well as the prominence of both corporate and private e-mail. The sheer volume of 
+demand for these services helped to drag the field out of its ‘dark-ages’, as more and more money was poured into 
+researching and solving the aforementioned problems. During this period, typically, computer-user bases went from either 
+hundreds, or thousands of users to sometimes many millions of international users. The reason this is relevant is that 
+although we have progressed a lot since the Software Crisis, many of the problems have not been fully solved and are very 
+useful to be mindful of when designing software today.
+     The overarching assignment was to design and implement a working mobile android application that showed the prices of 
+houses across the UK as a heat-map overlaid onto Google Maps (which was made available by Alphabet through the use of their 
+Google Maps API). The task was designed to simulate the trials of working within a faux commercial consumer-producer 
+association, as opposed to the usual academic teacher-student relationship. This meant that rather than being provided 
+with a comprehensive breakdown of the full task requirements from the beginning, we were fed smaller goals that were 
+achievable within the few weeks prior to the next specification. An example of this in practice is that in the first few 
+weeks, the original application was one that displayed dog ownership data. Within the scope of this project, we were 
+expected to decide on a S.E. production model to follow. Due to the erratic, changeable nature of the task set, we decided 
+to follow ‘Agile’. Agile methods replace high-level, static design with frequent re-design. More simply, it is about 
+recognising the limits of foresight within a turbulent environment. Despite our planning, there were numerous problems 
+encountered during the module and also thankfully a number of things that went well. The following essay will detail one 
+helpful feature of the group’s software engineering process, namely our use of Sprint Backlogs and one task that caused us a 
+number of problems, namely the process of attempting to implement Google DataStore as our backend hosting system.
+     In a project as relatively large scale as this, it is extremely likely that certain things will go wrong. One 
+problematic feature of the exercise was our misuse of Google Datastore. This application is a highly scalable NoSQL database 
+that automatically handles sharing and replication. One of the primary reasons for us choosing to use this application is 
+the fact that it provides a powerful query engine that allows you to search for data across multiple properties and sort as 
+needed. Unfortunately, with hindsight it can be said that using this for the task was not the correct path to follow. 
+Datastore did not meet the needs of our application. One aspect of the program’s functionality that was lacking was that it 
+could not support multiple inequality queries, which was required for our solution to the task at hand. Another reason 
+Datastore was not viable for the storing and retrieving of our application’s data is that adding files to the index takes 
+far too much computational power for the typical smart-phone and was therefore far too expensive and time consuming. When 
+confronted with a significant issue such as this, our employment of the Agile method of software engineering should have 
+allowed for the almost organic minimisation of any long term problems. Rather than realising this quickly, we spent far too 
+much time attempting to create a functioning implementation of our application using Datastore. Time spent working towards 
+this goal was eventually deemed futile and we decided to attempt to re-write our application using a different database 
+system entirely (Google’s SQL, a MySQL based platform). From this we learned that when under strict time conditions, it is 
+often best to make use of conventional, tried and tested strategies, as opposed to more unexplored, experimental ones.
+     One helpful feature of the group’s Software Engineering process was our use of the Sprint Backlogs within our Agile 
+development methodology. Sprint backlogs are lists of tasks identified by a Scrum team which are to be fulfilled during the 
+Scrum sprint. Using these backlogs allowed for the breaking down of user stories into tasks, time management planning and 
+any workflow redistribution (which is crucial for both Scrum and Agile). One of the main useful components of the Sprint 
+Backlogs were User stories. User stories are a description of an everyday job requirement for an end user from their own 
+perspective. User stories are used as the basis for defining the functions of a system, such as those that our application 
+should provide. Our utilisation of these stories within our group’s software engineering process allowed for a clear, shared 
+view of the program’s end goal. Our user stories were stored within our Github project’s ‘Sprint’ backlogs. An example of 
+one of these user stories is when attempting to ‘display a heat map of newest sales information’ it was recorded that 
+someone must be able to ‘allow for swapping between views’. This simplistic, non-technical description of an issue that 
+needed be addressed allowed for a similarly easy construction of the relevant methods. This particular task was completed 
+on ‘Day 10’, which was also noted for the sake of both organisation and communication. Although it is hard to compare such 
+different concepts, Sprint backlogs, unlike Google Datastore, are something that as a group we are likely to consider using 
+in future projects of a similar nature.
+     Whilst there have certainly been features of our group project that went well, there have also been a number of ways 
+in which looking back, we could have definitely improved. An example of a helpful feature being the aforementioned 
+Sprint Backlog, which provide a stark contrast to our problems with Google DataStore which did not go so well. Our use 
+of the Agile Software Engineering methodology undoubtedly made the process go much more smoothly than if we were to 
+have followed another, less suitable system for the task, for example Waterfall. In hindsight, the task has been both 
+eventful and fairly unique. Very few other modules attempt to simulate the real world of software engineering, as opposed 
+to following much more archetypal academic approaches towards learning and testing. The series of objectives set for us have 
+been varied and often demanding, yet all were completed to varying degrees of satisfaction within the timeframe.
