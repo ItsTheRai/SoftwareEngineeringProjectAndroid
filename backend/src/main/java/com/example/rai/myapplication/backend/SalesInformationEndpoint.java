@@ -156,7 +156,7 @@ public class SalesInformationEndpoint {
             name ="findSales",
             path = "findSalesPath",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public List<List<String>> findSales(@Named("paon") String paonString,
+    public List<SalesData> findSales(@Named("paon") String paonString,
                                                @Named("saon") String saonString,
                                                @Named("street") String streetString,
                                                @Named("town") String townString,
@@ -188,7 +188,7 @@ public class SalesInformationEndpoint {
 //        if (rangeInKilometers > MAXIMUM_DISTANCE) {
 //            rangeInKilometers = MAXIMUM_DISTANCE;
 //        }
-        List<List<String>> sales = SQLDatabaseQueryHelper.findProperty(paonString, saonString, streetString, townString, postcodeString);
+        List<SalesData> sales = SQLDatabaseQueryHelper.findProperty(paonString, saonString, streetString, townString, postcodeString);
         return sales;
     }
 

@@ -64,12 +64,12 @@ public class SQLDatabaseQueryHelper {
         }return places;
     }
 
-    public static List<List<String>> findProperty(String paon, String saon, String street, String town, String postcode) throws SQLException, ClassNotFoundException {
+    public static List<SalesData> findProperty(String paon, String saon, String street, String town, String postcode) throws SQLException, ClassNotFoundException {
         String url = null;
         Class.forName(CLASS_NAME);
         url = URL;
 
-        String query =  "select reference, price, Sale.postcode, latitude, longitude from Sale join HeatmapData where Sale.postcode = HeatmapData.postcode and ";
+        String query =  "select reference, price, Sale.postcode, latitude, longitude from Sale join HeatmapData on Sale.postcode = HeatmapData.postcode where ";
         if (postcode == null || postcode.equals("")) {
             postcode = "Sale.postcode like '%' and ";
         } else {
@@ -106,22 +106,33 @@ public class SQLDatabaseQueryHelper {
         //define return SalesData list
 
         if (rs != null) {
-            List<List<String>> salesDataList = new ArrayList<List<String>>();
+            List<SalesData> salesDataList = new ArrayList<SalesData>();
             while (rs.next()) {
-                List<String> stringList = new ArrayList<String>();
-                stringList.add(rs.getString("reference"));
-                stringList.add(rs.getString("latitude"));
-                stringList.add(rs.getString("longitude"));
-                stringList.add(rs.getString("postcode"));
-                stringList.add(rs.getInt("price") + "");
-//                String property_type = rs.getString("type");
-//                String SAON = rs.getString("saon");
-//                String streetName = rs.getString("street");
-//                String townString = rs.getString("town");
-//                String uniqueRef = rs.getString("reference");
-//                String PDD_category = rs.getString("pdd");
+                SalesData salesdata;
+                String ref = rs.getString("reference");
+                float lat = (float) rs.getDouble("latitude");
+                float lng = (float) rs.getDouble("longitude");
+                long id = 1;
+                String county = rs.getString("county");
+                String datetime = rs.getDate("date").toString();
+                String district = rs.getString("district");
+                String duration = rs.getString("duration");
+                String locality = rs.getString("locality");
+                String oldNew = rs.getString("age");
+                String PAON = rs.getString("paon");
+                String postCode = rs.getString("postcode");
+//                String price = rs.getInt("price") + "";
+                int price = rs.getInt("price");
+                String property_type = rs.getString("type");
+                String SAON = rs.getString("saon");
+                String streetName = rs.getString("street");
+                String townString = rs.getString("town");
+                String PDD_category = rs.getString("pdd");
 
-                salesDataList.add(stringList);
+                salesdata = new SalesData(id, county, datetime, district, duration, lat, locality, lng, oldNew, PAON, postCode, price, property_type, SAON, streetName, townString, ref, PDD_category);
+                salesDataList.add(salesdata);
+//                SalesDataSimplified sale = new SalesDataSimplified(ref, price, lat, lng, postCode);
+//                salesDataList.add(sale);
 //                System.out.println("Added sale successfully");
             }
             return salesDataList;
