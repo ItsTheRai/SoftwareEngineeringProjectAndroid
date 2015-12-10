@@ -13,6 +13,7 @@
     <string-array name="nav_drawer_items">
         <item>Heat Map</item>
         <item>Normal Map</item>
+        <item>Pin Map</item>
 
 
 
@@ -21,7 +22,7 @@
     <string-array name="subtile_items">
         <item>Switch on the heat map</item>
         <item>Switch on the normal map</item>
-
+        <item>Switch on the pin map</item>
 
     </string-array>
         <string name="title_activity_search">SearchActivity</string>
