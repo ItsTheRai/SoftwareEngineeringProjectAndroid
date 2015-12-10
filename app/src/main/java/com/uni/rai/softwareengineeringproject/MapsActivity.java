@@ -950,7 +950,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         }
         if  (postcode == null) {
             postcode = "";
-        } else {
+        } else if (!postcode.equals("") && postcode.length() >= 5){
             postcode = postcode.toUpperCase();
             // properly format the postcode
             String outwardCode = postcode.substring(0, postcode.length() - 3);
