@@ -914,7 +914,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
          **/
     }
 
-    public List<SalesData> searchSales(String paon, String saon, String street, String town, String postcode) throws ExecutionException, InterruptedException {
+    public List<List<String>> searchSales(String paon, String saon, String street, String town, String postcode) throws ExecutionException, InterruptedException {
         if  (paon == null) {
             paon = "";
         } else {
@@ -943,7 +943,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             String inwardCode = postcode.substring(postcode.length() - 3);
             postcode = outwardCode + " " + inwardCode;
         }
-        List<SalesData> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
+        List<List<String>> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
         System.out.println("List: " + temp.size());
         if (!temp.isEmpty() && temp.size() <= 100) {
             createMarkers(temp);
@@ -955,7 +955,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         return temp;
     }
 
-    private void createMarkers(List<SalesData> sales) {
+    private void createMarkers(List<List<String>> sales) {
         double xOffset = -0.05;
         double yOffset = -0.05;
         for (int i = 0; i < sales.size(); i++) {
@@ -965,12 +965,13 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             if (i % 10 == 0) {
                 yOffset += 0.05;
             }
-            double lat = sales.get(i).getLatitude() + xOffset;
-            double lng = sales.get(i).getLongitude() + yOffset;
+
+            double lat = Double.parseDouble(sales.get(i).get(1)) + xOffset;
+            double lng = Double.parseDouble(sales.get(i).get(2)) + yOffset;
             mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(lat, lng))
-                    .title(sales.get(i).getPaon() + " " + sales.get(i).getSaon() + " " + sales.get(i).getStreet())
-                    .snippet("£" + sales.get(i).getPrice()));
+                    .position(new LatLng(lat, lng)));
+//                    .title(sales.get(i).get(3) + " " + sales.get(i).get(4) + " " + sales.get(i).get(5))
+//                    .snippet("£" + sales.get(i).get(6)));
         }
     }
 
