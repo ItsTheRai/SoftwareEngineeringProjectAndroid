@@ -56,6 +56,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
@@ -564,31 +565,6 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 //        asyncTask.execute(mCurrentLocation,currentRangeInKm*1.5);
 
 //            new UpdateMapTask(this).execute(mCurrentLocation,currentRangeInKm*1.5);
-        } else {
-            //  remove the dummy lat long if the user zooms in past level 13
-            if (mMap.getCameraPosition().zoom > 13) {
-//                if (!currentSalesData.isEmpty()) {
-//                    if (dummy != null) {
-//                        if (currentSalesData.contains(dummy)) {
-//                            currentSalesData.remove(dummy);
-                            clearHeatmap();
-                            createHeatmap(currentSalesData);
-//                        System.out.println("removed dummy lat long");
-//                        }
-//                    }
-//                }
-            } else { // otherwise add it if it's not already in the list
-                if (!currentSalesData.isEmpty()) {
-//                    if (dummy != null) {
-//                        if (!currentSalesData.contains(dummy)) {
-//                            currentSalesData.add(dummy);
-                            clearHeatmap();
-                            createHeatmap(currentSalesData);
-//                        System.out.println("added dummy lat long");
-//                        }
-//                    }
-                }
-            }
         }
     }
 //        }
@@ -945,7 +921,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
          **/
     }
 
-    public List<List<String>> searchSales(String paon, String saon, String street, String town, String postcode) throws ExecutionException, InterruptedException {
+    public List<SalesData> searchSales(String paon, String saon, String street, String town, String postcode) throws ExecutionException, InterruptedException {
         if  (paon == null) {
             paon = "";
         } else {
@@ -974,9 +950,35 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             String inwardCode = postcode.substring(postcode.length() - 3);
             postcode = outwardCode + " " + inwardCode;
         }
-        List<List<String>> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
+        List<SalesData> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
         System.out.println("List: " + temp.size());
+        if (!temp.isEmpty() && temp.size() <= 100) {
+            createMarkers(temp);
+        } else if (temp.isEmpty()) {
+            Toast.makeText(MapsActivity.this,"No result found", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(MapsActivity.this,"Too many results found, please refine your search criteria", Toast.LENGTH_LONG).show();
+        }
         return temp;
+    }
+
+    private void createMarkers(List<SalesData> sales) {
+        double xOffset = -0.05;
+        double yOffset = -0.05;
+        for (int i = 0; i < sales.size(); i++) {
+//            double lat = Double.parseDouble(l.get(1));
+//            double lng = Double.parseDouble(l.get(2));
+            xOffset += 0.05;
+            if (i % 10 == 0) {
+                yOffset += 0.05;
+            }
+            double lat = sales.get(i).getLatitude() + xOffset;
+            double lng = sales.get(i).getLongitude() + yOffset;
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(lat, lng))
+                    .title(sales.get(i).getPaon() + " " + sales.get(i).getSaon() + " " + sales.get(i).getStreet())
+                    .snippet("£" + sales.get(i).getPrice()));
+        }
     }
 
 

@@ -12,6 +12,7 @@
 
  import java.io.IOException;
  import java.util.ArrayList;
+ import java.util.Collection;
  import java.util.List;
 
 
@@ -31,7 +32,7 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> 
 
     @Override
     //not type safe but gets the job done
-    protected List<List<String>> doInBackground(String... params) {
+    protected List<SalesData> doInBackground(String... params) {
         String paon = params[0];
         String saon =  params[1];
         String street =  params[2];
@@ -47,7 +48,7 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> 
                     .setRootUrl("https://software-engineering-1102.appspot.com/_ah/api/");
             myApiService = builder.build();
         }
-        List<List<String>> result = null;
+        SalesDataCollection result = null;
 
         try {
             result = myApiService.findSales(paon, saon, street, town, postcode).execute();
@@ -56,7 +57,7 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> 
         }
 //        if(result)
         if(result!=null && !result.isEmpty()) {
-            return result;
+            return result.getItems();
         }
         return new ArrayList<>();
     }
