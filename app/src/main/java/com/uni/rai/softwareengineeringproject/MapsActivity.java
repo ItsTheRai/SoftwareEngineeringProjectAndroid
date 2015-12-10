@@ -548,26 +548,26 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         } else {
             //  remove the dummy lat long if the user zooms in past level 13
             if (mMap.getCameraPosition().zoom > 13) {
-                if (!currentSalesData.isEmpty()) {
-                    if (dummy != null) {
-                        if (currentSalesData.contains(dummy)) {
-                            currentSalesData.remove(dummy);
+//                if (!currentSalesData.isEmpty()) {
+//                    if (dummy != null) {
+//                        if (currentSalesData.contains(dummy)) {
+//                            currentSalesData.remove(dummy);
                             clearHeatmap();
                             createHeatmap(currentSalesData);
 //                        System.out.println("removed dummy lat long");
-                        }
-                    }
-                }
+//                        }
+//                    }
+//                }
             } else { // otherwise add it if it's not already in the list
                 if (!currentSalesData.isEmpty()) {
-                    if (dummy != null) {
-                        if (!currentSalesData.contains(dummy)) {
-                            currentSalesData.add(dummy);
+//                    if (dummy != null) {
+//                        if (!currentSalesData.contains(dummy)) {
+//                            currentSalesData.add(dummy);
                             clearHeatmap();
                             createHeatmap(currentSalesData);
 //                        System.out.println("added dummy lat long");
-                        }
-                    }
+//                        }
+//                    }
                 }
             }
         }
@@ -596,39 +596,36 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     public List<WeightedLatLng> getWeightedFromList(List<List<Double>> temp){
         // first normalise the price range between 1 to 30
-        minPrice = Double.MAX_VALUE;
-        maxPrice = Double.MIN_VALUE;
-        final double MAX_INTENSITY = 30;
-        final double MIN_INTENSITY = 1;
-        double priceSum = 0;
+//        double minPrice = Double.MAX_VALUE;
+//        double maxPrice = Double.MIN_VALUE;
+//        final double MAX_INTENSITY = 30;
+//        final double MIN_INTENSITY = 1;
         // find out the min and max price of properties in the list retrieved from database
-        for(List<Double> heat:temp) {
-            priceSum += heat.get(2);
-            if (heat.get(2) < minPrice) {
-                minPrice = heat.get(2);
-            } else if (heat.get(2) > maxPrice){
-                maxPrice = heat.get(2);
-            }
-        }
-        averagePrice = priceSum / temp.size();
-        updatePrices();
+//        for(List<Double> heat:temp) {
+//            if (heat.get(2) < minPrice) {
+//                minPrice = heat.get(2);
+//            } else if (heat.get(2) > maxPrice){
+//                maxPrice = heat.get(2);
+//            }
+//        }
         List<WeightedLatLng> list = new ArrayList<>();
 //        double min = Double.MAX_VALUE;
 //        double max = Double.MIN_VALUE;
-
-        HashMap<String, Double> intensityByArea = new HashMap<String, Double>();
+//        double sum = 0;
+//        HashMap<String, Double> intensityByArea = new HashMap<String, Double>();
         for(List<Double> heat:temp){
             // calculate the normalised intensity
-            double intensity = MIN_INTENSITY + ((heat.get(2) - minPrice) * (MAX_INTENSITY - MIN_INTENSITY)) / (maxPrice - minPrice);
+//            double intensity = MIN_INTENSITY + ((heat.get(2) - minPrice) * (MAX_INTENSITY - MIN_INTENSITY)) / (maxPrice - minPrice);
+//            sum += intensity;
             // find out the sum of intensity of nearby places and store them in a hashmap
-            int lat = (int) (heat.get(0).doubleValue() * 10);
-            int longt = (int) (heat.get(1).doubleValue() * 10);
-            Double currentArea = intensityByArea.get(lat + "," + longt);
-            if (currentArea != null) {
-                intensityByArea.put(lat + "," + longt, currentArea + intensity);
-            } else {
-                intensityByArea.put(lat + "," + longt, intensity);
-            }
+//            int lat = (int) (heat.get(0).doubleValue() * 10);
+//            int longt = (int) (heat.get(1).doubleValue() * 10);
+//            Double currentArea = intensityByArea.get(lat + "," + longt);
+//            if (currentArea != null) {
+//                intensityByArea.put(lat + "," + longt, currentArea + intensity);
+//            } else {
+//                intensityByArea.put(lat + "," + longt, intensity);
+//            }
 
             //System.out.println("intensity: " + intensity);
 //            if (intensity < min) {
@@ -638,26 +635,26 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 //                max = intensity;
 //                System.out.println("min: " + min + ", max: " + max);
 //            }
-            list.add(new WeightedLatLng(new LatLng(heat.get(0),heat.get(1)), intensity));
+            list.add(new WeightedLatLng(new LatLng(heat.get(0),heat.get(1)), heat.get(2)));
         }
 
         // find out the area with the greatest sum of intensity and use that sum/10 as the intensity of the dummy weighted lat long
-        double biggestArea = 0;
+//        double biggestArea = 0;
 //        System.out.println("List Size: " + temp.size());
 //        System.out.println("Map Size: " + intensityByArea.values().size());
-        for (Double d: intensityByArea.values()) {
+//        for (Double d: intensityByArea.values()) {
 //            System.out.println("d: " + d);
-            if (d > biggestArea) {
-                biggestArea = d;
-            }
-        }
+//            if (d > biggestArea) {
+//                biggestArea = d;
+//            }
+//        }
 //        System.out.println("biggestArea: " + biggestArea);
-        dummy = new WeightedLatLng(new LatLng(54, -1), biggestArea / 10);
+//        dummy = new WeightedLatLng(new LatLng(54, -1), biggestArea / 10);
         // only display the dummy if the user zoomed out past level 13
-        if (mMap.getCameraPosition().zoom < 13) {
-            list.add(dummy);
+//        if (mMap.getCameraPosition().zoom < 13) {
+//            list.add(dummy);
 //            System.out.println("add dummy");
-        }
+//        }
         return list;
     }
 
@@ -838,7 +835,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     //  create heatmap using the list taken from a parameter
     public boolean createHeatmap(List<WeightedLatLng> pointsList) {
-        HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).radius(50).build();
+        HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).radius(10).build();
         tOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tProvider));
         return true;
     }
