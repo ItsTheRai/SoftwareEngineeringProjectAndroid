@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -81,7 +82,7 @@ import java.util.concurrent.ExecutionException;
 import android.view.Menu;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 
@@ -207,8 +208,8 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         });
 
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.drawer_open, R.string.drawer_close){
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,R.drawable.ic_drawer,
+               R.string.drawer_open, R.string.drawer_close){
 
             public void onDrawerClosed(View drawerview){
                 super.onDrawerClosed(drawerview);
@@ -230,7 +231,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         };
 
 
-
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 
 
@@ -331,6 +332,10 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     public boolean onOptionsItemSelected(MenuItem item) {
         this.item = item;
 
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         switch (item.getItemId()) {
             case R.id.search_id:
                 Intent intent = new Intent(getApplicationContext(),SearchActivity.class);
@@ -377,6 +382,20 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mGoogleApiClient.disconnect();
         mCurrentLocation = null; // reset the current location to null
         Log.d(TAG, "isConnected ...............: " + mGoogleApiClient.isConnected());
+    }
+
+    @Override
+    public void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+
+
+    }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+
     }
 
     @Override
@@ -989,7 +1008,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         ArrayList<NavItem> mNavItems;
         String[] drawerItems;
         String[] subtile;
-        int[] images= {R.mipmap.heatmap , R.mipmap.normalmap};
+        int[] images= {R.mipmap.heatmap , R.mipmap.normalmap,R.mipmap.pinmap};
 
 
         public DrawerListAdapter(Context context) {
