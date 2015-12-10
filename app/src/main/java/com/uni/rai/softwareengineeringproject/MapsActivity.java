@@ -926,7 +926,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
          **/
     }
 
-    public List<SalesData> searchSales(String paon, String saon, String street, String town, String postcode) throws ExecutionException, InterruptedException {
+    public List<List<String>> searchSales(String paon, String saon, String street, String town, String postcode) throws ExecutionException, InterruptedException {
         if  (paon == null) {
             paon = "";
         } else {
@@ -955,7 +955,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             String inwardCode = postcode.substring(postcode.length() - 3);
             postcode = outwardCode + " " + inwardCode;
         }
-        List<SalesData> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
+        List<List<String>> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
         System.out.println("List: " + temp.size());
         return temp;
     }

@@ -31,11 +31,11 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> 
 
     @Override
     //not type safe but gets the job done
-    protected List<SalesData> doInBackground(String... params) {
+    protected List<List<String>> doInBackground(String... params) {
         String paon = params[0];
         String saon =  params[1];
         String street =  params[2];
-        String locality =  params[3];
+        String town =  params[3];
         String postcode =  params[4];
 
 //        }
@@ -47,16 +47,16 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> 
                     .setRootUrl("https://software-engineering-1102.appspot.com/_ah/api/");
             myApiService = builder.build();
         }
-        SalesDataCollection result = null;
+        List<List<String>> result = null;
 
         try {
-            result = myApiService.findSales(paon, saon, street, locality, postcode).execute();
+            result = myApiService.findSales(paon, saon, street, town, postcode).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
 //        if(result)
         if(result!=null && !result.isEmpty()) {
-            return result.getItems();
+            return result;
         }
         return new ArrayList<>();
     }

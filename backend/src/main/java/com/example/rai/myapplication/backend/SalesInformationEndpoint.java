@@ -156,10 +156,10 @@ public class SalesInformationEndpoint {
             name ="findSales",
             path = "findSalesPath",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public List<SalesData> findSales(@Named("paon") String paonString,
+    public List<List<String>> findSales(@Named("paon") String paonString,
                                                @Named("saon") String saonString,
                                                @Named("street") String streetString,
-                                               @Named("locality") String localityString,
+                                               @Named("town") String townString,
                                                @Named("postcode") String postcodeString)
             throws BadRequestException, SQLException, ClassNotFoundException {
 
@@ -188,7 +188,7 @@ public class SalesInformationEndpoint {
 //        if (rangeInKilometers > MAXIMUM_DISTANCE) {
 //            rangeInKilometers = MAXIMUM_DISTANCE;
 //        }
-        List<SalesData> sales = SQLDatabaseQueryHelper.findProperty(paonString, saonString, streetString, localityString, postcodeString);
+        List<List<String>> sales = SQLDatabaseQueryHelper.findProperty(paonString, saonString, streetString, townString, postcodeString);
         return sales;
     }
 
