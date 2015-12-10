@@ -3,7 +3,6 @@ package com.uni.rai.softwareengineeringproject;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,13 +24,9 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.AdapterView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager.*;
-import android.support.v4.app.FragmentManager;
 
 //import com.example.rai.myapplication.backend.model.SalesLocationData;
 //import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
@@ -75,7 +70,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -84,7 +78,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 
 
 public class MapsActivity extends FragmentActivity implements OnDataSendToActivity, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,

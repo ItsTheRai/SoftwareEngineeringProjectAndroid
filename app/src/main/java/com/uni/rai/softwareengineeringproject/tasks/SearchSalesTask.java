@@ -7,6 +7,7 @@
  import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
  import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
  import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
+ import com.example.rai.myapplication.backend.salesInformationApi.model.StringCollectionCollection;
  import com.google.api.client.extensions.android.http.AndroidHttp;
  import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 
@@ -15,7 +16,7 @@
  import java.util.List;
 
 
-public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> {
+public class SearchSalesTask extends AsyncTask< String, Void , List<List<String>>> {
      Activity mActivity;
     private static SalesInformationApi myApiService = null;
     private Context context;
@@ -47,7 +48,7 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> 
                     .setRootUrl("https://software-engineering-1102.appspot.com/_ah/api/");
             myApiService = builder.build();
         }
-        List<List<String>> result = null;
+        StringCollectionCollection result = null;
 
         try {
             result = myApiService.findSales(paon, saon, street, town, postcode).execute();
@@ -56,7 +57,7 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> 
         }
 //        if(result)
         if(result!=null && !result.isEmpty()) {
-            return result;
+            return result.getItems();
         }
         return new ArrayList<>();
     }
