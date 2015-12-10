@@ -11,6 +11,7 @@
  import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 
  import java.io.IOException;
+ import java.util.ArrayList;
  import java.util.List;
 
 
@@ -54,7 +55,10 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> 
             e.printStackTrace();
         }
 //        if(result)
-        return result.getItems();
+        if(result!=null && !result.isEmpty()) {
+            return result.getItems();
+        }
+        return new ArrayList<>();
     }
 
 }
