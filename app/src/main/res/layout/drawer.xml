@@ -21,29 +21,58 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Minimum Value:  "
-            android:id="@+id/textView2"
-            android:background="#FFFFFF"
-            android:textColor="#000000"
-            android:textSize="20dp"
-            android:layout_above="@+id/textView3"
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="150dp"
+            android:id="@+id/imageView4"
+            android:src="@drawable/Blueish3"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:paddingTop="25dp"
+            android:paddingRight="120dp" />
+
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="150dp"
+            android:id="@+id/imageView3"
+            android:src="@drawable/Rainbow"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingTop="42dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Maximum Value:  "
+            android:text="0"
+            android:id="@+id/textView2"
+            android:background="#FFFFFF"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:layout_marginLeft="58dp"
+            android:layout_alignBaseline="@+id/textView3"
+            android:layout_alignBottom="@+id/textView3"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="58dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"
             android:id="@+id/textView3"
             android:textColor="#000000"
             android:background="#FFFFFF"
             android:textSize="20dp"
+            android:layout_marginLeft="17dp"
+            android:layout_marginStart="17dp"
+            android:layout_marginBottom="17dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_toRightOf="@+id/textView4"
+            android:layout_toEndOf="@+id/textView4" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,6 +82,7 @@
             android:textColor="#000000"
             android:background="#FFFFFF"
             android:textSize="20dp"
+            android:layout_marginBottom="36dp"
             android:layout_above="@+id/textView2"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />

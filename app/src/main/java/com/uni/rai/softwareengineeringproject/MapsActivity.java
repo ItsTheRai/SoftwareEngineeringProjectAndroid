@@ -249,8 +249,8 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             final TextView averageText = (TextView) findViewById(R.id.textView4);
 
             //Replace second strings with values.
-            minText.setText("Minimum price:  " + minPrice);
-            maxText.setText("Maximum price:  " + maxPrice);
+            minText.setText("" + minPrice);
+            maxText.setText("" + maxPrice);
             averageText.setText("Average price:  " + averagePrice);
         }
     }
