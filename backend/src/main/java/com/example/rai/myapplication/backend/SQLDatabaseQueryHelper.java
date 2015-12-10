@@ -64,13 +64,13 @@ public class SQLDatabaseQueryHelper {
         }return places;
     }
 
-    public static List<SalesData> findProperty(String paon, String saon, String street, String locality, String postcode) throws SQLException, ClassNotFoundException {
+    public static List<SalesData> findProperty(String paon, String saon, String street, String town, String postcode) throws SQLException, ClassNotFoundException {
         String url = null;
         Class.forName(CLASS_NAME);
         url = URL;
 
         String query =  "select * from Sale where ";
-        if (postcode == null) {
+        if (postcode == null || postcode.equals("")) {
             postcode = "postcode like '%' and ";
         } else {
             postcode = "postcode = '" + postcode + "' and ";
@@ -94,17 +94,17 @@ public class SQLDatabaseQueryHelper {
             street = "street = '" + street + "' and ";
         }
         query += street;
-        if (locality == null || locality.equals("")) {
-            locality = "locality like '%';";
+        if (town == null || town.equals("")) {
+            town = "town like '%';";
         } else {
-            locality = "locality = '" + locality + "';";
+            town = "town = '" + town + "';";
         }
-        query += locality;
+        query += town;
 
         Connection conn = DriverManager.getConnection(url);
         ResultSet rs = conn.createStatement().executeQuery(query);
         //define return SalesData list
-        List<SalesData> salesDataList = null;
+        List<SalesData> salesDataList = new ArrayList<SalesData>();
         if (rs != null) {
             while (rs.next()) {
                 SalesData salesdata;
@@ -114,7 +114,7 @@ public class SQLDatabaseQueryHelper {
                 String district = rs.getString("district");
                 String duration = rs.getString("duration");
                 float latitude = 0; // Sale table doesn't have these information
-                String local = rs.getString("locality");
+                String locality = rs.getString("locality");
                 float longtitude = 0;
                 String oldNew = rs.getString("age");
                 String PAON = rs.getString("paon");
@@ -123,12 +123,13 @@ public class SQLDatabaseQueryHelper {
                 String property_type = rs.getString("type");
                 String SAON = rs.getString("saon");
                 String streetName = rs.getString("street");
-                String town = rs.getString("town");
+                String townString = rs.getString("town");
                 String uniqueRef = rs.getString("reference");
                 String PDD_category = rs.getString("pdd");
 
-                salesdata = new SalesData(id, county, datetime, district, duration, latitude, local, longtitude, oldNew, PAON, postCode, price, property_type, SAON, streetName, town, uniqueRef, PDD_category);
+                salesdata = new SalesData(id, county, datetime, district, duration, latitude, locality, longtitude, oldNew, PAON, postCode, price, property_type, SAON, streetName, townString, uniqueRef, PDD_category);
                 salesDataList.add(salesdata);
+                System.out.println("Added sale successfully");
             }
             return salesDataList;
         }

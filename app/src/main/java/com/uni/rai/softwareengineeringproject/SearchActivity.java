@@ -51,8 +51,8 @@ public class SearchActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"Make sure City/Town is not empty",
                             Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(getApplicationContext(),houseNumberText + "/n" +FlatNumberText + "/n"  + StreetText + "/n" +
-                                    CityText + "/n" + PostCodeText,
+                    Toast.makeText(getApplicationContext(),houseNumberText + "\n" +FlatNumberText + "\n"  + StreetText + "\n" +
+                                    CityText + "\n" + PostCodeText,
                             Toast.LENGTH_LONG).show();
 
                     try {

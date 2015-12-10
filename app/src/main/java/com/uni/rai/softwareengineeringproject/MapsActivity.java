@@ -111,9 +111,9 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     public Menu menu;
     private boolean isHeatmap;
     private WeightedLatLng dummy;
-//    private double minPrice = 0;
-//    private double maxPrice = 0;
-
+    private double minPrice = 0;
+    private double maxPrice = 0;
+    private double averagePrice = 0;
 
     ListView mDrawerList;
     RelativeLayout mDrawerPane;
@@ -177,14 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mNavItems.add(new NavItem("Home", "Meetup destination", R.mipmap.arrowleft));
 
         //Heatmap Overlay
-        final TextView minText = (TextView) findViewById(R.id.textView2);
-        final TextView maxText = (TextView) findViewById(R.id.textView3);
-        final TextView averageText = (TextView) findViewById(R.id.textView4);
-
-        //Replace second strings with values.
-        minText.setText("Minimum Value:  " + "MINVALUE");
-        maxText.setText("Maximum Value:  " + "MAXVALUE");
-        averageText.setText("Average Value:  " + "AVERAGEVALUE");
+        updatePrices();
 
 /**
  // DrawerLayout
@@ -246,6 +239,19 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         //houseNumberText = intent.getStringExtra("houseNumberText");
 
 
+    }
+
+    public void updatePrices() {
+        if (isHeatmap) {
+            final TextView minText = (TextView) findViewById(R.id.textView2);
+            final TextView maxText = (TextView) findViewById(R.id.textView3);
+            final TextView averageText = (TextView) findViewById(R.id.textView4);
+
+            //Replace second strings with values.
+            minText.setText("Minimum price:  " + minPrice);
+            maxText.setText("Maximum price:  " + maxPrice);
+            averageText.setText("Average price:  " + averagePrice);
+        }
     }
 
     /**
@@ -328,7 +334,6 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         switch (item.getItemId()) {
             case R.id.search_id:
                 Intent intent = new Intent(getApplicationContext(),SearchActivity.class);
-               // intent.putExtra("preferences_id", preferenceId);
                 startActivity(intent);
 
                 return true;
@@ -591,27 +596,30 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     public List<WeightedLatLng> getWeightedFromList(List<List<Double>> temp){
         // first normalise the price range between 1 to 30
-        double minPrice = Double.MAX_VALUE;
-        double maxPrice = Double.MIN_VALUE;
+        minPrice = Double.MAX_VALUE;
+        maxPrice = Double.MIN_VALUE;
         final double MAX_INTENSITY = 30;
         final double MIN_INTENSITY = 1;
+        double priceSum = 0;
         // find out the min and max price of properties in the list retrieved from database
         for(List<Double> heat:temp) {
+            priceSum += heat.get(2);
             if (heat.get(2) < minPrice) {
                 minPrice = heat.get(2);
             } else if (heat.get(2) > maxPrice){
                 maxPrice = heat.get(2);
             }
         }
+        averagePrice = priceSum / temp.size();
+        updatePrices();
         List<WeightedLatLng> list = new ArrayList<>();
 //        double min = Double.MAX_VALUE;
 //        double max = Double.MIN_VALUE;
-//        double sum = 0;
+
         HashMap<String, Double> intensityByArea = new HashMap<String, Double>();
         for(List<Double> heat:temp){
             // calculate the normalised intensity
             double intensity = MIN_INTENSITY + ((heat.get(2) - minPrice) * (MAX_INTENSITY - MIN_INTENSITY)) / (maxPrice - minPrice);
-//            sum += intensity;
             // find out the sum of intensity of nearby places and store them in a hashmap
             int lat = (int) (heat.get(0).doubleValue() * 10);
             int longt = (int) (heat.get(1).doubleValue() * 10);
@@ -921,20 +929,36 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
          **/
     }
 
-    public List<SalesData> searchSales(String paon, String saon, String street, String locality, String postcode) throws ExecutionException, InterruptedException {
+    public List<SalesData> searchSales(String paon, String saon, String street, String town, String postcode) throws ExecutionException, InterruptedException {
         if  (paon == null) {
             paon = "";
+        } else {
+            paon = paon.toUpperCase();
         }
         if  (saon == null) {
             saon = "";
+        } else {
+            saon = saon.toUpperCase();
         }
         if  (street == null) {
             street = "";
+        } else {
+            street = street.toUpperCase();
+        }
+        if (town != null) {
+            town = town.toUpperCase();
         }
         if  (postcode == null) {
             postcode = "";
+        } else {
+            postcode = postcode.toUpperCase();
+            // properly format the postcode
+            String outwardCode = postcode.substring(0, postcode.length() - 3);
+            outwardCode = outwardCode.trim();
+            String inwardCode = postcode.substring(postcode.length() - 3);
+            postcode = outwardCode + " " + inwardCode;
         }
-        List<SalesData> temp= new SearchSalesTask(this).execute(paon, saon, street, locality, postcode).get();
+        List<SalesData> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
         System.out.println("List: " + temp.size());
         return temp;
     }

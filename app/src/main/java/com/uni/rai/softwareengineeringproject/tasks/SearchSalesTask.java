@@ -50,8 +50,8 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<SalesData>> 
         SalesDataCollection result = null;
 
         try {
-            result = myApiService.findSales(paon, saon, street, locality, postcode).execute();     }
-        catch (IOException e) {
+            result = myApiService.findSales(paon, saon, street, locality, postcode).execute();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 //        if(result)
