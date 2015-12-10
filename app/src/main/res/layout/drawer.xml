@@ -31,33 +31,34 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:paddingTop="25dp"
-            android:paddingRight="120dp" />
+            android:paddingTop="25dp" />
 
         <ImageView
             android:layout_width="250dp"
             android:layout_height="150dp"
             android:id="@+id/imageView3"
-            android:src="@drawable/Rainbow"
+            android:src="@drawable/rainbow2"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:paddingTop="42dp" />
+            android:paddingTop="42dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/imageView4" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
             android:id="@+id/textView2"
-            android:background="#FFFFFF"
+            android:background="#deeff5"
             android:textColor="#000000"
             android:textSize="20dp"
-            android:layout_marginLeft="58dp"
-            android:layout_alignBaseline="@+id/textView3"
-            android:layout_alignBottom="@+id/textView3"
+            android:layout_marginLeft="107dp"
+            android:layout_marginStart="107dp"
+            android:layout_alignTop="@+id/textView3"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="58dp" />
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -65,11 +66,11 @@
             android:text="100"
             android:id="@+id/textView3"
             android:textColor="#000000"
-            android:background="#FFFFFF"
+            android:background="#deeff5"
             android:textSize="20dp"
-            android:layout_marginLeft="17dp"
-            android:layout_marginStart="17dp"
-            android:layout_marginBottom="17dp"
+            android:layout_marginLeft="23dp"
+            android:layout_marginStart="23dp"
+            android:layout_marginBottom="15dp"
             android:layout_alignParentBottom="true"
             android:layout_toRightOf="@+id/textView4"
             android:layout_toEndOf="@+id/textView4" />
@@ -80,9 +81,11 @@
             android:text="Average Value:  "
             android:id="@+id/textView4"
             android:textColor="#000000"
-            android:background="#FFFFFF"
+            android:background="#deeff5"
             android:textSize="20dp"
-            android:layout_marginBottom="36dp"
+            android:layout_marginBottom="43dp"
+            android:layout_marginLeft="69dp"
+            android:layout_marginStart="69dp"
             android:layout_above="@+id/textView2"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
