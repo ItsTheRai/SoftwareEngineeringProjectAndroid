@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class SearchActivity extends AppCompatActivity {
@@ -55,19 +57,26 @@ public class SearchActivity extends AppCompatActivity {
                                     CityText + "\n" + PostCodeText,
                             Toast.LENGTH_LONG).show();
 
+                    List<List<String>> sales = new ArrayList<List<String>>();
                     try {
-                        activity.searchSales(houseNumberText,FlatNumberText,StreetText,CityText,PostCodeText );
+                        sales = activity.searchSales(houseNumberText,FlatNumberText,StreetText,CityText,PostCodeText );
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                    }
+                    ArrayList<String> salesList = new ArrayList<String>();
+                    for(List<String> l : sales) {
+                        salesList.add(l.get(0) + "," + l.get(1) + "," + l.get(2));
+                        System.out.println("SearchAct, unique ref: " + l.get(0) + ", lat: " + l.get(1) + ", long: " + l.get(2));
                     }
                     Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
 //                    intent.putExtra("houseNumberText", houseNumberText);
 //                    intent.putExtra("flatNumberText", FlatNumberText);
 //                    intent.putExtra("StreetText", StreetText);
 //                    intent.putExtra("CityText", CityText);
-//                    intent.putExtra("PostCodeText", PostCodeText);
+                    intent.putExtra("salesList", salesList);
+
                     startActivity(intent);
 
 

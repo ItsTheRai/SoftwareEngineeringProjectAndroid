@@ -444,6 +444,19 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mMap.getUiSettings().setScrollGesturesEnabled(true);
         mMap.setMyLocationEnabled(true);
         isLockedOn=false;
+        ArrayList<String> salesList = this.getIntent().getStringArrayListExtra("salesList");
+        if (salesList != null) {
+            for (String s : salesList) {
+                String[] tokens = s.split(",");
+                List<String> newList = new ArrayList<String>();
+                System.out.println("unique ref: " + tokens[0] + ", lat: " + tokens[1] + ", long: " + tokens[2]);
+                newList.add(tokens[0]);
+                newList.add(tokens[1]);
+                newList.add(tokens[2]);
+                sales.add(newList);
+            }
+            createMarkers(sales);
+        }
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             //add listener to update camera when the user zooms in/out
             @Override
@@ -966,7 +979,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         List<List<String>> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
         System.out.println("List: " + temp.size());
         if (!temp.isEmpty() && temp.size() <= 100) {
-            createMarkers(temp);
+
         } else if (temp.isEmpty()) {
             Toast.makeText(MapsActivity.this,"No result found", Toast.LENGTH_LONG).show();
         } else {
