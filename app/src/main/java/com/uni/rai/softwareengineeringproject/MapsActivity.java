@@ -51,6 +51,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
@@ -118,6 +119,9 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     private String[] drawerItems;
 
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
+
+    List<List<String>> sales = new ArrayList<List<String>>();
+    List<Marker> markerList = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -484,6 +488,17 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                     mMap.getUiSettings().setScrollGesturesEnabled(false);
                 }
                 return true;
+            }
+        });
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                marker.getTitle(); // TODO: this is the unique ref, use it to query the database
+                // TODO: code to query db here
+//                marker.setTitle(paon + " " + saon + " " + street); // TODO: uncomment these two lines
+//                marker.setSnippet("£" + price);   // TODO: and assign the right value for paon, saon, street and price
+                return false;
             }
         });
     }
@@ -861,6 +876,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         switch (position) {
             case 0:
                 isHeatmap = true;
+                removeMarkers();
                 Toast toast = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast.show();
                 showUser();
@@ -884,6 +900,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             case 1:
 
                 isHeatmap = false;
+                removeMarkers();
                 Toast toast1 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast1.show();
                 clearHeatmap();
@@ -892,6 +909,9 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             case 2:
                 Toast toast2 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast2.show();
+                isHeatmap = false;
+                removeMarkers();
+                createMarkers(sales);
             default:
                 break;
         }
@@ -952,10 +972,15 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         } else {
             Toast.makeText(MapsActivity.this,"Too many results found, please refine your search criteria", Toast.LENGTH_LONG).show();
         }
+        sales = temp;
         return temp;
     }
 
     private void createMarkers(List<List<String>> sales) {
+        if (!sales.isEmpty()) {
+            isHeatmap = false;
+            clearHeatmap();
+        }
         double xOffset = -0.05;
         double yOffset = -0.05;
         for (int i = 0; i < sales.size(); i++) {
@@ -965,14 +990,21 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             if (i % 10 == 0) {
                 yOffset += 0.05;
             }
-
             double lat = Double.parseDouble(sales.get(i).get(1)) + xOffset;
             double lng = Double.parseDouble(sales.get(i).get(2)) + yOffset;
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(lat, lng)));
-//                    .title(sales.get(i).get(3) + " " + sales.get(i).get(4) + " " + sales.get(i).get(5))
-//                    .snippet("£" + sales.get(i).get(6)));
+            Marker m = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(lat, lng))
+                    .title(sales.get(i).get(0)));
+            markerList.add(m);
         }
+
+    }
+
+    private void removeMarkers() {
+        for (Marker m : markerList) {
+            m.remove();
+        }
+        markerList = new ArrayList<Marker>();
     }
 
 
