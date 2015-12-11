@@ -3,7 +3,6 @@ package com.uni.rai.softwareengineeringproject;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,13 +24,9 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.AdapterView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager.*;
-import android.support.v4.app.FragmentManager;
 
 //import com.example.rai.myapplication.backend.model.SalesLocationData;
 //import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
@@ -56,6 +51,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
@@ -76,7 +72,6 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -85,7 +80,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 
 
 public class MapsActivity extends FragmentActivity implements OnDataSendToActivity, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
@@ -125,6 +119,9 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     private String[] drawerItems;
 
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
+
+    List<List<String>> sales = new ArrayList<List<String>>();
+    List<Marker> markerList = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -491,6 +488,17 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                     mMap.getUiSettings().setScrollGesturesEnabled(false);
                 }
                 return true;
+            }
+        });
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                marker.getTitle(); // TODO: this is the unique ref, use it to query the database
+                // TODO: code to query db here
+//                marker.setTitle(paon + " " + saon + " " + street); // TODO: uncomment these two lines
+//                marker.setSnippet("£" + price);   // TODO: and assign the right value for paon, saon, street and price
+                return false;
             }
         });
     }
@@ -868,6 +876,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         switch (position) {
             case 0:
                 isHeatmap = true;
+                removeMarkers();
                 Toast toast = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast.show();
                 showUser();
@@ -891,6 +900,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             case 1:
 
                 isHeatmap = false;
+                removeMarkers();
                 Toast toast1 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast1.show();
                 clearHeatmap();
@@ -899,6 +909,9 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             case 2:
                 Toast toast2 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast2.show();
+                isHeatmap = false;
+                removeMarkers();
+                createMarkers(sales);
             default:
                 break;
         }
@@ -921,7 +934,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
          **/
     }
 
-    public List<SalesData> searchSales(String paon, String saon, String street, String town, String postcode) throws ExecutionException, InterruptedException {
+    public List<List<String>> searchSales(String paon, String saon, String street, String town, String postcode) throws ExecutionException, InterruptedException {
         if  (paon == null) {
             paon = "";
         } else {
@@ -950,7 +963,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             String inwardCode = postcode.substring(postcode.length() - 3);
             postcode = outwardCode + " " + inwardCode;
         }
-        List<SalesData> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
+        List<List<String>> temp= new SearchSalesTask(this).execute(paon, saon, street, town, postcode).get();
         System.out.println("List: " + temp.size());
         if (!temp.isEmpty() && temp.size() <= 100) {
             createMarkers(temp);
@@ -959,10 +972,15 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         } else {
             Toast.makeText(MapsActivity.this,"Too many results found, please refine your search criteria", Toast.LENGTH_LONG).show();
         }
+        sales = temp;
         return temp;
     }
 
-    private void createMarkers(List<SalesData> sales) {
+    private void createMarkers(List<List<String>> sales) {
+        if (!sales.isEmpty()) {
+            isHeatmap = false;
+            clearHeatmap();
+        }
         double xOffset = -0.05;
         double yOffset = -0.05;
         for (int i = 0; i < sales.size(); i++) {
@@ -972,13 +990,21 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             if (i % 10 == 0) {
                 yOffset += 0.05;
             }
-            double lat = sales.get(i).getLatitude() + xOffset;
-            double lng = sales.get(i).getLongitude() + yOffset;
-            mMap.addMarker(new MarkerOptions()
+            double lat = Double.parseDouble(sales.get(i).get(1)) + xOffset;
+            double lng = Double.parseDouble(sales.get(i).get(2)) + yOffset;
+            Marker m = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(lat, lng))
-                    .title(sales.get(i).getPaon() + " " + sales.get(i).getSaon() + " " + sales.get(i).getStreet())
-                    .snippet("£" + sales.get(i).getPrice()));
+                    .title(sales.get(i).get(0)));
+            markerList.add(m);
         }
+
+    }
+
+    private void removeMarkers() {
+        for (Marker m : markerList) {
+            m.remove();
+        }
+        markerList = new ArrayList<Marker>();
     }
 
 

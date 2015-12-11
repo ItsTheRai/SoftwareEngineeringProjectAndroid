@@ -64,7 +64,7 @@ public class SQLDatabaseQueryHelper {
         }return places;
     }
 
-    public static List<SalesData> findProperty(String paon, String saon, String street, String town, String postcode) throws SQLException, ClassNotFoundException {
+    public static List<List<String>> findProperty(String paon, String saon, String street, String town, String postcode) throws SQLException, ClassNotFoundException {
         String url = null;
         Class.forName(CLASS_NAME);
         url = URL;
@@ -106,30 +106,30 @@ public class SQLDatabaseQueryHelper {
         //define return SalesData list
 
         if (rs != null) {
-            List<SalesData> salesDataList = new ArrayList<SalesData>();
+            List<List<String>> salesDataList = new ArrayList<>();
             while (rs.next()) {
-                SalesData salesdata;
-                String ref = rs.getString("reference");
-                float lat = (float) rs.getDouble("latitude");
-                float lng = (float) rs.getDouble("longitude");
-                long id = 1;
-                String county = rs.getString("county");
-                String datetime = rs.getDate("date").toString();
-                String district = rs.getString("district");
-                String duration = rs.getString("duration");
-                String locality = rs.getString("locality");
-                String oldNew = rs.getString("age");
-                String PAON = rs.getString("paon");
-                String postCode = rs.getString("postcode");
+                List<String> salesdata = new ArrayList<>();
+                salesdata.add(rs.getString("reference"));
+                salesdata.add(String.valueOf((float) rs.getDouble("latitude")));
+                salesdata.add(String.valueOf((float) rs.getDouble("longitude")));
+//                long id = 1;
+//                String county = rs.getString("county");
+//                String datetime = rs.getDate("date").toString();
+//                String district = rs.getString("district");
+//                String duration = rs.getString("duration");
+//                String locality = rs.getString("locality");
+//                String oldNew = rs.getString("age");
+//                String PAON = rs.getString("paon");
+//                String postCode = rs.getString("postcode");
 //                String price = rs.getInt("price") + "";
-                int price = rs.getInt("price");
-                String property_type = rs.getString("type");
-                String SAON = rs.getString("saon");
-                String streetName = rs.getString("street");
-                String townString = rs.getString("town");
-                String PDD_category = rs.getString("pdd");
+//                int price = rs.getInt("price");
+//                String property_type = rs.getString("type");
+//                String SAON = rs.getString("saon");
+//                String streetName = rs.getString("street");
+//                String townString = rs.getString("town");
+//                String PDD_category = rs.getString("pdd");
 
-                salesdata = new SalesData(id, county, datetime, district, duration, lat, locality, lng, oldNew, PAON, postCode, price, property_type, SAON, streetName, townString, ref, PDD_category);
+//                salesdata = new SalesData( county, datetime, district, duration, lat, locality, lng, oldNew, PAON, postCode, price, property_type, SAON, streetName, townString, ref, PDD_category);
                 salesDataList.add(salesdata);
 //                SalesDataSimplified sale = new SalesDataSimplified(ref, price, lat, lng, postCode);
 //                salesDataList.add(sale);
@@ -137,7 +137,7 @@ public class SQLDatabaseQueryHelper {
             }
             return salesDataList;
         }
-        return null; // no rows found
+        else return null; // no rows found
     }
 
     /**
