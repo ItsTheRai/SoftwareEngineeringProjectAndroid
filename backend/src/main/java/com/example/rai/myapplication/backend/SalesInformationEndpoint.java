@@ -115,6 +115,57 @@ public class SalesInformationEndpoint {
         return places;
     }
 
+
+    @ApiMethod(
+            name ="getPinsInRange",
+            path="/getPinsInRange",
+            httpMethod = ApiMethod.HttpMethod.GET)
+    public List<List<String>> getPinsInRange(@Named("latitude") double latitudeString,
+                                                 @Named("longitude") double longitudeString,
+                                                 @Named("rangeInKilometers") double rangeInKilometers,
+                                                 @Named("maxLength") int maxLength)
+            throws BadRequestException, SQLException, ClassNotFoundException {
+        //returns point in range of the user using helper class
+
+        double latitude;
+        double longitude;
+//        Location l;
+        GeoPoint location;
+        int count = maxLength;
+        double rangeInKm = rangeInKilometers;
+
+        try {
+            latitude = latitudeString;
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    "Invalid value of 'latitude' argument");
+        }
+
+        try {
+            longitude = longitudeString;
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    "Invalid value of 'longitude' argument");
+        }
+
+//        try {
+//            location = new GeoPoint(latitude, longitude);
+//        } catch (Exception e) {
+//            throw new BadRequestException(
+//                    "Invalid pair of 'latitude' and 'longitude' arguments");
+//        }
+
+        if (rangeInKm > MAXIMUM_DISTANCE) {
+            rangeInKm = MAXIMUM_DISTANCE;
+        }
+        List<List<String>> places = SQLDatabaseQueryHelper.getPins(latitude, longitude, rangeInKm, count);
+        return places;
+    }
+
+
+
+
+
     /**
      * Inserts a new {@code SalesData}.
      */

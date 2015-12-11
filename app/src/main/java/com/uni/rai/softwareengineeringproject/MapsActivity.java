@@ -28,19 +28,6 @@ import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.AdapterView;
 
-//import com.example.rai.myapplication.backend.model.SalesLocationData;
-//import com.example.rai.myapplication.backend.userLocationApi.model.UserLocation;
-//import com.example.rai.myapplication.backend.model.SalesLocationData;
-//import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
-
-//import com.example.rai.myapplication.backend.model.SalesInformation;
-import com.example.rai.myapplication.backend.salesInformationApi.model.SalesData;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesLocationData;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShort;
-//import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -57,6 +44,7 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
+import com.uni.rai.softwareengineeringproject.tasks.MarkerTask;
 import com.uni.rai.softwareengineeringproject.tasks.OnDataSendToActivity;
 import com.uni.rai.softwareengineeringproject.tasks.SearchSalesTask;
 import com.uni.rai.softwareengineeringproject.tasks.UpdateMapTask;
@@ -120,7 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
 
-    List<List<String>> sales = new ArrayList<List<String>>();
+    List<List<String>> sales;
     List<Marker> markerList = new ArrayList<Marker>();
 
     @Override
@@ -135,6 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         currentRangeInKm=0.0;
         isHeatmap=true;
         currentSalesData = new ArrayList<>();
+        sales= new ArrayList<List<String>>();
         //since API 23, need to ask for user permission to use location
         //so create a check and dialog box
         if (ContextCompat.checkSelfPermission(this,
@@ -176,7 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mNavItems.add(new NavItem("Home", "Meetup destination", R.mipmap.arrowleft));
 
         //Heatmap Overlay
-        updatePrices();
+//        updatePrices();
 
 /**
  // DrawerLayout
@@ -201,7 +190,13 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItemFromDrawer(position);
+                try {
+                    selectItemFromDrawer(position);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -249,7 +244,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             //Replace second strings with values.
             minText.setText("" + minPrice);
             maxText.setText("" + maxPrice);
-            averageText.setText("Average price:  " + averagePrice);
+            averageText.setText("Average price:  " + (minPrice+maxPrice)/2);
         }
     }
 
@@ -455,7 +450,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                 newList.add(tokens[2]);
                 sales.add(newList);
             }
-            createMarkers(sales);
+//            createMarkers(sales);
         }
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             //add listener to update camera when the user zooms in/out
@@ -507,7 +502,9 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                marker.getTitle(); // TODO: this is the unique ref, use it to query the database
+                marker.getTitle();
+                marker.showInfoWindow();
+                 // TODO: this is the unique ref, use it to query the database
                 // TODO: code to query db here
 //                marker.setTitle(paon + " " + saon + " " + street); // TODO: uncomment these two lines
 //                marker.setSnippet("£" + price);   // TODO: and assign the right value for paon, saon, street and price
@@ -612,18 +609,21 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     public List<WeightedLatLng> getWeightedFromList(List<List<Double>> temp){
         // first normalise the price range between 1 to 30
-//        double minPrice = Double.MAX_VALUE;
-//        double maxPrice = Double.MIN_VALUE;
+        double minPrice = Double.MAX_VALUE;
+        double maxPrice = Double.MIN_VALUE;
 //        final double MAX_INTENSITY = 30;
 //        final double MIN_INTENSITY = 1;
         // find out the min and max price of properties in the list retrieved from database
-//        for(List<Double> heat:temp) {
-//            if (heat.get(2) < minPrice) {
-//                minPrice = heat.get(2);
-//            } else if (heat.get(2) > maxPrice){
-//                maxPrice = heat.get(2);
-//            }
-//        }
+        for(List<Double> heat:temp) {
+            if (heat.get(2) < minPrice) {
+                minPrice = heat.get(2);
+            } else if (heat.get(2) > maxPrice){
+                maxPrice = heat.get(2);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+            }
+        }
+        this.minPrice=minPrice;
+        this.maxPrice=maxPrice;
+        updatePrices();
         List<WeightedLatLng> list = new ArrayList<>();
 //        double min = Double.MAX_VALUE;
 //        double max = Double.MIN_VALUE;
@@ -851,7 +851,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     //  create heatmap using the list taken from a parameter
     public boolean createHeatmap(List<WeightedLatLng> pointsList) {
-        HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).radius(10).build();
+        HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).radius(2*(int)mMap.getCameraPosition().zoom-20).build();
         tOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tProvider));
         return true;
     }
@@ -875,20 +875,37 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
     @Override
     public void sendData(List<List<Double>> list) {
         if(isHeatmap) {
-            this.currentSalesData = this.getWeightedFromList(list);
-            clearHeatmap();
-            createHeatmap(currentSalesData);
-            Toast.makeText(getApplicationContext(),
-                    "Done retrieving results",
-                    Toast.LENGTH_LONG).show();
+            if (list != null) {
+                this.currentSalesData = this.getWeightedFromList(list);
+                clearHeatmap();
+                createHeatmap(currentSalesData);
+                Toast.makeText(getApplicationContext(),
+                        "Done retrieving results",
+                        Toast.LENGTH_LONG).show();
+//                updateSalesData(currentSalesData);
+            }
+        }
+
+    }
+
+    private void updateSalesData(List<WeightedLatLng>salesData){
+        sales.clear();
+        for (WeightedLatLng s : salesData){
+            List<String> data = new ArrayList<>();
+            data.add(" ");
+            data.add(String.valueOf(s.getPoint().x));
+            data.add(String.valueOf(s.getPoint().y));
+            sales.add(data);
         }
     }
-    private void selectItemFromDrawer(int position) {
+
+    private void selectItemFromDrawer(int position) throws ExecutionException, InterruptedException {
 
 
         switch (position) {
             case 0:
                 isHeatmap = true;
+//                mMap.clear();
                 removeMarkers();
                 Toast toast = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast.show();
@@ -917,14 +934,16 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                 Toast toast1 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast1.show();
                 clearHeatmap();
-
+//                removeMarkers();
+//                createMarkers(sales);
                 break;
             case 2:
                 Toast toast2 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast2.show();
                 isHeatmap = false;
+                clearHeatmap();
                 removeMarkers();
-                createMarkers(sales);
+                createMarkers();
             default:
                 break;
         }
@@ -989,35 +1008,76 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         return temp;
     }
 
-    private void createMarkers(List<List<String>> sales) {
-        if (!sales.isEmpty()) {
-            isHeatmap = false;
-            clearHeatmap();
-        }
-        double xOffset = -0.05;
-        double yOffset = -0.05;
-        for (int i = 0; i < sales.size(); i++) {
-//            double lat = Double.parseDouble(l.get(1));
-//            double lng = Double.parseDouble(l.get(2));
-            xOffset += 0.05;
-            if (i % 10 == 0) {
-                yOffset += 0.05;
-            }
-            double lat = Double.parseDouble(sales.get(i).get(1)) + xOffset;
-            double lng = Double.parseDouble(sales.get(i).get(2)) + yOffset;
-            Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(lat, lng))
-                    .title(sales.get(i).get(0)));
-            markerList.add(m);
-        }
+    private void createMarkers() throws ExecutionException, InterruptedException {
+//        if (!sales.isEmpty()) {
+//            isHeatmap = false;
+//            clearHeatmap();
+//        }
+        double xOffset = -0.0001;
+        double yOffset = -0.0001;
+        List<List<String>> l = new MarkerTask(this).execute(mMap.getMyLocation(),currentRangeInKm).get();
+        if(l!=null) {
+            for (int i = 0; i < l.size(); i++) {
+                double lat = Double.parseDouble(l.get(i).get(1)) + xOffset;
+                double lng = Double.parseDouble(l.get(i).get(2)) + yOffset;
 
+//                double lat = Double.parseDouble(l.get(i).get(1));
+//                double lng = Double.parseDouble(l.get(i).get(2));
+            xOffset += 0.0001;
+            if (i % 10 == 0) {
+                yOffset += 0.0001;
+            }
+
+                mMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(lat, lng))
+                                .title(l.get(i).get(5) + "-" +l.get(i).get(6)+" " + l.get(i).get(7) + ", " +
+                                        l.get(i).get(8))
+//                                .snippet("aasdfasd")
+//                                .snippet()
+                                .snippet("Price: " + l.get(i).get(4))
+                );// + " " + sales.get(i).get(4) + " " + sales.get(i).get(5))
+//                    .snippet("£" + sales.get(i).get(6)));
+            }
+        }
     }
 
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        intent.putExtra("method", "searchSales");
+//        intent.putExtra("houseNumberText", houseNumberText);
+//        intent.putExtra("flatNumberText", FlatNumberText);
+//        intent.putExtra("StreetText", StreetText);
+//        intent.putExtra("CityText", CityText);
+//        intent.putExtra("PostCodeText", PostCodeText);
+
+//        super.onNewIntent(intent);
+//        if(intent.getStringExtra("methodName").equals("searchSales")){
+//            String houseNumberText = intent.getStringExtra("houseNumberText");
+//            String flatNumberText = intent.getStringExtra("flatNumberText");
+//            String streetText = intent.getStringExtra("StreetText");
+//            String cityText = intent.getStringExtra("CityText");
+//            String postsCodeText = intent.getStringExtra("PostsCodeText");
+//            this.isHeatmap =false;
+//
+//            try {
+//                searchSales(houseNumberText,flatNumberText,streetText,cityText,postsCodeText);
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//    }
+
     private void removeMarkers() {
-        for (Marker m : markerList) {
-            m.remove();
-        }
-        markerList = new ArrayList<Marker>();
+        markerList.clear();
+//        for (Marker m :
+                mMap.clear();
+//        {
+//            m.remove();
+//        }
+//        markerList = new ArrayList<Marker>();
     }
 
 

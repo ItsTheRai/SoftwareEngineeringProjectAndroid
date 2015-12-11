@@ -1,51 +1,52 @@
- package com.uni.rai.softwareengineeringproject.tasks;
+package com.uni.rai.softwareengineeringproject.tasks;
 
-        import android.app.Activity;
-        import android.app.ProgressDialog;
-        import android.content.Context;
-        import android.location.Location;
-        import android.os.AsyncTask;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.location.Location;
+import android.os.AsyncTask;
 
 //        import com.example.rai.myapplication.backend.LatLongWrapper;
-        import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
+import com.example.rai.myapplication.backend.salesInformationApi.SalesInformationApi;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataCollection;
 //import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
 //        import com.example.rai.myapplication.backend.salesInformationApi.model.SalesDataShortCollection;
-        import com.example.rai.myapplication.backend.salesInformationApi.model.NumberCollectionCollection;
-       // import com.example.rai.myapplication.backend.salesInformationApi.model.WeightedLatLngCollection;
-        import com.google.android.gms.maps.model.VisibleRegion;
-        import com.google.api.client.extensions.android.http.AndroidHttp;
-        import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-        import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-        import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-        import com.google.maps.android.heatmaps.WeightedLatLng;
+import com.example.rai.myapplication.backend.salesInformationApi.model.NumberCollectionCollection;
+// import com.example.rai.myapplication.backend.salesInformationApi.model.WeightedLatLngCollection;
+import com.example.rai.myapplication.backend.salesInformationApi.model.StringCollectionCollection;
+import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 
-        import java.io.IOException;
-        import java.sql.Connection;
-        import java.sql.DriverManager;
-        import java.sql.ResultSet;
-        import java.sql.SQLException;
-        import java.util.List;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
- /**
+/**
  * Created by rai on 21/10/15.
  */
 
 
-public class UpdateMapTask extends AsyncTask<Object, List<List<Double>> , List<List<Double>>> {
-//     Activity mActivity;
+public class MarkerTask extends AsyncTask<Object, List<List<String>> , List<List<String>>> {
+    //     Activity mActivity;
     //    private static long range =1000000000;
     private static final int NUMBER_OF_RESULTS = 50000;
     private static SalesInformationApi myApiService = null;
-//    private Context context;
+    //    private Context context;
     private ProgressDialog dialog;
-     OnDataSendToActivity dataSendToActivity;
-     private Activity context;
+    OnDataSendToActivity dataSendToActivity;
+    private Activity context;
 
-     public UpdateMapTask(Activity activity){
-         this.context = activity;
-         dataSendToActivity = (OnDataSendToActivity)activity;
-     }
+    public MarkerTask(Activity activity){
+        this.context = activity;
+        dataSendToActivity = (OnDataSendToActivity)activity;
+    }
 //    public UpdateMapTask(Activity activity){
 //        mActivity=activity;
 //    }
@@ -54,19 +55,19 @@ public class UpdateMapTask extends AsyncTask<Object, List<List<Double>> , List<L
     protected void onPreExecute() {
         super.onPreExecute();
         dialog = new ProgressDialog(context);
-        dialog.setMessage("Loading housed in your area");
+        dialog.setMessage("Loading houses in your area");
         dialog.show();
     }
 
     @Override
     //not type safe but gets the job done
-    protected List<List<Double>> doInBackground(Object... params) {
+    protected List<List<String>> doInBackground(Object... params) {
         Location location = (Location)params[0];
         double distanceInKm =  (double)params[1]; ///////////////////////////////////////////
         double longitude;
         double latitude;
-            latitude =  location.getLatitude();
-            longitude =  location.getLongitude();
+        latitude =  location.getLatitude();
+        longitude =  location.getLongitude();
 //        }
 
         if(myApiService == null) { // Only do this once
@@ -86,10 +87,10 @@ public class UpdateMapTask extends AsyncTask<Object, List<List<Double>> , List<L
 //
             myApiService = builder.build();
         }
-        NumberCollectionCollection result = null;
+        StringCollectionCollection result = null;
 //        LatLongWrapper s=null;
         try {
-            result = myApiService.getPointsInRange( latitude, longitude, distanceInKm, NUMBER_OF_RESULTS).execute();     }
+            result = myApiService.getPinsInRange(latitude, longitude, NUMBER_OF_RESULTS, distanceInKm).execute();     }
         catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,13 +102,13 @@ public class UpdateMapTask extends AsyncTask<Object, List<List<Double>> , List<L
     }
 
     @Override
-    protected void onPostExecute(List<List<Double>> result) {
+    protected void onPostExecute(List<List<String>> result) {
         super.onPostExecute(result);
-        dataSendToActivity.sendData(result);
+//        dataSendToActivity.sendData(result);
         dialog.dismiss();
 //        mActivity.getApplication().
 //        for (Quote q : result) {
 //            Toast.makeText(context, q.getWho() + " : " + q.getWhat(), Toast.LENGTH_LONG).show();
-        }
+    }
 }
 

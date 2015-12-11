@@ -49,7 +49,7 @@ public class SQLDatabaseQueryHelper {
 //        "LIMIT 0 , "+resultCount;
                 "select * from HeatmapData where latitude > " + lat1 +
                 " and latitude < " + lat2 + " and longitude > " + lon1 + " and longitude < " + lon2 +
-                " ";
+                " limit 100";
         Connection conn = DriverManager.getConnection(url);
         //test with mock queries
         ResultSet rs = conn.createStatement().executeQuery(query);
@@ -68,77 +68,121 @@ public class SQLDatabaseQueryHelper {
         String url = null;
         Class.forName(CLASS_NAME);
         url = URL;
-
-        String query =  "select reference, price, Sale.postcode, latitude, longitude from Sale join HeatmapData on Sale.postcode = HeatmapData.postcode where ";
+        String query =  "select reference, HeatmapData.postcode, paon, saon,price, street, town, latitude, longitude " +
+                "from Sale join HeatmapData on Sale.postcode = HeatmapData.postcode where ";
         if (postcode == null || postcode.equals("")) {
-            postcode = "Sale.postcode like '%' and ";
+//            postcode = "Sale.postcode like '%' and ";
         } else {
             postcode = "Sale.postcode = '" + postcode + "' and ";
         }
         query += postcode;
         if (paon == null || paon.equals("")) {
-            paon = "paon like '%' and ";
+//            paon = "paon like '%' and ";
         } else {
             paon = "paon = '" + paon + "' and ";
         }
         query += paon;
         if (saon == null || saon.equals("")) {
-            saon = "saon like '%' and ";
+//            saon = "saon like '%' and ";
         } else {
             saon = "saon = '" + saon + "' and ";
         }
         query += saon;
         if (street == null || street.equals("")) {
-            street = "street like '%' and ";
+//            street = "street like '%' and ";
         } else {
             street = "street = '" + street + "' and ";
         }
         query += street;
         if (town == null || town.equals("")) {
-            town = "town like '%';";
+//            town = "town like '%';";
         } else {
-            town = "town = '" + town + "';";
+            town = "town = '" + town + " limit 100;'";
         }
         query += town;
+//        query+=" limit 100;";
 
-        Connection conn = DriverManager.getConnection(url);
-        ResultSet rs = conn.createStatement().executeQuery(query);
+//        Connection conn = DriverManager.getConnection(url);
+//        ResultSet rs = conn.createStatement().executeQuery(query);
         //define return SalesData list
+//        String query =
+//                "select reference, HeatmapData.postcode, paon, saon,price, street, town, latitude, longitude " +
+//                        "from Sale join HeatmapData on Sale.postcode = HeatmapData.postcode " +
+//                        "where latitude > " + lat1 +
+//                        " and latitude < " + lat2 + " and longitude > " + lon1 + " and longitude < " + lon2 +
+//                        " limit 100";
+        Connection conn = DriverManager.getConnection(url);
+        //test with mock queries
+        ResultSet rs = conn.createStatement().executeQuery(query);
+        //define return array
+//        List<List<Double>> places = new ArrayList<>();
 
         if (rs != null) {
             List<List<String>> salesDataList = new ArrayList<>();
             while (rs.next()) {
                 List<String> salesdata = new ArrayList<>();
                 salesdata.add(rs.getString("reference"));
-                salesdata.add(String.valueOf((float) rs.getDouble("latitude")));
-                salesdata.add(String.valueOf((float) rs.getDouble("longitude")));
-//                long id = 1;
-//                String county = rs.getString("county");
-//                String datetime = rs.getDate("date").toString();
-//                String district = rs.getString("district");
-//                String duration = rs.getString("duration");
-//                String locality = rs.getString("locality");
-//                String oldNew = rs.getString("age");
-//                String PAON = rs.getString("paon");
-//                String postCode = rs.getString("postcode");
-//                String price = rs.getInt("price") + "";
-//                int price = rs.getInt("price");
-//                String property_type = rs.getString("type");
-//                String SAON = rs.getString("saon");
-//                String streetName = rs.getString("street");
-//                String townString = rs.getString("town");
-//                String PDD_category = rs.getString("pdd");
+                salesdata.add(String.valueOf(rs.getDouble("latitude")));
+                salesdata.add(String.valueOf( rs.getDouble("longitude")));
+                salesdata.add(String.valueOf( rs.getString("postcode")));
+                salesdata.add(String.valueOf( rs.getDouble("price")));
+                salesdata.add(String.valueOf( rs.getString("paon")));
+                salesdata.add(String.valueOf( rs.getString("saon")));
+                salesdata.add(String.valueOf( rs.getString("street")));
+                salesdata.add(String.valueOf( rs.getString("town")));
 
-//                salesdata = new SalesData( county, datetime, district, duration, lat, locality, lng, oldNew, PAON, postCode, price, property_type, SAON, streetName, townString, ref, PDD_category);
                 salesDataList.add(salesdata);
-//                SalesDataSimplified sale = new SalesDataSimplified(ref, price, lat, lng, postCode);
-//                salesDataList.add(sale);
-//                System.out.println("Added sale successfully");
             }
             return salesDataList;
         }
-        else return null; // no rows found
+        else return null;
     }
+
+    public static List<List<String>> getPins(double latitude, double longitude, double distanceInKm, int count) throws ClassNotFoundException, SQLException {
+        int KM_CONSTANT = 6371;
+//        double latitude = latitud;//50.8252;
+//        double longitude = longitud;//-0.13824;
+        String url = null;
+        Class.forName(CLASS_NAME);
+        url = URL;
+        //create rectangel for query
+        double lon1 = (longitude - distanceInKm / Math.abs(Math.cos(latitude * Math.PI / 180.0) * 69));
+        double lon2 = (longitude + distanceInKm / Math.abs(Math.cos(latitude * Math.PI / 180.0) * 69));
+        double lat1 = (latitude - (distanceInKm / 69));
+        double lat2 = (latitude + (distanceInKm / 69));
+        String query =
+                "select reference, HeatmapData.postcode, paon, saon,price, street, town, latitude, longitude " +
+                        "from Sale join HeatmapData on Sale.postcode = HeatmapData.postcode " +
+                        "where latitude > " + lat1 +
+                        " and latitude < " + lat2 + " and longitude > " + lon1 + " and longitude < " + lon2 +
+                        " limit 100";
+        Connection conn = DriverManager.getConnection(url);
+        //test with mock queries
+        ResultSet rs = conn.createStatement().executeQuery(query);
+        //define return array
+//        List<List<Double>> places = new ArrayList<>();
+
+        if (rs != null) {
+            List<List<String>> salesDataList = new ArrayList<>();
+            while (rs.next()) {
+                List<String> salesdata = new ArrayList<>();
+                salesdata.add(rs.getString("reference"));
+                salesdata.add(String.valueOf(rs.getDouble("latitude")));
+                salesdata.add(String.valueOf( rs.getDouble("longitude")));
+                salesdata.add(String.valueOf( rs.getString("postcode")));
+                salesdata.add(String.valueOf( rs.getDouble("price")));
+                salesdata.add(String.valueOf( rs.getString("paon")));
+                salesdata.add(String.valueOf( rs.getString("saon")));
+                salesdata.add(String.valueOf( rs.getString("street")));
+                salesdata.add(String.valueOf( rs.getString("town")));
+
+                salesDataList.add(salesdata);
+            }
+            return salesDataList;
+        }
+        else return null;
+    }
+
 
     /**
      * Computes the geodesic between two GPS coordinates.
@@ -160,4 +204,6 @@ public class SQLDatabaseQueryHelper {
                 .acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1)
                         * Math.cos(lat2) * Math.cos(Math.abs(long1 - long2)));
     }
+
+
 }

@@ -59,7 +59,7 @@ public class SearchSalesTask extends AsyncTask< String, Void , List<List<String>
         if(result!=null && !result.isEmpty()) {
             return result.getItems();
         }
-        return new ArrayList<>();
+        else return new ArrayList<>();
     }
 
 }

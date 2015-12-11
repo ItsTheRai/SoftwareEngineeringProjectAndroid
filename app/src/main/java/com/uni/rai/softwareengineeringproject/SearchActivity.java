@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,12 +50,12 @@ public class SearchActivity extends AppCompatActivity {
                 String PostCodeText = PostCode.getText().toString();
 
                 if (CityText.matches("")){
-                    Toast.makeText(getApplicationContext(),"Make sure City/Town is not empty",
-                            Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(),"Make sure City/Town is not empty",
+//                            Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(getApplicationContext(),houseNumberText + "\n" +FlatNumberText + "\n"  + StreetText + "\n" +
-                                    CityText + "\n" + PostCodeText,
-                            Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(),houseNumberText + "\n" +FlatNumberText + "\n"  + StreetText + "\n" +
+//                                    CityText + "\n" + PostCodeText,
+//                            Toast.LENGTH_LONG).show();
 
                     List<List<String>> sales = new ArrayList<List<String>>();
                     try {
