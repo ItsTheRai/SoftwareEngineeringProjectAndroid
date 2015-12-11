@@ -110,6 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     List<List<String>> sales;
     List<Marker> markerList = new ArrayList<Marker>();
+    private boolean isPinmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
         firstRequest=true;
         isLockedOn = false;
         currentRangeInKm=0.0;
-        isHeatmap=true;
+        isHeatmap=true;isPinmap = false;
         currentSalesData = new ArrayList<>();
         sales= new ArrayList<List<String>>();
         //since API 23, need to ask for user permission to use location
@@ -456,6 +457,7 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
             //add listener to update camera when the user zooms in/out
             @Override
             public void onCameraChange(CameraPosition pos) {
+
                 if (isHeatmap) {
                     //TODO uncomment method
                     float minZoom = 10.0f;
@@ -477,7 +479,29 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
                             }
                         }
                     }
-                } else {
+                }
+//                else if (isPinmap) {
+//                    //TODO uncomment method
+//                    float minZoom = 13.0f;
+//                    if (pos.zoom < minZoom) {
+//                        mMap.animateCamera((CameraUpdateFactory.zoomTo(minZoom)));
+//                    }
+////                    if (!firstRequest) {
+////                        if (pos.zoom >= minZoom) {
+//                            try {
+//                                createMarkers();             ;
+//                            } catch (ExecutionException e) {
+//                                e.printStackTrace();
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+////                            } catch (ClassNotFoundException e) {
+////                                e.printStackTrace();
+////                            } catch (SQLException e) {
+////                                e.printStackTrace();
+////                            }
+//                        }
+//                    }
+                else {
                     //TODO here you put stuff to control queries for the marker view to query db when
                     //TODO the user moves the map
                 }
@@ -851,7 +875,26 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
     //  create heatmap using the list taken from a parameter
     public boolean createHeatmap(List<WeightedLatLng> pointsList) {
-        HeatmapTileProvider tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).radius(2*(int)mMap.getCameraPosition().zoom-20).build();
+        HeatmapTileProvider tProvider = null;
+        if (mMap.getCameraPosition().zoom<13){
+        tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).
+                radius(10
+//                        * (int)mMap.getCameraPosition().zoom-40)
+                ).build()
+                ;
+        }
+        else if(mMap.getCameraPosition().zoom<15){
+            tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).
+                radius(20
+//                        * (int)mMap.getCameraPosition().zoom-40)
+                ).build()
+                ;
+    }
+        else {
+            tProvider = new HeatmapTileProvider.Builder().weightedData(pointsList).
+                    radius(50).build();
+        }
+
         tOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tProvider));
         return true;
     }
@@ -928,8 +971,10 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 
                 break;
             case 1:
+                currentRangeInKm=0;
 
                 isHeatmap = false;
+                isPinmap = false;
                 removeMarkers();
                 Toast toast1 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast1.show();
@@ -938,9 +983,15 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 //                createMarkers(sales);
                 break;
             case 2:
+                isPinmap=true;
+                currentRangeInKm = 0;
+                if (mMap.getCameraPosition().zoom < 13) {
+                    mMap.animateCamera((CameraUpdateFactory.zoomTo(13)));
+                }
                 Toast toast2 = Toast.makeText(MapsActivity.this,drawerItems[position], Toast.LENGTH_LONG);
                 toast2.show();
                 isHeatmap = false;
+                isPinmap = true;
                 clearHeatmap();
                 removeMarkers();
                 createMarkers();
@@ -1013,30 +1064,35 @@ public class MapsActivity extends FragmentActivity implements OnDataSendToActivi
 //            isHeatmap = false;
 //            clearHeatmap();
 //        }
-        double xOffset = -0.0001;
-        double yOffset = -0.0001;
-        List<List<String>> l = new MarkerTask(this).execute(mMap.getMyLocation(),currentRangeInKm).get();
-        if(l!=null) {
-            for (int i = 0; i < l.size(); i++) {
-                double lat = Double.parseDouble(l.get(i).get(1)) + xOffset;
-                double lng = Double.parseDouble(l.get(i).get(2)) + yOffset;
+        double rangeInKm = getRange(mMap);
+        Location location = mCurrentLocation;
+        if (rangeInKm > currentRangeInKm*1.6) {
+            currentRangeInKm = rangeInKm;
+//            double xOffset = -0.0001;
+//            double yOffset = -0.0001;
+            List<List<String>> l = new MarkerTask(this).execute(location, rangeInKm).get();
+            if (l != null) {
+                for (int i = 0; i < l.size(); i++) {
+                    double lat = Double.parseDouble(l.get(i).get(1));// + xOffset;
+                    double lng = Double.parseDouble(l.get(i).get(2));// + yOffset;
 
 //                double lat = Double.parseDouble(l.get(i).get(1));
 //                double lng = Double.parseDouble(l.get(i).get(2));
-            xOffset += 0.0001;
-            if (i % 10 == 0) {
-                yOffset += 0.0001;
-            }
+//                    xOffset += 0.0001;
+//                    if (i % 10 == 0) {
+//                        yOffset += 0.0001;
+//                    }
 
-                mMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(lat, lng))
-                                .title(l.get(i).get(5) + "-" +l.get(i).get(6)+" " + l.get(i).get(7) + ", " +
-                                        l.get(i).get(8))
+                    mMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(lat, lng))
+                                    .title(l.get(i).get(5) + "-" + l.get(i).get(6) + " " + l.get(i).get(7) + ", " +
+                                            l.get(i).get(8))
 //                                .snippet("aasdfasd")
 //                                .snippet()
-                                .snippet("Price: " + l.get(i).get(4))
-                );// + " " + sales.get(i).get(4) + " " + sales.get(i).get(5))
+                                    .snippet("Price: " + l.get(i).get(4))
+                    );// + " " + sales.get(i).get(4) + " " + sales.get(i).get(5))
 //                    .snippet("£" + sales.get(i).get(6)));
+                }
             }
         }
     }
