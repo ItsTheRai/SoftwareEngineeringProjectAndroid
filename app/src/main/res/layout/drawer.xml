@@ -37,13 +37,14 @@
             android:layout_width="250dp"
             android:layout_height="150dp"
             android:id="@+id/imageView3"
-            android:src="@drawable/rainbow2"
+            android:src="@drawable/rainbow_rotate"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:paddingTop="42dp"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/imageView4" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,11 +54,9 @@
             android:background="#deeff5"
             android:textColor="#000000"
             android:textSize="20dp"
-            android:layout_marginLeft="107dp"
-            android:layout_marginStart="107dp"
             android:layout_alignTop="@+id/textView3"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignLeft="@+id/textView4"
+            android:layout_alignStart="@+id/textView4" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -67,12 +66,12 @@
             android:textColor="#000000"
             android:background="#deeff5"
             android:textSize="20dp"
-            android:layout_marginLeft="23dp"
-            android:layout_marginStart="23dp"
-            android:layout_marginBottom="15dp"
+
             android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/textView4"
-            android:layout_toEndOf="@+id/textView4" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="56dp"
+            android:layout_marginEnd="56dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -81,10 +80,11 @@
             android:id="@+id/textView4"
             android:textColor="#000000"
             android:textSize="20dp"
-            android:layout_marginBottom="42dp"
-            android:layout_marginLeft="67dp"
-            android:layout_marginStart="67dp"
-            android:layout_above="@+id/textView2"
+            android:layout_marginLeft="51dp"
+            android:layout_marginStart="51dp"
+
+            android:layout_marginTop="41dp"
+            android:layout_alignTop="@+id/imageView4"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
